@@ -1,0 +1,103 @@
+name: "🔥 Intel Submission — Generate Threat Path from URL"
+description: "Submit a fraud intel source URL and FLAME's AI pipeline will generate a structured threat path draft for review."
+title: "[Intel] "
+labels: ["intel-submission", "ai-generation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Submit Fraud Intelligence
+        Paste a URL to a fraud advisory, report, blog post, or indictment. FLAME's AI pipeline will:
+        1. Extract the fraud scheme from the source
+        2. Map techniques to CFPF phases (Recon → Monetization)
+        3. Cross-reference to FT3 tactics and ATT&CK techniques
+        4. Generate a structured threat path draft
+        5. Check for duplicate/overlapping submissions
+        6. Create a PR for maintainer review
+
+        **Supported sources**: FBI IC3, FinCEN advisories, APWG reports, DOJ press releases, vendor threat blogs, FS-ISAC alerts, Group-IB reports, Recorded Future reports, news articles, academic papers.
+
+  - type: input
+    id: source_url
+    attributes:
+      label: "Intel Source URL"
+      description: "URL to the fraud intelligence source"
+      placeholder: "https://www.ic3.gov/PSA/2025/PSA250101"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: submission_type
+    attributes:
+      label: "Submission Type"
+      options:
+        - "🔥 Threat Path (fraud scheme mapping)"
+        - "📊 Baseline (environmental profiling)"
+        - "⚡ Detection Logic (rules/queries/analytics)"
+    validations:
+      required: true
+
+  - type: input
+    id: crafter_name
+    attributes:
+      label: "Your Name or Handle"
+      description: "How you'd like to be credited on the contributor leaderboard"
+      placeholder: "Your name or GitHub handle"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "Additional Context (optional)"
+      description: "Any notes, observations, or specific aspects of the source you'd like the AI to focus on. For example: 'Focus on the BEC variant described in section 3' or 'The insurance-specific techniques aren't well-documented elsewhere.'"
+      placeholder: "Optional notes for the AI pipeline..."
+
+  - type: dropdown
+    id: sector
+    attributes:
+      label: "Primary Sector"
+      description: "Which financial sector is most affected?"
+      options:
+        - Banking
+        - Insurance
+        - Credit Union
+        - Investment
+        - Fintech
+        - Payments
+        - Crypto
+        - Healthcare
+        - Government
+        - Cross-sector
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: fraud_types
+    attributes:
+      label: "Fraud Types (select all that apply)"
+      options:
+        - label: "Account Takeover"
+        - label: "Business Email Compromise (BEC)"
+        - label: "Wire Fraud"
+        - label: "ACH Fraud"
+        - label: "Check Fraud"
+        - label: "Invoice Fraud / Payment Diversion"
+        - label: "Synthetic Identity"
+        - label: "New Account Fraud / Application Fraud"
+        - label: "Phishing / Vishing / Smishing"
+        - label: "Insurance Fraud (claims, premium, provider)"
+        - label: "Insider Threat"
+        - label: "Money Mule / Crypto Laundering"
+        - label: "Deepfake / Impersonation"
+        - label: "Other (describe in context above)"
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: "Confirmation"
+      options:
+        - label: "The source material is TLP:WHITE or publicly available"
+          required: true
+        - label: "I have reviewed the existing FLAME database for potential duplicates"
+          required: true

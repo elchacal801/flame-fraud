@@ -1,0 +1,363 @@
+{
+  "version": "0.1.0",
+  "framework": "FS-ISAC Cyber Fraud Prevention Framework",
+  "framework_date": "2025-04-01",
+  "note": "Initial technique catalog derived from CFPF paper and appendix. IDs are FLAME-assigned pending official FS-ISAC numbering.",
+  "phases": {
+    "P1": {
+      "name": "Recon",
+      "description": "Threat actor determines target, collects information, and sets up infrastructure.",
+      "typical_owners": ["Cyber Threat Intel", "OSINT", "Brand Protection"],
+      "techniques": [
+        {
+          "id": "CFPF-P1-001",
+          "name": "Search engine malvertising",
+          "description": "Purchase of search engine ads targeting banking/financial keywords to redirect victims to spoofed login pages.",
+          "indicators": ["Ad purchases on brand keywords", "Spoofed domain in ad destination URL", "Google Ads transparency reports"],
+          "mitre_attack": ["T1583.001", "T1608.005"],
+          "fraud_types": ["account-takeover", "credential-stuffing"]
+        },
+        {
+          "id": "CFPF-P1-002",
+          "name": "SEO poisoning",
+          "description": "Manipulation of search engine results to surface malicious sites impersonating legitimate financial institutions.",
+          "indicators": ["Anomalous search result rankings for brand terms", "Newly indexed domains mimicking financial institutions"],
+          "mitre_attack": ["T1608.005"],
+          "fraud_types": ["account-takeover", "phishing"]
+        },
+        {
+          "id": "CFPF-P1-003",
+          "name": "Lookalike domain registration",
+          "description": "Registration of domains that visually resemble legitimate financial institution domains via typosquatting, homoglyphs, or TLD variations.",
+          "indicators": ["Certificate transparency logs", "WHOIS registration patterns", "Domain monitoring alerts"],
+          "mitre_attack": ["T1583.001"],
+          "fraud_types": ["account-takeover", "BEC", "phishing"]
+        },
+        {
+          "id": "CFPF-P1-004",
+          "name": "Dark web reconnaissance",
+          "description": "Acquisition of stolen credentials, PII, or financial data from dark web marketplaces for use in account takeover or synthetic identity fraud.",
+          "indicators": ["Credentials appearing in breach databases", "PII packages sold on forums"],
+          "mitre_attack": ["T1589"],
+          "fraud_types": ["account-takeover", "synthetic-identity", "new-account-fraud"]
+        },
+        {
+          "id": "CFPF-P1-005",
+          "name": "Social media reconnaissance",
+          "description": "Collection of target information from social media profiles — employer, role, business relationships — to support social engineering.",
+          "indicators": ["Profile scraping activity", "Connection request patterns from suspicious accounts"],
+          "mitre_attack": ["T1593"],
+          "fraud_types": ["BEC", "vishing", "impersonation"]
+        },
+        {
+          "id": "CFPF-P1-006",
+          "name": "Callback infrastructure setup",
+          "description": "Establishment of phone numbers, VoIP services, and caller ID spoofing capability to support vishing operations.",
+          "indicators": ["Bulk VoIP number registration", "Caller ID spoofing service acquisition"],
+          "mitre_attack": ["T1583.006"],
+          "fraud_types": ["vishing", "account-takeover", "BEC"]
+        },
+        {
+          "id": "CFPF-P1-007",
+          "name": "Credential marketplace acquisition",
+          "description": "Purchase of valid credentials from initial access brokers or infostealer log marketplaces.",
+          "indicators": ["Credentials matching corporate email domains in stealer logs", "Access broker listings"],
+          "mitre_attack": ["T1589.001"],
+          "fraud_types": ["account-takeover", "BEC"]
+        },
+        {
+          "id": "CFPF-P1-008",
+          "name": "Target list compilation",
+          "description": "Assembly of target lists from public records, business directories, regulatory filings, or purchased data for mass-targeting campaigns.",
+          "indicators": ["Unusual access to public company databases", "Business registration lookups at volume"],
+          "mitre_attack": ["T1589.002"],
+          "fraud_types": ["BEC", "invoice-fraud", "application-fraud"]
+        }
+      ]
+    },
+    "P2": {
+      "name": "Initial Access",
+      "description": "Threat actor gains foothold against consumer, institution, or third party.",
+      "typical_owners": ["Cybersecurity", "SOC", "Email Security", "Call Center"],
+      "techniques": [
+        {
+          "id": "CFPF-P2-001",
+          "name": "Credential harvesting via spoofed page",
+          "description": "Victim enters credentials on a convincing replica of their financial institution's login page. May include real-time MFA token relay.",
+          "indicators": ["Referral URLs from ad networks", "Login attempts from known phishing infrastructure", "MFA token reuse patterns"],
+          "mitre_attack": ["T1566.002"],
+          "fraud_types": ["account-takeover", "phishing"]
+        },
+        {
+          "id": "CFPF-P2-002",
+          "name": "Vishing (voice phishing)",
+          "description": "Phone-based social engineering where actor impersonates bank staff, law enforcement, or government agency to extract credentials, MFA tokens, or authorization for account changes.",
+          "indicators": ["Spoofed caller ID matching institution numbers", "Customer-reported suspicious calls", "Call center interaction preceding account changes"],
+          "mitre_attack": ["T1656"],
+          "fraud_types": ["vishing", "account-takeover"]
+        },
+        {
+          "id": "CFPF-P2-003",
+          "name": "Smishing (SMS phishing)",
+          "description": "Fraudulent SMS messages impersonating financial institutions to direct victims to credential harvesting pages or elicit direct responses with sensitive information.",
+          "indicators": ["Bulk SMS from spoofed short codes", "URLs in SMS pointing to newly registered domains"],
+          "mitre_attack": ["T1566.002"],
+          "fraud_types": ["smishing", "account-takeover"]
+        },
+        {
+          "id": "CFPF-P2-004",
+          "name": "Email phishing / spearphishing",
+          "description": "Targeted or bulk email campaigns impersonating financial institutions, vendors, or business partners to deliver credential harvesting links or malware.",
+          "indicators": ["Email header anomalies", "Newly registered sending domains", "URL redirectors in email body"],
+          "mitre_attack": ["T1566.001", "T1566.002"],
+          "fraud_types": ["phishing", "BEC", "account-takeover"]
+        },
+        {
+          "id": "CFPF-P2-005",
+          "name": "Credential stuffing",
+          "description": "Automated use of stolen credential pairs from unrelated breaches to test login access across financial platforms.",
+          "indicators": ["High-volume failed login attempts", "Distributed source IPs", "Login velocity anomalies", "Residential proxy usage"],
+          "mitre_attack": ["T1110.004"],
+          "fraud_types": ["credential-stuffing", "account-takeover"]
+        },
+        {
+          "id": "CFPF-P2-006",
+          "name": "SIM swap",
+          "description": "Social engineering or insider compromise at mobile carrier to transfer victim's phone number to actor-controlled SIM, intercepting MFA codes.",
+          "indicators": ["Customer-reported loss of mobile service", "MFA delivery to new device preceding account changes"],
+          "mitre_attack": ["T1111"],
+          "fraud_types": ["account-takeover"]
+        },
+        {
+          "id": "CFPF-P2-007",
+          "name": "Business email compromise",
+          "description": "Compromise or spoofing of business email accounts to impersonate executives, vendors, or partners for fraudulent payment authorization.",
+          "indicators": ["Email forwarding rule changes", "Inbox rule modifications", "Reply-to domain mismatches", "Unusual email sending patterns"],
+          "mitre_attack": ["T1534", "T1114"],
+          "fraud_types": ["BEC", "invoice-fraud", "payment-diversion"]
+        },
+        {
+          "id": "CFPF-P2-008",
+          "name": "Synthetic identity creation",
+          "description": "Fabrication of a new identity using a combination of real and fictitious PII to open new accounts or establish credit.",
+          "indicators": ["SSN not matching identity databases", "Thin credit files", "Inconsistent PII across applications"],
+          "mitre_attack": [],
+          "fraud_types": ["synthetic-identity", "new-account-fraud", "application-fraud"]
+        },
+        {
+          "id": "CFPF-P2-009",
+          "name": "Insider access abuse",
+          "description": "Malicious use of legitimate employee access to financial systems, either by a rogue insider or through coercion/bribery.",
+          "indicators": ["Off-hours system access", "Access to accounts outside normal responsibilities", "Bulk data exports"],
+          "mitre_attack": ["T1078"],
+          "fraud_types": ["insider-threat", "collusion", "data-theft"]
+        },
+        {
+          "id": "CFPF-P2-010",
+          "name": "Malware / infostealer",
+          "description": "Installation of malware on victim's device to capture credentials, session cookies, or banking information.",
+          "indicators": ["Endpoint detection alerts", "Unusual outbound connections", "Cookie/credential exfiltration traffic"],
+          "mitre_attack": ["T1566.001", "T1204"],
+          "fraud_types": ["account-takeover"]
+        }
+      ]
+    },
+    "P3": {
+      "name": "Positioning",
+      "description": "Threat actor changes or collects account information for forwarding to controlled infrastructure.",
+      "typical_owners": ["Fraud Operations", "Cybersecurity", "Account Management"],
+      "techniques": [
+        {
+          "id": "CFPF-P3-001",
+          "name": "Add authorized user",
+          "description": "Addition of actor-controlled identity as authorized user on the compromised account.",
+          "indicators": ["New user additions from unusual IP/device", "Temporal correlation with social engineering events"],
+          "mitre_attack": ["T1098"],
+          "fraud_types": ["account-takeover"]
+        },
+        {
+          "id": "CFPF-P3-002",
+          "name": "Modify beneficiary / payee information",
+          "description": "Changes to wire transfer beneficiaries, ACH recipients, or payment routing to direct funds to actor-controlled accounts.",
+          "indicators": ["Beneficiary changes from new devices", "Changes followed by immediate wire requests", "Bulk beneficiary modifications"],
+          "mitre_attack": [],
+          "fraud_types": ["account-takeover", "payment-diversion", "BEC"]
+        },
+        {
+          "id": "CFPF-P3-003",
+          "name": "Modify contact information",
+          "description": "Changes to email, phone, or mailing address to prevent legitimate account holder from receiving transaction alerts or correspondence.",
+          "indicators": ["Contact info changes from new devices/IPs", "Changes shortly before high-value transactions"],
+          "mitre_attack": [],
+          "fraud_types": ["account-takeover"]
+        },
+        {
+          "id": "CFPF-P3-004",
+          "name": "Disable or redirect alerts",
+          "description": "Modification of notification preferences to suppress transaction alerts, balance notifications, or security warnings.",
+          "indicators": ["Alert preference changes from unusual sources", "Notification opt-outs preceding high-value activity"],
+          "mitre_attack": ["T1562"],
+          "fraud_types": ["account-takeover"]
+        },
+        {
+          "id": "CFPF-P3-005",
+          "name": "Register new MFA device",
+          "description": "Enrollment of actor-controlled device for multi-factor authentication to maintain persistent access.",
+          "indicators": ["New device enrollment from unusual location", "Multiple MFA devices registered in short period"],
+          "mitre_attack": ["T1098.005"],
+          "fraud_types": ["account-takeover"]
+        },
+        {
+          "id": "CFPF-P3-006",
+          "name": "Increase transaction limits",
+          "description": "Request or modification of daily transaction limits, wire transfer thresholds, or credit limits to enable larger fraudulent transactions.",
+          "indicators": ["Limit increase requests from new channels", "Limit changes preceding large transactions"],
+          "mitre_attack": [],
+          "fraud_types": ["account-takeover", "new-account-fraud"]
+        },
+        {
+          "id": "CFPF-P3-007",
+          "name": "Email forwarding rule",
+          "description": "Creation of email forwarding or inbox rules to intercept communications and maintain visibility into victim's correspondence.",
+          "indicators": ["New forwarding rules to external addresses", "Rules auto-deleting messages from specific senders"],
+          "mitre_attack": ["T1114.003"],
+          "fraud_types": ["BEC", "account-takeover"]
+        },
+        {
+          "id": "CFPF-P3-008",
+          "name": "Data exfiltration for fraud setup",
+          "description": "Collection of account details, transaction history, contact lists, or vendor relationships to support convincing impersonation in later phases.",
+          "indicators": ["Bulk data access or export", "Unusual API queries against account data", "Screen scraping activity"],
+          "mitre_attack": ["T1530"],
+          "fraud_types": ["BEC", "invoice-fraud", "insider-threat"]
+        }
+      ]
+    },
+    "P4": {
+      "name": "Execution",
+      "description": "Threat actor converts stolen data or access to money through business procedures.",
+      "typical_owners": ["Fraud Operations", "Treasury Operations", "Claims"],
+      "techniques": [
+        {
+          "id": "CFPF-P4-001",
+          "name": "Unauthorized wire transfer",
+          "description": "Initiation of wire transfers to actor-controlled accounts using compromised access or fraudulent authorization.",
+          "indicators": ["Wires to new beneficiaries", "Unusual transfer timing", "Amount near review thresholds"],
+          "mitre_attack": ["T1657"],
+          "fraud_types": ["wire-fraud", "account-takeover", "BEC"]
+        },
+        {
+          "id": "CFPF-P4-002",
+          "name": "Unauthorized ACH origination",
+          "description": "Initiation of ACH debits or credits to move funds to actor-controlled accounts.",
+          "indicators": ["ACH to new recipients", "Unusual batch patterns", "Same-day ACH requests"],
+          "mitre_attack": ["T1657"],
+          "fraud_types": ["ACH-fraud", "account-takeover"]
+        },
+        {
+          "id": "CFPF-P4-003",
+          "name": "Check fraud",
+          "description": "Issuance of unauthorized checks, alteration of legitimate checks, or creation of counterfeit checks using compromised account information.",
+          "indicators": ["Checks to unknown payees", "Check stock discrepancies", "Mobile deposit anomalies"],
+          "mitre_attack": ["T1657"],
+          "fraud_types": ["check-fraud"]
+        },
+        {
+          "id": "CFPF-P4-004",
+          "name": "Fraudulent invoice submission",
+          "description": "Submission of fraudulent invoices or modification of legitimate invoices to redirect payments to actor-controlled accounts.",
+          "indicators": ["Invoice routing changes", "Vendor bank detail modifications", "Duplicate invoices with different payment details"],
+          "mitre_attack": ["T1657"],
+          "fraud_types": ["invoice-fraud", "BEC", "payment-diversion"]
+        },
+        {
+          "id": "CFPF-P4-005",
+          "name": "Payroll diversion",
+          "description": "Modification of direct deposit information to redirect employee payroll to actor-controlled accounts.",
+          "indicators": ["Direct deposit changes from unusual sources", "Multiple employee changes in short period", "Changes near payroll processing dates"],
+          "mitre_attack": ["T1657"],
+          "fraud_types": ["payroll-diversion", "BEC"]
+        },
+        {
+          "id": "CFPF-P4-006",
+          "name": "Fraudulent insurance claim",
+          "description": "Submission of fabricated, exaggerated, or staged insurance claims to extract payment from insurance carriers.",
+          "indicators": ["Claim patterns inconsistent with historical baseline", "Provider billing anomalies", "Claimant behavior indicators"],
+          "mitre_attack": [],
+          "fraud_types": ["fraudulent-claim", "provider-fraud", "disability-fraud"]
+        },
+        {
+          "id": "CFPF-P4-007",
+          "name": "Loan/credit application fraud",
+          "description": "Use of stolen or synthetic identities to apply for loans, credit cards, or lines of credit with no intent to repay.",
+          "indicators": ["Application velocity from similar PII", "Inconsistent application data", "Thin credit files"],
+          "mitre_attack": [],
+          "fraud_types": ["application-fraud", "synthetic-identity", "new-account-fraud"]
+        }
+      ]
+    },
+    "P5": {
+      "name": "Monetization",
+      "description": "Method of payment transferring stolen funds to threat actor's control.",
+      "typical_owners": ["AML", "Financial Crimes", "BSA Compliance"],
+      "techniques": [
+        {
+          "id": "CFPF-P5-001",
+          "name": "Domestic wire to mule account",
+          "description": "Wire transfer to a domestic account controlled by a money mule, who further distributes funds.",
+          "indicators": ["Recently opened receiving accounts", "Rapid subsequent withdrawals", "Receiving account in SAR databases"],
+          "mitre_attack": ["T1657"],
+          "fraud_types": ["wire-fraud", "money-mule"]
+        },
+        {
+          "id": "CFPF-P5-002",
+          "name": "International wire transfer",
+          "description": "Wire transfer to accounts in foreign jurisdictions, often in countries with limited bilateral recovery agreements.",
+          "indicators": ["Transfers to high-risk jurisdictions", "No prior international wire history for account", "Beneficiary in known mule geography"],
+          "mitre_attack": ["T1657"],
+          "fraud_types": ["wire-fraud", "money-mule"]
+        },
+        {
+          "id": "CFPF-P5-003",
+          "name": "Cryptocurrency conversion",
+          "description": "Conversion of stolen funds to cryptocurrency via exchanges, peer-to-peer platforms, or Bitcoin ATMs to obscure the money trail.",
+          "indicators": ["Rapid fiat-to-crypto conversion", "Transactions with known mixing services", "Bitcoin ATM activity near mule account locations"],
+          "mitre_attack": [],
+          "fraud_types": ["crypto-laundering", "money-mule"]
+        },
+        {
+          "id": "CFPF-P5-004",
+          "name": "Cash withdrawal network",
+          "description": "Coordinated ATM withdrawals or over-the-counter cash withdrawals from mule accounts, often across multiple branches/locations simultaneously.",
+          "indicators": ["Geographically dispersed withdrawals from same account", "Rapid sequential ATM withdrawals", "Withdrawals immediately after incoming wire"],
+          "mitre_attack": [],
+          "fraud_types": ["money-mule"]
+        },
+        {
+          "id": "CFPF-P5-005",
+          "name": "Prepaid card loading",
+          "description": "Transfer of stolen funds to prepaid debit cards or gift cards, which are then used for purchases or resold.",
+          "indicators": ["High-value prepaid card purchases", "Multiple card loads from same source", "Card usage patterns inconsistent with legitimate use"],
+          "mitre_attack": [],
+          "fraud_types": ["money-mule"]
+        },
+        {
+          "id": "CFPF-P5-006",
+          "name": "Trade-based laundering",
+          "description": "Use of over- or under-invoiced trade transactions to move value across borders while disguising the origin of funds.",
+          "indicators": ["Trade values significantly deviating from market rates", "Circular trade patterns", "Shell company involvement"],
+          "mitre_attack": [],
+          "fraud_types": ["money-mule"]
+        },
+        {
+          "id": "CFPF-P5-007",
+          "name": "Digital payment platform transfer",
+          "description": "Movement of funds through digital payment platforms (Zelle, Venmo, PayPal, CashApp) to layer transactions and complicate tracing.",
+          "indicators": ["New payee additions on P2P platforms", "High-velocity P2P transfers", "P2P transfers to newly created accounts"],
+          "mitre_attack": [],
+          "fraud_types": ["money-mule", "payment-diversion"]
+        }
+      ]
+    }
+  }
+}

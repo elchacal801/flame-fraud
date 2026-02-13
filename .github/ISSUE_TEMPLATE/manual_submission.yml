@@ -1,0 +1,62 @@
+name: "Submit a Threat Path Manually"
+description: "Submit a fraud threat path for review without using the AI intake pipeline."
+title: "[Manual] "
+labels: ["manual-submission", "review-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Manual Threat Path Submission
+        Use this form to submit a threat path directly. For AI-assisted intake from a URL,
+        use the Intel Submission template instead.
+
+        Please prepare your threat path markdown file following the template in
+        `Templates/threat-path-template.md` and attach it or paste the content below.
+
+  - type: input
+    id: title
+    attributes:
+      label: "Threat Path Title"
+      description: "Descriptive title for the fraud scheme"
+      placeholder: "e.g., Payroll Diversion via HR Portal Compromise"
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: "Your Name or Handle"
+      description: "How you'd like to be credited"
+      placeholder: "Your name or GitHub handle"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "Submission Category"
+      options:
+        - "Threat Path (fraud scheme mapping)"
+        - "Baseline (environmental profiling)"
+        - "Detection Logic (rules/queries/analytics)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: content
+    attributes:
+      label: "Threat Path Content"
+      description: "Paste the full markdown content of your threat path, or describe the scheme and we will help structure it."
+      placeholder: "Paste markdown content here..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: "Confirmation"
+      options:
+        - label: "The content is TLP:WHITE or based on publicly available information"
+          required: true
+        - label: "I have reviewed the existing FLAME database for potential duplicates"
+          required: true

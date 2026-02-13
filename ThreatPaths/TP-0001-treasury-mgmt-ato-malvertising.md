@@ -1,0 +1,258 @@
+# TP-0001: Treasury Management ATO via Malvertising and Vishing
+
+```yaml
+---
+id: TP-0001
+title: "Treasury Management ATO via Malvertising and Vishing"
+category: ThreatPath
+date: 2026-02-12
+author: "FLAME Project (adapted from FS-ISAC CFPF Working Group case study)"
+source: "https://www.fsisac.com/hubfs/Knowledge/Fraud/CyberFraudPreventionFramework.pdf"
+tlp: WHITE
+sector:
+  - banking
+fraud_types:
+  - account-takeover
+  - vishing
+  - wire-fraud
+  - malvertising
+cfpf_phases:
+  - P1
+  - P2
+  - P3
+  - P4
+  - P5
+mitre_attack:
+  - T1583.001  # Acquire Infrastructure: Domains
+  - T1566.002  # Phishing: Spearphishing Link
+  - T1656      # Impersonation
+  - T1657      # Financial Theft
+ft3_tactics: []                  # Stripe FT3 (when mapped)
+mitre_f3: []                     # MITRE F3 (placeholder)
+groupib_stages:               # Group-IB Fraud Matrix (reference)
+  - "Reconnaissance"
+  - "Resource Development"
+  - "Trust Abuse"
+  - "End-user Interaction"
+  - "Credential Access"
+  - "Account Access"
+  - "Perform Fraud"
+  - "Monetization"
+  - "Laundering"
+tags:
+  - treasury-management
+  - commercial-banking
+  - SEO-poisoning
+  - social-engineering
+  - money-mule
+  - high-value
+---
+```
+
+---
+
+## Summary
+
+Threat actors target commercial banking customers using a multi-phase scheme that begins with search engine malvertising (poisoned ads impersonating bank login pages), transitions to vishing (phone-based social engineering impersonating bank staff), and culminates in unauthorized wire transfers to mule accounts. One bank documented approximately 10 attacks per day with six-to-seven-figure losses per successful incident. Cross-functional analysis using the CFPF framework traced the full kill chain and identified that mitigating the malvertising entry point eliminated successful ATOs for 8 months, saving the institution hundreds of thousands of dollars per day.
+
+---
+
+## Threat Path Hypothesis
+
+> **Hypothesis**: Financially motivated actors are using search engine malvertising to lure commercial banking customers to spoofed login pages, then conducting vishing calls impersonating bank staff to complete account takeover of treasury management platforms, resulting in unauthorized high-value wire transfers to mule accounts.
+
+**Confidence**: High — based on direct observation across multiple financial institutions and documented in the FS-ISAC CFPF case study (300+ member working group).
+
+**Estimated Impact**: $100,000 – $1,000,000+ per successful incident. At ~10 attempts/day against a single institution, aggregate exposure reaches hundreds of thousands per day.
+
+---
+
+## CFPF Phase Mapping
+
+### Phase 1: Recon
+
+| Technique | Description | Indicators |
+|-----------|-------------|------------|
+| CFPF-P1-001: Search engine malvertising | Actors purchase search ads for bank-related keywords ("bank name login", "treasury management portal"). Ads appear above organic results and redirect to spoofed login pages. | Newly registered domains mimicking bank URLs; ad purchases on banking keywords; spoofed page infrastructure (hosting, certificates) |
+| CFPF-P1-002: Domain infrastructure | Registration of lookalike domains (typosquats, homoglyphs) for hosting credential harvesting pages and establishing callback phone numbers. | Domain registration patterns; WHOIS anomalies; certificate transparency logs showing bank-name lookalikes |
+| CFPF-P1-003: Target identification | Actors likely identify commercial banking customers through public records, business directories, and company websites listing banking relationships. | N/A (difficult to observe externally) |
+
+**Data Sources**: Domain monitoring (domain_intel-style tooling), certificate transparency logs, ad platform abuse reports, brand protection services, search engine ad transparency reports.
+
+---
+
+### Phase 2: Initial Access
+
+| Technique | Description | Indicators |
+|-----------|-------------|------------|
+| CFPF-P2-001: Credential harvesting via spoofed page | Customer clicks malvertising ad, lands on convincing spoofed bank login page, enters treasury management credentials. Page may include MFA harvesting (real-time relay). | Web analytics showing referral from ad networks to spoofed domains; customer reports of "suspicious login pages"; credential reuse across sessions |
+| CFPF-P2-002: Vishing (voice phishing) | After capturing initial credentials, actors call the customer impersonating bank staff. Pretext: "We detected suspicious activity on your account and need to verify your identity." Used to obtain MFA tokens, security questions, or authorization for account changes. | Call center logs showing inbound/outbound calls near account modification events; customer-reported suspicious calls; caller ID spoofing of bank numbers |
+| CFPF-P2-003: Social engineering of call center | In some variants, actors call the bank's own call center impersonating the customer, using harvested information to pass authentication. | Call center authentication failures followed by successes; unusual call patterns; voice analysis anomalies |
+
+**Target**: Consumer (commercial banking customer) and Institution (bank call center)
+
+**Data Sources**: Web server/proxy logs, phishing report feeds, call center interaction logs (telephony metadata + CRM), authentication system logs, MFA provider logs.
+
+---
+
+### Phase 3: Positioning
+
+| Technique | Description | Indicators |
+|-----------|-------------|------------|
+| CFPF-P3-001: Add authorized user | Using stolen credentials and social-engineered access, actors add themselves or a confederate as an authorized user on the treasury management platform. | New authorized user additions outside normal business patterns; user additions from unusual IP/device; additions temporally correlated with vishing calls |
+| CFPF-P3-002: Modify account information | Actors change beneficiary information, wire transfer limits, notification preferences (disable alerts), and contact information to prevent the legitimate customer from receiving transaction alerts. | Beneficiary changes followed by wire transfers within short time window; contact info changes from new devices/IPs; alert preference modifications |
+| CFPF-P3-003: Establish persistence | Actors may register new MFA devices, add backup email addresses, or modify security questions to maintain access even if the original compromise vector is remediated. | New MFA device registrations; backup contact additions; security question resets outside normal patterns |
+
+**Data Sources**: Account administration audit logs, treasury management platform change logs, MFA enrollment records, email/notification delivery logs, session analytics (device fingerprinting, IP geolocation).
+
+---
+
+### Phase 4: Execution
+
+| Technique | Description | Indicators |
+|-----------|-------------|------------|
+| CFPF-P4-001: Unauthorized wire transfer | Using the newly established or modified authorized access, actors initiate wire transfers to external accounts. Transfers are often structured just below institutional review thresholds or timed for end-of-day processing. | Wire transfers to new beneficiaries; transfers outside normal business hours or patterns; transfer amounts near threshold limits; multiple transfers in rapid succession |
+| CFPF-P4-002: ACH origination | In some variants, actors initiate ACH transfers rather than wires, which may receive less scrutiny but take longer to settle. | ACH originations to new recipients; unusual ACH batch patterns; same-day ACH requests outside normal usage |
+
+**Data Sources**: Wire transfer monitoring systems, payment processing logs, transaction monitoring platforms, dual-authorization logs, real-time payment screening.
+
+---
+
+### Phase 5: Monetization
+
+| Technique | Description | Indicators |
+|-----------|-------------|------------|
+| CFPF-P5-001: Wire to domestic mule account | Funds wired to accounts held by money mules (recruited via romance scams, fake job ads, or willingly complicit). Mules further transfer funds or withdraw cash. | Destination accounts with recent opening dates; receiving accounts with rapid subsequent withdrawals or transfers; accounts flagged in FinCEN SAR data |
+| CFPF-P5-002: Rapid fund movement | Once funds arrive at mule accounts, they are quickly moved through additional layers — domestic wires to other mules, crypto conversion, or international wire to jurisdictions with limited recovery options. | Multi-hop wire patterns; rapid crypto on-ramp activity at receiving accounts; international transfers from domestic mule accounts |
+
+**Data Sources**: Wire transfer network data, FinCEN SAR database, bank account opening records, cryptocurrency exchange transaction monitoring, correspondent banking records.
+
+---
+
+## Look Left / Look Right Analysis
+
+**Discovery Phase**: Typically discovered at **Phase 4 (Execution)** — fraud operations teams see the unauthorized wire transfer or the customer calls to report unrecognized activity. In some cases discovered at **Phase 3** when a customer notices account modifications they didn't authorize.
+
+**Look Left** (what was missed before discovery):
+
+- **P3 → P2**: Beneficiary changes and new user additions should have been correlated with recent call center interactions. Were there vishing calls in the hours preceding the account modifications?
+- **P2 → P1**: Authentication events should have been checked against known spoofed domain indicators. Was the customer's session originating from a credential harvesting redirect?
+- **P1**: Brand protection monitoring would have flagged the malvertising domains before any customer was compromised. Were the spoofed domains in the bank's monitoring scope?
+- **Cross-team gap**: Cybersecurity had the malvertising/phishing indicators. Fraud operations had the unauthorized transaction. Neither team routinely shared data with the other. The connection between the malvertising campaign and the ATO was invisible to both teams in isolation.
+
+**Look Right** (predicted next steps if uninterrupted):
+
+- Mule accounts will show rapid fund movement within 24-48 hours
+- Same malvertising infrastructure will be reused against other customers (campaign-level targeting, not one-off)
+- Actor group likely running parallel campaigns against multiple banks simultaneously
+- Recovery window for wire recall is typically 24-72 hours; international wires have near-zero recovery after settlement
+
+---
+
+## Controls & Mitigations
+
+| Phase | Control | Type | Owner |
+|-------|---------|------|-------|
+| P1 | Partner with search engines to flag/remove malvertising targeting bank keywords | Preventive | Cyber + Marketing |
+| P1 | Domain monitoring for lookalike registrations (automated alerting) | Detective | Cyber Threat Intel |
+| P1 | Customer education on verifying URLs before entering credentials | Preventive | Customer Communications |
+| P2 | Implement phishing-resistant MFA (FIDO2/WebAuthn) for treasury platforms | Preventive | IT / IAM |
+| P2 | Call center enhanced authentication for high-risk actions (callback verification to number on file) | Preventive | Fraud Ops |
+| P2 | Real-time credential phishing detection (monitor for known spoofed domain referrals) | Detective | Cybersecurity |
+| P3 | Beneficiary change velocity alerting — flag accounts with beneficiary changes followed by wire requests within N hours | Detective | Fraud Ops |
+| P3 | Out-of-band verification for authorized user additions on commercial accounts | Preventive | Treasury Ops |
+| P3 | Alert suppression monitoring — flag customers whose notification preferences change before high-value transactions | Detective | Fraud Ops |
+| P4 | Enhanced transaction monitoring rules: new beneficiary + recent account changes + amount threshold | Detective | Fraud Ops |
+| P4 | Mandatory dual authorization for wire transfers above threshold from recently modified accounts | Preventive | Treasury Ops |
+| P5 | Real-time wire recall procedures with receiving bank | Responsive | Fraud Ops / AML |
+| P5 | SAR filing with mule account identifiers for FinCEN cross-referencing | Responsive | AML / BSA |
+
+### What Actually Worked
+
+Per the CFPF case study: **mitigating the malvertising at Phase 1** — partnering with search engines to remove poisoned ads — was the single most effective control. The bank went 8 months without a successful treasury management ATO after addressing the upstream entry point. This validates the CFPF's "look left" principle: the highest-leverage intervention was at the earliest phase, not at the point of discovery.
+
+---
+
+## Detection Approaches
+
+### Queries / Rules
+
+**Splunk — Beneficiary Change → Wire Transfer Correlation (Phase 3→4)**
+
+```spl
+index=treasury_mgmt (action="beneficiary_change" OR action="wire_transfer")
+| transaction account_id maxspan=24h
+| where eventcount > 1
+| search action="beneficiary_change" AND action="wire_transfer"
+| eval time_delta=round((latest - earliest)/3600, 2)
+| where time_delta < 24
+| table account_id, time_delta, _time, action, amount, beneficiary_name, ip_address, device_id
+| sort - amount
+```
+
+**Sigma — New Authorized User from Unusual Location (Phase 3)**
+
+```yaml
+title: Treasury Platform - New Authorized User from Anomalous Source
+status: experimental
+description: Detects addition of authorized users on treasury management platforms from IP addresses or devices not previously associated with the account.
+logsource:
+    product: treasury_management
+    service: audit
+detection:
+    selection:
+        action: "add_authorized_user"
+    filter_known:
+        source_ip|cidr:
+            - '10.0.0.0/8'        # Expected corporate ranges
+            - '172.16.0.0/12'
+    condition: selection and not filter_known
+level: high
+tags:
+    - attack.persistence
+    - cfpf.phase3.positioning
+```
+
+### Behavioral Analytics
+
+- **Session risk scoring**: Flag sessions where a user's device fingerprint, IP geolocation, or behavioral biometrics (typing cadence, mouse movement) deviate significantly from their baseline profile — particularly when followed by high-risk actions (beneficiary changes, wire initiation)
+- **Beneficiary change velocity**: Establish per-account baselines for how frequently beneficiary information changes, then alert on deviations. Commercial accounts with stable payee lists should rarely see new beneficiaries.
+- **Call center interaction correlation**: Identify accounts where call center interactions (especially identity verification or "security alert" pretexts) immediately precede online account modifications
+
+### Cross-Team Correlation
+
+- **Cyber → Fraud**: Phishing/malvertising indicators (spoofed domains, credential harvesting pages) should feed into fraud case management when associated customer accounts show subsequent modification activity
+- **Fraud → AML**: Mule account patterns identified in unauthorized wire destinations should be flagged for SAR filing and cross-referenced against existing SAR data
+- **Fraud → Cyber**: Beneficiary account details from fraud cases should feed back to threat intelligence for infrastructure mapping of the actor group's mule network
+
+---
+
+## Case Studies & References
+
+- **FS-ISAC Cyber Fraud Prevention Framework (2025)**: Primary source. Treasury management ATO case study appears on pages 8-9, documenting the cross-functional investigation that traced malvertising → vishing → ATO → wire fraud chain. Reports ~10 attacks/day, six-to-seven-figure losses, and 8-month prevention after addressing malvertising. [PDF](https://www.fsisac.com/hubfs/Knowledge/Fraud/CyberFraudPreventionFramework.pdf)
+
+- **FBI IC3 2024 Internet Crime Report**: Business Email Compromise and account takeover remain top financial loss categories, with BEC alone accounting for $2.9B+ in reported losses.
+
+- **BankInfoSecurity — "New Framework Targets Rising Financial Crime Threats" (2025)**: Coverage of the CFPF launch, noting that cyber and fraud teams "traditionally get involved at different points in the attack lifecycle." [Link](https://www.bankinfosecurity.com/new-framework-targets-rising-financial-crime-threats-a-28112)
+
+---
+
+## Analyst Notes
+
+This threat path represents a "textbook" CFPF case — it's the framework's flagship example for good reason. A few practitioner observations:
+
+**Why this scheme persists**: The attack exploits the organizational gap between cybersecurity (owns Phase 1-2 visibility) and fraud operations (owns Phase 3-5 visibility). Neither team sees the full chain without deliberate cross-functional coordination. The CFPF was literally built to solve this problem.
+
+**Insurance sector parallels**: While this threat path is banking-focused, insurance companies face analogous schemes targeting agent portals, premium payment redirections, and claims system access. The Phase 1-2 techniques (malvertising, vishing, credential harvesting) are sector-agnostic — only the Phases 3-5 execution differ based on what the compromised platform enables.
+
+**Emerging variants**: Recent reporting suggests threat actors are beginning to use AI-generated voice deepfakes in the vishing phase (P2), making caller impersonation more convincing. This raises the effectiveness of the social engineering component and reduces the skill barrier for new entrants.
+
+**Connection to mule networks**: The monetization phase (P5) connects this threat path to broader organized crime infrastructure. Mule recruitment campaigns (romance scams, fake job postings) represent a separate but interconnected threat path that feeds into this one. See also: [TP-XXXX: Money Mule Recruitment Networks — when created].
+
+---
+
+## Revision History
+
+| Date | Author | Change |
+|------|--------|--------|
+| 2026-02-12 | FLAME Project | Initial submission, adapted from FS-ISAC CFPF case study |

@@ -1,0 +1,39 @@
+name: Update Database
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ThreatPaths/**'
+      - 'Baselines/**'
+      - 'DetectionLogic/**'
+      - 'cfpf_techniques.json'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build database
+        run: python scripts/build_database.py
+
+      - name: Commit updated database
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add database/
+          git diff --cached --quiet || git commit -m "Rebuild database [automated]"
+          git push

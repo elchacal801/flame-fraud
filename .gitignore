@@ -1,0 +1,25 @@
+# Internal planning documents (not for public repo)
+docs/antigravity-kickoff-prompt.md
+docs/SLEUTHCON-CFP-draft.md
+docs/COMPETITIVE-LANDSCAPE.md
+docs/FLAME-project-design.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gemini agent workspace
+.gemini/
