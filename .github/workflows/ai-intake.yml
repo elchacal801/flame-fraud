@@ -135,7 +135,7 @@ jobs:
           Model: ${MODEL}
           Issue: #${ISSUE_NUM}"
 
-          git push origin "$BRANCH"
+          git push -f origin "$BRANCH"
 
           # Build PR body
           VALIDATION_STATUS="passed"

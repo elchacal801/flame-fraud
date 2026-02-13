@@ -169,7 +169,7 @@ You must output a complete threat path markdown document following the FLAME sch
 The document MUST follow this exact structure:
 
 1. A title line: `# TP-XXXX: Title Here`
-2. A YAML frontmatter block wrapped in triple backticks with ```yaml ... ``` (NOT raw --- delimiters)
+2. A YAML frontmatter block wrapped in triple backticks with ```yaml ... ```. IMPORTANT: Inside the code block, the content MUST be wrapped in `---` delimiters (standard frontmatter format).
 3. Required sections: Summary, Threat Path Hypothesis, CFPF Phase Mapping (with technique tables), Look Left / Look Right, Controls & Mitigations, Detection Approaches, References, Revision History
 
 ## Frontmatter Schema
@@ -359,17 +359,18 @@ def extract_title_from_output(content: str) -> str:
 
 
 def clean_output(content: str) -> str:
-    """Clean up LLM output — strip markdown code fences and ensure valid frontmatter."""
+    """
+    Clean up LLM output.
+    Ensures the content follows FLAME's specific format:
+    1. Title line (# TP-XXXX: ...)
+    2. YAML frontmatter wrapped in ```yaml ... ``` code block
+    """
     content = content.strip()
 
-    # Remove wrapping ```markdown ... ``` or ```yaml ... ```
-    # Some LLMs wrap the whole response, others just the frontmatter.
-    # We need to be careful.
-
-    # Pattern 1: Whole file wrapped in ```markdown
+    # 1. Remove wrapping ```markdown ... ``` if the LLM enclosed the whole file
     if content.startswith("```markdown") or content.startswith("```md"):
         lines = content.splitlines()
-        # Remove first line
+        # Remove first line if it's the fence
         if lines[0].startswith("```"):
             lines = lines[1:]
         # Remove last line if it's closing fence
@@ -377,41 +378,48 @@ def clean_output(content: str) -> str:
             lines = lines[:-1]
         content = "\n".join(lines).strip()
 
-    # Pattern 2: Frontmatter wrapped in ```yaml, but distinct from body
-    # This is trickier. If we see ```yaml at start, we should likely keep the content inside
-    # but strip the fence lines themselves if they are interfering.
-    
-    # Simple standardized approach:
-    # 1. If it doesn't start with ---, but has a YAML block, try to fix it.
-    if not content.startswith("---"):
-        # Check if it starts with ```yaml
-        if content.startswith("```yaml"):
-            content = re.sub(r"^```yaml\s*", "---\n", content)
-            content = re.sub(r"\n```\s*", "\n---\n", content, count=1)
-    
-    # 2. If it still doesn't start with ---, maybe it has a Title line first?
-    # The prompt asked for "# TP-XXXX: Title" first.
-    # But validate_submission.py might expect frontmatter *first*?
-    # Let's check validate_submission.py requirements. 
-    # Usually frontmatter comes BEFORE the title in Jekyll/Hugo/etc.
-    # But FLAME seed files have # Title line first? 
-    # Let's check TP-0002.md...
-    # It has:
-    # # TP-0002: Start
-    # 
+    # 2. Ensure frontmatter is wrapped in ```yaml
+    # The validator requires:
     # ```yaml
     # ---
     # ...
     # ---
     # ```
     
-    # Wait, the seed files DO wrap frontmatter in ```yaml blocks!
-    # See TP-0002 line 3: ```yaml
-    
-    # So valid_submission.py expects the frontmatter INSIDE a code block?
-    # Let's verify validate_submission.py logic.
-    pass 
-    # I will read validate_submission.py first before finishing this edit to be sure.
+    # Check if we have a YAML block
+    if "```yaml" not in content:
+        # If the LLM output raw YAML (starting with ---), wrap it
+        # But be careful not to wrap the Title line if it's first!
+        
+        lines = content.splitlines()
+        new_lines = []
+        in_yaml = False
+        yaml_started = False
+        
+        for i, line in enumerate(lines):
+            if line.strip() == "---":
+                if not in_yaml:
+                    if not yaml_started:
+                        # Start of YAML block
+                        new_lines.append("```yaml")
+                        new_lines.append("---")
+                        in_yaml = True
+                        yaml_started = True
+                    else:
+                        # This shouldn't happen for standard frontmatter 
+                        # unless there are multiple --- blocks?
+                        new_lines.append(line)
+                else:
+                    # End of YAML block
+                    new_lines.append("---")
+                    new_lines.append("```")
+                    in_yaml = False
+            else:
+                new_lines.append(line)
+        
+        if yaml_started:
+            content = "\n".join(new_lines)
+
     return content
 
 
