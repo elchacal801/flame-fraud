@@ -1,13 +1,11 @@
-name: AI Intake — Generate Threat Path
-
 on:
   issues:
-    types: [labeled]
+    types: [opened, labeled]
 
 jobs:
   generate:
     # Only run when the intel-submission label is applied
-    if: github.event.label.name == 'intel-submission'
+    if: contains(github.event.issue.labels.*.name, 'intel-submission')
     runs-on: ubuntu-latest
     permissions:
       contents: write
