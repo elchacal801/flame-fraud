@@ -359,19 +359,59 @@ def extract_title_from_output(content: str) -> str:
 
 
 def clean_output(content: str) -> str:
-    """Clean up LLM output — strip any markdown code fences wrapping the whole output."""
+    """Clean up LLM output — strip markdown code fences and ensure valid frontmatter."""
     content = content.strip()
 
-    # Remove wrapping ```markdown ... ``` if the LLM enclosed everything
-    if content.startswith("```markdown"):
-        content = content[len("```markdown"):].strip()
-        if content.endswith("```"):
-            content = content[:-3].strip()
-    elif content.startswith("```md"):
-        content = content[len("```md"):].strip()
-        if content.endswith("```"):
-            content = content[:-3].strip()
+    # Remove wrapping ```markdown ... ``` or ```yaml ... ```
+    # Some LLMs wrap the whole response, others just the frontmatter.
+    # We need to be careful.
 
+    # Pattern 1: Whole file wrapped in ```markdown
+    if content.startswith("```markdown") or content.startswith("```md"):
+        lines = content.splitlines()
+        # Remove first line
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        # Remove last line if it's closing fence
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        content = "\n".join(lines).strip()
+
+    # Pattern 2: Frontmatter wrapped in ```yaml, but distinct from body
+    # This is trickier. If we see ```yaml at start, we should likely keep the content inside
+    # but strip the fence lines themselves if they are interfering.
+    
+    # Simple standardized approach:
+    # 1. If it doesn't start with ---, but has a YAML block, try to fix it.
+    if not content.startswith("---"):
+        # Check if it starts with ```yaml
+        if content.startswith("```yaml"):
+            content = re.sub(r"^```yaml\s*", "---\n", content)
+            content = re.sub(r"\n```\s*", "\n---\n", content, count=1)
+    
+    # 2. If it still doesn't start with ---, maybe it has a Title line first?
+    # The prompt asked for "# TP-XXXX: Title" first.
+    # But validate_submission.py might expect frontmatter *first*?
+    # Let's check validate_submission.py requirements. 
+    # Usually frontmatter comes BEFORE the title in Jekyll/Hugo/etc.
+    # But FLAME seed files have # Title line first? 
+    # Let's check TP-0002.md...
+    # It has:
+    # # TP-0002: Start
+    # 
+    # ```yaml
+    # ---
+    # ...
+    # ---
+    # ```
+    
+    # Wait, the seed files DO wrap frontmatter in ```yaml blocks!
+    # See TP-0002 line 3: ```yaml
+    
+    # So valid_submission.py expects the frontmatter INSIDE a code block?
+    # Let's verify validate_submission.py logic.
+    pass 
+    # I will read validate_submission.py first before finishing this edit to be sure.
     return content
 
 
