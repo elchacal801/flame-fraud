@@ -42,12 +42,14 @@ Actors compromise insurance agent portals to modify policy payment routing, dive
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P1-005: Social media / web recon | Identify independent insurance agencies and their carrier relationships from agency websites, state licensing databases, and industry directories | Scraping of state insurance commissioner databases |
 | CFPF-P1-007: Credential acquisition | Purchase agent portal credentials from infostealer log marketplaces (agents often use personal devices with poor hygiene) | Agency email domains appearing in stealer log dumps |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-004: Phishing | Spearphishing targeting agency staff with carrier-branded emails — "Portal migration", "Commission statement available", "License renewal required" | Phishing emails mimicking specific carrier communications |
@@ -55,6 +57,7 @@ Actors compromise insurance agent portals to modify policy payment routing, dive
 | CFPF-P2-005: Credential stuffing | Automated login attempts against carrier agent portals using breached credentials | Login anomalies on agent portal; failed auth spikes |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Payment routing modification | Modify EFT/ACH routing for premium remittance from agent trust account to carrier | Bank routing changes on agent accounts; changes from unusual sessions |
@@ -62,12 +65,14 @@ Actors compromise insurance agent portals to modify policy payment routing, dive
 | CFPF-P3-004: Disable alerts | Turn off agent notifications for payment discrepancies or policy status changes | Notification preference changes on agent account |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Premium payment diversion | Policyholder premium payments routed to actor-controlled account instead of carrier | Premiums not received by carrier despite policyholder payment; agent trust account discrepancies |
 | Fraudulent policy servicing | Issue unauthorized policy changes, endorsements, or cancellations to extract cash value or create refund payments | Unusual policy change volume from agent; cash value withdrawals; refund checks to non-policyholder addresses |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P5-001: Domestic wire/ACH | Diverted premiums sent to mule accounts via the modified payment routing | ACH deposits to accounts with no insurance industry relationship |
@@ -95,6 +100,7 @@ Actors compromise insurance agent portals to modify policy payment routing, dive
 ## Detection Approaches
 
 **SQL — Agent Portal Payment Routing Anomaly**
+
 ```sql
 SELECT agent_id, agency_name, 
        old_routing_number, new_routing_number,
@@ -110,14 +116,16 @@ ORDER BY change_timestamp DESC;
 
 This threat path is particularly relevant for insurance carriers because the agent distribution model creates a massive, distributed attack surface. Independent agents may have 10+ carrier portal credentials, often on personal devices without endpoint protection. The insurance sector's delayed detection cycle (premium non-payment takes 30-90 days to trigger cancellation) gives actors significantly more operational time than banking fraud.
 
-**Unum/group benefits variant**: For disability and group life carriers, the agent portal ATO could target employer-level billing — diverting employer premium payments creates coverage gaps affecting hundreds of employees under a single group policy.
+**Disability/group benefits variant**: For disability and group life carriers, the agent portal ATO could target employer-level billing — diverting employer premium payments creates coverage gaps affecting hundreds of employees under a single group policy.
 
 ## References
+
 - Coalition Against Insurance Fraud: Annual Report
 - NAIC: Cybersecurity and Insurance Fraud Whitepaper
 - State insurance commissioner enforcement actions (various)
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

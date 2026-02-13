@@ -1,8 +1,5 @@
 # Internal planning documents (not for public repo)
-docs/antigravity-kickoff-prompt.md
-docs/SLEUTHCON-CFP-draft.md
-docs/COMPETITIVE-LANDSCAPE.md
-docs/FLAME-project-design.md
+docs/
 
 # Python
 __pycache__/
