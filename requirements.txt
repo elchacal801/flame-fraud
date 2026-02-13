@@ -1,1 +1,4 @@
-pyyaml>=6.0
+pyyaml
+requests
+beautifulsoup4
+

@@ -1,0 +1,188 @@
+name: AI Intake — Generate Threat Path
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  generate:
+    # Only run when the intel-submission label is applied
+    if: github.event.label.name == 'intel-submission'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml requests beautifulsoup4
+
+      - name: Parse issue body
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+
+            // Extract fields from the issue form
+            function extractField(body, label) {
+              // Issue forms render as: ### Label\n\nValue
+              const regex = new RegExp(`### ${label}\\s*\\n+([\\s\\S]*?)(?=\\n### |$)`, 'i');
+              const match = body.match(regex);
+              return match ? match[1].trim() : '';
+            }
+
+            const sourceUrl = extractField(body, 'Intel Source URL');
+            const submissionType = extractField(body, 'Submission Type');
+            const crafterName = extractField(body, 'Your Name or Handle');
+            const additionalContext = extractField(body, 'Additional Context \\(optional\\)');
+            const sector = extractField(body, 'Primary Sector');
+
+            // Parse fraud types from checkboxes
+            const fraudSection = extractField(body, 'Fraud Types \\(select all that apply\\)');
+            const fraudTypes = [];
+            const checkboxRegex = /- \[X\] (.+)/gi;
+            let m;
+            while ((m = checkboxRegex.exec(fraudSection)) !== null) {
+              // Convert display names to kebab-case slugs
+              const raw = m[1].trim();
+              const slug = raw.toLowerCase()
+                .replace(/[()\/]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/-$/, '');
+              fraudTypes.push(slug);
+            }
+
+            // Validate required fields
+            if (!sourceUrl || sourceUrl === '_No response_') {
+              core.setFailed('No source URL found in issue body');
+              return;
+            }
+
+            core.setOutput('source_url', sourceUrl);
+            core.setOutput('author', crafterName || 'FLAME AI Intake');
+            core.setOutput('sector', sector.toLowerCase().replace(/\s+/g, '-') || 'cross-sector');
+            core.setOutput('fraud_types', fraudTypes.join(',') || '');
+            core.setOutput('context', additionalContext === '_No response_' ? '' : additionalContext);
+
+      - name: Run AI intake
+        id: intake
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          OUTPUT=$(python scripts/ai_intake.py \
+            --url "${{ steps.parse.outputs.source_url }}" \
+            --author "${{ steps.parse.outputs.author }}" \
+            --sector "${{ steps.parse.outputs.sector }}" \
+            --fraud-types "${{ steps.parse.outputs.fraud_types }}" \
+            --context "${{ steps.parse.outputs.context }}")
+
+          echo "intake_json=$OUTPUT" >> $GITHUB_OUTPUT
+
+          # Extract fields from JSON
+          FILEPATH=$(echo "$OUTPUT" | python -c "import sys,json; print(json.load(sys.stdin)['filepath'])")
+          TITLE=$(echo "$OUTPUT" | python -c "import sys,json; print(json.load(sys.stdin)['title'])")
+          TP_ID=$(echo "$OUTPUT" | python -c "import sys,json; print(json.load(sys.stdin)['tp_id'])")
+          MODEL=$(echo "$OUTPUT" | python -c "import sys,json; print(json.load(sys.stdin)['model'])")
+
+          echo "filepath=$FILEPATH" >> $GITHUB_OUTPUT
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+          echo "tp_id=$TP_ID" >> $GITHUB_OUTPUT
+          echo "model=$MODEL" >> $GITHUB_OUTPUT
+
+      - name: Validate generated file
+        id: validate
+        run: |
+          python scripts/validate_submission.py "${{ steps.intake.outputs.filepath }}" && echo "valid=true" >> $GITHUB_OUTPUT || echo "valid=false" >> $GITHUB_OUTPUT
+
+      - name: Create branch and PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="ai-intake/issue-${{ github.event.issue.number }}"
+          TP_ID="${{ steps.intake.outputs.tp_id }}"
+          TITLE="${{ steps.intake.outputs.title }}"
+          MODEL="${{ steps.intake.outputs.model }}"
+          SOURCE_URL="${{ steps.parse.outputs.source_url }}"
+          VALID="${{ steps.validate.outputs.valid }}"
+          ISSUE_NUM="${{ github.event.issue.number }}"
+          FILEPATH="${{ steps.intake.outputs.filepath }}"
+
+          git config user.name "FLAME AI Intake"
+          git config user.email "flame-ai@users.noreply.github.com"
+
+          git checkout -b "$BRANCH"
+          git add "$FILEPATH"
+          git commit -m "feat: Add ${TP_ID} — ${TITLE} (AI-generated)
+
+          Source: ${SOURCE_URL}
+          Model: ${MODEL}
+          Issue: #${ISSUE_NUM}"
+
+          git push origin "$BRANCH"
+
+          # Build PR body
+          VALIDATION_STATUS="passed"
+          if [ "$VALID" = "false" ]; then
+            VALIDATION_STATUS="**failed** (manual review required)"
+          fi
+
+          PR_BODY="## AI-Generated Threat Path
+
+          | Field | Value |
+          |-------|-------|
+          | **Source** | ${SOURCE_URL} |
+          | **Model** | \`${MODEL}\` |
+          | **TP ID** | ${TP_ID} |
+          | **Validation** | ${VALIDATION_STATUS} |
+          | **Triggered by** | #${ISSUE_NUM} |
+
+          ---
+
+          > This threat path was automatically generated by the FLAME AI intake pipeline.
+          > Please review the content for accuracy, completeness, and quality before merging.
+          > Pay special attention to CFPF phase mappings and MITRE ATT&CK technique references."
+
+          gh pr create \
+            --title "[AI Intake] ${TP_ID}: ${TITLE}" \
+            --body "$PR_BODY" \
+            --base main \
+            --head "$BRANCH" \
+            --label "ai-generated,needs-review"
+
+      - name: Comment on issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tpId = '${{ steps.intake.outputs.tp_id }}';
+            const title = '${{ steps.intake.outputs.title }}';
+            const model = '${{ steps.intake.outputs.model }}';
+            const valid = '${{ steps.validate.outputs.valid }}';
+            const branch = `ai-intake/issue-${context.payload.issue.number}`;
+
+            let comment = `### FLAME AI Intake Complete\n\n`;
+            comment += `| Field | Value |\n|-------|-------|\n`;
+            comment += `| **TP ID** | ${tpId} |\n`;
+            comment += `| **Title** | ${title} |\n`;
+            comment += `| **Model** | \`${model}\` |\n`;
+            comment += `| **Validation** | ${valid === 'true' ? 'Passed' : 'Failed (manual fixes needed)'} |\n\n`;
+            comment += `A pull request has been created on branch \`${branch}\` for maintainer review.\n\n`;
+            comment += `> The generated threat path should be reviewed for accuracy before merging.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: comment
+            });
