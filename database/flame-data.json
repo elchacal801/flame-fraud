@@ -8,7 +8,7 @@
     "source": "https://www.fsisac.com/hubfs/Knowledge/Fraud/CyberFraudPreventionFramework.pdf",
     "tlp": "WHITE",
     "summary": "Threat actors target commercial banking customers using a multi-phase scheme that begins with search engine malvertising (poisoned ads impersonating bank login pages), transitions to vishing (phone-based social engineering impersonating bank staff), and culminates in unauthorized wire transfers to mule accounts. One bank documented approximately 10 attacks per day with six-to-seven-figure losses per successful incident. Cross-functional analysis using the CFPF framework traced the full kill chain and identified that mitigating the malvertising entry point eliminated successful ATOs for 8 months, saving the institution hundreds of thousands of dollars per day.\n\n---",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0001-treasury-mgmt-ato-malvertising.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0001-treasury-mgmt-ato-malvertising.md",
     "sectors": [
       "banking"
     ],
@@ -62,7 +62,7 @@
     "source": "FBI IC3 / FinCEN Advisory FIN-2019-A005 / multiple public reporting",
     "tlp": "WHITE",
     "summary": "Threat actors compromise or spoof vendor email accounts, then impersonate the vendor to redirect legitimate invoice payments to actor-controlled accounts. BEC caused $2.9B+ in reported losses in 2023 per FBI IC3. The scheme exploits trust relationships between businesses and their vendors, often going undetected until the legitimate vendor inquires about unpaid invoices weeks or months later.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0002-bec-vendor-impersonation-wire.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0002-bec-vendor-impersonation-wire.md",
     "sectors": [
       "banking",
       "cross-sector"
@@ -105,7 +105,7 @@
     "source": "Federal Reserve / FinCEN / ACFE reporting",
     "tlp": "WHITE",
     "summary": "Actors create fictitious identities by combining real SSNs (often belonging to children, elderly, deceased, or immigrants) with fabricated PII. They then \"nurture\" these synthetic identities over months or years — opening accounts, building credit history, and establishing legitimacy — before executing a coordinated \"bust-out\" where all available credit is maxed and the identities are abandoned. The Federal Reserve estimates synthetic identity fraud costs U.S. lenders $6B+ annually.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0003-synthetic-identity-bust-out.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0003-synthetic-identity-bust-out.md",
     "sectors": [
       "banking",
       "fintech"
@@ -143,7 +143,7 @@
     "source": "FBI IC3 PSA I-091819-PSA / multiple industry reports",
     "tlp": "WHITE",
     "summary": "Actors compromise employee self-service HR portals (Workday, ADP, UKG, etc.) to change direct deposit routing information, diverting paychecks to actor-controlled accounts. Often combined with email rule manipulation to suppress payroll notifications. FBI IC3 flagged this as a growing BEC variant. Low per-incident amounts ($2,000-$10,000) but high volume and often undetected for multiple pay cycles.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0004-payroll-diversion-hr-portal.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0004-payroll-diversion-hr-portal.md",
     "sectors": [
       "cross-sector"
     ],
@@ -184,7 +184,7 @@
     "source": "Coalition Against Insurance Fraud / industry reporting",
     "tlp": "WHITE",
     "summary": "Actors compromise insurance agent portals to modify policy payment routing, diverting premium payments from policyholders to actor-controlled accounts. Alternatively, actors gain access to agent trust accounts where premiums are held before remittance to the carrier. This scheme exploits the distributed nature of insurance distribution — independent agents operate semi-autonomously with significant system access. Discovery is often delayed because policyholders believe they've paid and carriers may not flag gaps until policy cancellation for non-payment.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0005-insurance-premium-diversion-agent-ato.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0005-insurance-premium-diversion-agent-ato.md",
     "sectors": [
       "insurance"
     ],
@@ -224,7 +224,7 @@
     "source": "FBI IC3 / American Land Title Association (ALTA) reporting",
     "tlp": "WHITE",
     "summary": "Actors compromise email accounts of real estate agents, title companies, attorneys, or mortgage lenders to monitor pending transactions and send fraudulent wire instructions to homebuyers at closing. The scheme exploits the time-sensitive, high-value nature of real estate closings and the expectation that wire instructions will arrive via email. FBI IC3 reports real estate BEC as one of the fastest-growing BEC subcategories, with average losses of $150,000+ (often representing a buyer's entire down payment or full purchase price).",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0006-real-estate-wire-fraud.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0006-real-estate-wire-fraud.md",
     "sectors": [
       "banking",
       "cross-sector"
@@ -269,7 +269,7 @@
     "source": "Wall Street Journal (2019 UK energy firm case) / Regula AI deepfake fraud surveys",
     "tlp": "WHITE",
     "summary": "Actors use AI-generated voice deepfakes to impersonate executives, clients, or authorized signers during phone-based wire transfer authorization. The first publicly documented case (2019) involved a UK energy firm's CEO impersonated via deepfake voice, resulting in a $243,000 transfer. As voice cloning technology becomes more accessible and convincing, this threat path is accelerating. It specifically targets institutions that rely on voice-based dual authorization as a fraud control — turning a security measure into an attack vector.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0007-deepfake-voice-wire-authorization.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0007-deepfake-voice-wire-authorization.md",
     "sectors": [
       "banking",
       "cross-sector"
@@ -320,7 +320,7 @@
     "source": "FBI IC3 / DOJ SIM swap prosecutions / industry reporting",
     "tlp": "WHITE",
     "summary": "Actors social-engineer mobile carriers to transfer a victim's phone number to an actor-controlled SIM card, then use intercepted SMS-based MFA codes to take over cryptocurrency exchange accounts and drain digital assets. FBI IC3 reported $68M+ in SIM swap losses in 2021 alone, with individual losses frequently exceeding $1M for high-net-worth crypto holders. DOJ has prosecuted multiple SIM swap rings targeting crypto investors specifically.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0008-sim-swap-crypto-ato.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0008-sim-swap-crypto-ato.md",
     "sectors": [
       "crypto",
       "fintech",
@@ -372,7 +372,7 @@
     "source": "USPS OIG / FinCEN / banking industry reporting",
     "tlp": "WHITE",
     "summary": "Actors steal checks from USPS mailboxes (using stolen arrow keys or by fishing mail from collection boxes), chemically wash the payee and amount fields, then rewrite checks to themselves or accomplices for higher amounts. Washed checks are deposited via mobile banking apps — sometimes the same stolen check is deposited multiple times across different institutions. FinCEN data shows check fraud SARs surged 200%+ from 2021-2023. Despite being a \"low-tech\" fraud, it's one of the fastest-growing categories due to the explosion of USPS mail theft and the ease of mobile deposit.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0009-check-washing-mobile-deposit.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0009-check-washing-mobile-deposit.md",
     "sectors": [
       "banking",
       "credit-union"
@@ -408,7 +408,7 @@
     "source": "DOJ prosecution records / Coalition Against Insurance Fraud / industry experience",
     "tlp": "WHITE",
     "summary": "Actors file fraudulent long-term or short-term disability claims using fabricated, exaggerated, or collusively obtained medical documentation. Schemes range from individual claimants exaggerating symptoms with a complicit provider to organized rings where providers generate documentation for dozens of fictitious or exaggerated claims. DOJ prosecutions reveal schemes lasting years with cumulative payouts in the millions. The long-tail nature of disability payments means a single fraudulent claim can generate $100,000+ in benefits before detection.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0010-disability-insurance-fraud.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0010-disability-insurance-fraud.md",
     "sectors": [
       "insurance"
     ],
@@ -446,7 +446,7 @@
     "source": "FBI IC3 / FinCEN Advisory FIN-2020-A008 / INTERPOL",
     "tlp": "WHITE",
     "summary": "Actors operating from organized scam compounds (primarily Southeast Asia) cultivate fake romantic or investment relationships with victims over weeks to months, then exploit the relationship to either extract money directly (romance scam) or recruit the victim as an unwitting money mule. Romance scams generated $1.1B+ in reported losses in 2023 per FBI IC3. This threat path is unique because victims are simultaneously targets AND infrastructure — recruited mules enable other fraud schemes (BEC wire fraud, check fraud, ATO). The \"pig butchering\" variant combines romance cultivation with fake cryptocurrency investment platforms.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0011-romance-scam-mule-pipeline.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0011-romance-scam-mule-pipeline.md",
     "sectors": [
       "cross-sector"
     ],
@@ -494,7 +494,7 @@
     "source": "FBI IC3 / UK PSR APP fraud data / FTC consumer reports",
     "tlp": "WHITE",
     "summary": "Actors contact victims impersonating bank fraud departments, tech support (Microsoft, Apple, Amazon), or government agencies (IRS, SSA), convincing them that their accounts are compromised and they must urgently transfer funds to a \"safe account.\" Unlike traditional ATO, the victim themselves authorizes and executes the payment — making recovery extremely difficult. The UK's Payment Systems Regulator reported £460M+ in APP fraud losses in 2023. FBI IC3 reports tech support fraud as one of the highest-loss categories for victims over 60.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0012-app-fraud-tech-support-impersonation.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0012-app-fraud-tech-support-impersonation.md",
     "sectors": [
       "banking",
       "credit-union"
@@ -537,7 +537,7 @@
     "source": "Akamai State of the Internet reports / industry reporting",
     "tlp": "WHITE",
     "summary": "Actors use large-scale credential stuffing (automated testing of stolen username/password pairs from unrelated breaches) against loyalty program portals, bank rewards platforms, and gift card balance-check sites. Successful logins are used to drain stored value — transferring loyalty points to actor-controlled accounts, converting rewards to gift cards, or transferring gift card balances. Loyalty points and gift cards are attractive targets because they're less monitored than bank accounts, rarely have MFA, and can be monetized quickly through resale markets. Akamai reports billions of credential stuffing attempts per year targeting financial services.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0013-credential-stuffing-loyalty-drain.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0013-credential-stuffing-loyalty-drain.md",
     "sectors": [
       "fintech",
       "banking",
@@ -586,7 +586,7 @@
     "source": "DOJ prosecution records / ACFE / FinCEN SAR data / FDIC enforcement actions",
     "tlp": "WHITE",
     "summary": "Employees of financial institutions abuse their legitimate system access to commit or enable fraud — opening accounts with stolen identities, modifying customer records to facilitate unauthorized transactions, exfiltrating customer data to external fraud rings, or directly siphoning funds. The ACFE estimates that insider fraud accounts for 5% of organizational revenue globally. Financial institution insiders are particularly dangerous because they understand internal controls and know how to avoid triggering detection. Schemes often involve collusion with external actors who provide stolen identities or receive diverted funds.",
-    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0014-insider-enabled-fraud.md",
+    "file_path": "/home/runner/work/flame-fraud/flame-fraud/ThreatPaths/TP-0014-insider-enabled-fraud.md",
     "sectors": [
       "banking",
       "credit-union",
