@@ -1,0 +1,42 @@
+[
+  {
+    "evidence_id": "EV-TP0003-2026-001",
+    "tp_id": "TP-0003",
+    "title": "OVH Disposable Email Infrastructure Cluster",
+    "source": "domain_intel investigation 2026-02-19",
+    "cluster": "51.254.35.55 (OVH, France)",
+    "domain_count": "7,003 domains",
+    "confidence": "High",
+    "cfpf_phase_coverage": "P1, P2"
+  },
+  {
+    "evidence_id": "EV-TP0003-2026-002",
+    "tp_id": "TP-0003",
+    "title": "GTHost Crypto/Finance Co-hosting Pattern",
+    "source": "domain_intel investigation 2026-02-19",
+    "cluster": "193.108.118.7 (GTHost, Netherlands)",
+    "domain_count": "3 key domains (fex.plus, btc.glass, bridgecredit.org)",
+    "confidence": "Medium",
+    "cfpf_phase_coverage": "P4, P5"
+  },
+  {
+    "evidence_id": "EV-TP0012-2026-001",
+    "tp_id": "TP-0012",
+    "title": "Alibaba Cloud Mobile Sideloading Infrastructure",
+    "source": "domain_intel investigation 2026-02-19",
+    "cluster": "47.88.24.103 (Alibaba Cloud, US)",
+    "domain_count": "2 key domains (deploygate.io, diawi.io)",
+    "confidence": "Medium",
+    "cfpf_phase_coverage": "P2, P3"
+  },
+  {
+    "evidence_id": "EV-TP0015-2026-001",
+    "tp_id": "TP-0015",
+    "title": "DEA Multi-Cluster Employment Fraud Infrastructure",
+    "source": "domain_intel investigation 2026-02-19",
+    "cluster": "72.167.126.201 (GoDaddy, US), 51.81.93.75 (OVH, US), 84.32.84.32 (Hostinger, LT)",
+    "domain_count": "Multiple domains across 3 hosting providers",
+    "confidence": "High",
+    "cfpf_phase_coverage": "P1, P2, P3, P4"
+  }
+]

@@ -43,6 +43,7 @@ database/             Generated SQLite + JSON (auto-built)
 ├─ flame-data.json          Legacy flat export
 ├─ flame-index.json         Metadata-only index (fast load)
 ├─ flame-stats.json         Pre-computed aggregate statistics
+├─ flame-evidence-index.json Cross-TP evidence listing
 └─ flame-content/           Individual TP content files (lazy load)
 docs/                 Project documentation and design
 .github/              Workflows and issue templates
@@ -50,7 +51,7 @@ docs/                 Project documentation and design
 
 ## Seed Collection
 
-FLAME ships with **14 seed threat paths** covering major fraud categories:
+FLAME ships with **15 seed threat paths** covering major fraud categories:
 
 | ID | Scheme | Key Fraud Types |
 |----|--------|-----------------|
@@ -68,6 +69,7 @@ FLAME ships with **14 seed threat paths** covering major fraud categories:
 | TP-0012 | APP Fraud -- Tech Support / Bank Impersonation | Vishing, impersonation |
 | TP-0013 | Credential Stuffing to Loyalty Point / Gift Card Drain | Credential stuffing, ATO |
 | TP-0014 | Insider-Enabled Account Fraud at Financial Institution | Insider threat, collusion |
+| TP-0015 | Employment Fraud via Brand Impersonation | Job scam, identity theft, advance fee |
 
 ## Quick Start
 
@@ -95,6 +97,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for submission guidelines.
 ## Contributing
 
 FLAME is community-driven. Contributions of threat paths, baselines, and detection logic are welcome from practitioners across all financial sectors. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## Operational Evidence
+
+Threat paths can include an **Operational Evidence** section linking real-world investigation findings to the fraud lifecycle. The build script parses these entries and includes them in:
+
+- `flame-content/TP-XXXX.json` — full evidence array per threat path
+- `flame-index.json` — `evidence_count` per entry
+- `flame-evidence-index.json` — cross-TP evidence listing for deduplication
+
+Evidence entries follow the format `EV-[TP-ID]-[YYYY]-[NNN]` and are currently sourced from the [domain_intel](https://github.com/elchacal801/domain_intel) investigation pipeline.
 
 ## Documentation
 

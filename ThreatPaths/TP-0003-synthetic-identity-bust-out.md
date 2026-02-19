@@ -44,18 +44,21 @@ Actors create fictitious identities by combining real SSNs (often belonging to c
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P1-004: Dark web recon | Acquire SSNs from breach data, dark web marketplaces. SSNs belonging to minors, recently deceased, or non-citizens are preferred (less likely to be monitored) | SSN usage patterns inconsistent with age/history |
 | PII fabrication | Assemble synthetic identity: real SSN + fake name + fake DOB + fabricated address. Create supporting infrastructure (phone, email, mailing address) | Multiple identities sharing addresses, phone numbers, or devices |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-008: Synthetic identity creation | Apply for initial credit products. First application typically gets denied but creates a credit file with the bureaus ("credit profile fabrication") | Application for credit with SSN that has no bureau history; SSN randomization patterns (post-2011 SSNs not matching SSA issuance geography) |
 | Authorized user piggybacking | Get added as authorized user on established accounts (purchased service) to rapidly age the synthetic identity's credit file | Multiple thin-file identities added as authorized users to same seasoned account |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Credit building / nurturing | Open small credit accounts, make regular payments, maintain low utilization. This phase lasts 12-24 months. | Credit file growth patterns inconsistent with normal consumer behavior; identical payment patterns across multiple identities; addresses/phones shared across thin-file applicants |
@@ -63,12 +66,14 @@ Actors create fictitious identities by combining real SSNs (often belonging to c
 | Multi-product diversification | Open accounts across multiple lenders to maximize available credit before bust-out | Application velocity increase after long dormancy; applications across many lenders in short window |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Coordinated bust-out | Simultaneously max out all credit lines across all products. Cash advances, balance transfers to controlled accounts, high-value purchases for resale | Sudden utilization spike from <30% to 100% across multiple accounts; cash advance activity on previously low-activity accounts; purchases at high-resale-value merchants |
 | CFPF-P4-007: Loan application fraud | Apply for personal loans, auto loans, or HELOC using the established synthetic identity at the point of maximum creditworthiness | Loan applications timed to coincide with peak credit scores; applications across multiple lenders in days |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Purchase and resale | High-value purchases (electronics, luxury goods) resold through secondary markets, pawn shops, or online marketplaces | Purchases skewing toward high-resale categories; shipping to addresses different from account address |
@@ -97,6 +102,7 @@ Actors create fictitious identities by combining real SSNs (often belonging to c
 ## Detection Approaches
 
 **Graph Analytics — Shared Attribute Clustering**
+
 ```
 Build identity graph where nodes = applicants, edges = shared attributes:
   - Same mailing address
@@ -113,6 +119,7 @@ Flag clusters where:
 ```
 
 **SQL — Bust-Out Velocity Detection**
+
 ```sql
 SELECT account_id, identity_id,
        MAX(utilization_pct) - LAG(MAX(utilization_pct), 30) 
@@ -124,13 +131,37 @@ HAVING util_change_30d > 60  -- 60%+ utilization jump in 30 days
 ORDER BY util_change_30d DESC;
 ```
 
+## Operational Evidence
+
+### EV-TP0003-2026-001: OVH Disposable Email Infrastructure Cluster
+
+- **Source**: domain_intel investigation 2026-02-19
+- **Cluster**: 51.254.35.55 (OVH, France)
+- **Domain Count**: 7,003 domains
+- **Key Indicators**: cprapid.com nameservers, bulk disposable email domain registrations, uniform cPanel hosting configuration
+- **CFPF Phase Coverage**: P1, P2
+- **Confidence**: High
+- **Summary**: Massive cluster of disposable email domains hosted on a single OVH IP with uniform cprapid.com nameserver patterns. This infrastructure directly supports synthetic identity creation at scale — disposable email addresses are used during credit bureau file fabrication (P1 recon) and initial application submission (P2 initial access). The volume (7,003 domains) and uniform hosting pattern indicate organized, purpose-built infrastructure rather than opportunistic registration.
+
+### EV-TP0003-2026-002: GTHost Crypto/Finance Co-hosting Pattern
+
+- **Source**: domain_intel investigation 2026-02-19
+- **Cluster**: 193.108.118.7 (GTHost, Netherlands)
+- **Domain Count**: 3 key domains (fex.plus, btc.glass, bridgecredit.org)
+- **Key Indicators**: file sharing (fex.plus), cryptocurrency interface (btc.glass), financial services impersonation (bridgecredit.org), co-hosted on single IP
+- **CFPF Phase Coverage**: P4, P5
+- **Confidence**: Medium
+- **Summary**: Co-location of file sharing, cryptocurrency, and financial services impersonation domains on a single GTHost IP suggests bust-out monetization infrastructure. The btc.glass cryptocurrency interface maps to P5 crypto conversion, while bridgecredit.org impersonates legitimate lending services relevant to P4 loan application fraud. The file sharing service (fex.plus) may facilitate document exchange for fraudulent applications.
+
 ## References
+
 - Federal Reserve: "Synthetic Identity Fraud in the U.S. Payment System" (2021)
 - OCC Bulletin on Synthetic Identity Fraud Risk
 - Socure: Synthetic Identity Fraud Report
 - ACFE: "The Growing Threat of Synthetic Identity Fraud"
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

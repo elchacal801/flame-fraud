@@ -46,6 +46,7 @@ Actors contact victims impersonating bank fraud departments, tech support (Micro
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P1-006: Callback infrastructure | Set up caller ID spoofing to display bank's legitimate phone number, tech company support number, or government agency number | VoIP infrastructure spoofing known institutional numbers |
@@ -53,6 +54,7 @@ Actors contact victims impersonating bank fraud departments, tech support (Micro
 | CFPF-P1-004: Victim data acquisition | Purchase consumer PII (name, phone, bank relationship, account details) from data brokers or breach data to make calls more convincing | Scam calls that reference specific account details or recent transactions |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-002: Vishing — bank impersonation | Call victim from spoofed bank number: "We've detected fraudulent activity on your account. We need to help you secure your funds." | Spoofed caller ID matching victim's bank; call referencing real account details |
@@ -60,6 +62,7 @@ Actors contact victims impersonating bank fraud departments, tech support (Micro
 | Remote access establishment | Convince victim to install screen-sharing or remote access software, giving actor visibility into banking sessions | AnyDesk/TeamViewer installation followed by online banking session |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Authority and urgency | Convince victim the threat is real and immediate — "If you don't move your money now, the hackers will drain your account." Transfer to fake "fraud supervisor" to add authority layers. | Multiple actors involved in same call; escalation to "supervisors"; claims of law enforcement involvement |
@@ -67,12 +70,14 @@ Actors contact victims impersonating bank fraud departments, tech support (Micro
 | Coaching through controls | Talk victim through authentication challenges, transaction confirmation screens, and fraud warning prompts — "That warning is from the hackers, ignore it and click confirm" | Victim overriding fraud alerts during coached transaction |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Victim-initiated wire/transfer | Victim personally authorizes wire transfer, ACH, or Zelle payment to actor's "safe" account. The victim is the authenticated, authorized user. | Wire/transfer authorized by legitimate account holder to new beneficiary; transfer during or immediately after extended phone call; victim overriding confirmation prompts |
 | Multiple transactions | Actor coaches victim through multiple smaller transfers (to avoid single-transaction thresholds) or returns for additional transfers over days | Series of transfers from same victim to same or related beneficiaries; repeat transactions escalating in amount |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P5-001: Domestic mule | Funds sent to domestic mule accounts, rapidly redistributed | Mule accounts receiving APP fraud funds from multiple victims |
@@ -101,6 +106,7 @@ Actors contact victims impersonating bank fraud departments, tech support (Micro
 ## Detection Approaches
 
 **Real-Time Transaction Risk Scoring**
+
 ```
 Flag transactions where:
   - Account holder is on active phone call during online banking session (carrier integration)
@@ -110,13 +116,27 @@ Flag transactions where:
   - Remote access software active on customer's device during banking session
 ```
 
+## Operational Evidence
+
+### EV-TP0012-2026-001: Alibaba Cloud Mobile Sideloading Infrastructure
+
+- **Source**: domain_intel investigation 2026-02-19
+- **Cluster**: 47.88.24.103 (Alibaba Cloud, US)
+- **Domain Count**: 2 key domains (deploygate.io, diawi.io)
+- **Key Indicators**: mobile app sideloading platforms, Alibaba Cloud hosting, .io TLD pattern, app distribution bypassing official store review
+- **CFPF Phase Coverage**: P2, P3
+- **Confidence**: Medium
+- **Summary**: Mobile app sideloading infrastructure hosted on Alibaba Cloud enables distribution of malicious applications outside App Store and Google Play review processes. DeployGate and Diawi are legitimate beta testing platforms, but these impersonation domains facilitate delivery of fraudulent apps used in tech support scams (P2 initial access via fake "security" or "banking" apps) and remote access establishment (P3 positioning). This infrastructure is adjacent to the core TP-0012 attack chain — actors can direct victims to sideload fake bank/support apps instead of using commercial remote access tools.
+
 ## References
+
 - FBI IC3: Tech Support Fraud PSAs
 - UK Payment Systems Regulator: APP Fraud Data (annual)
 - FTC: Consumer Sentinel Data — Impersonation Scams
 - Which?: "Authorized Push Payment Scam" investigation
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

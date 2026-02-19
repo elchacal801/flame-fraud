@@ -44,5 +44,7 @@
     "Perform Fraud",
     "Monetization",
     "Laundering"
-  ]
+  ],
+  "evidence": [],
+  "evidence_count": 0
 }
