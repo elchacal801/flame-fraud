@@ -50,7 +50,8 @@
       "Perform Fraud",
       "Monetization",
       "Laundering"
-    ]
+    ],
+    "evidence_count": 0
   },
   {
     "id": "TP-0002",
@@ -92,7 +93,8 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": []
+    "groupib_stages": [],
+    "evidence_count": 0
   },
   {
     "id": "TP-0003",
@@ -129,7 +131,8 @@
     "mitre_attack": [],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": []
+    "groupib_stages": [],
+    "evidence_count": 2
   },
   {
     "id": "TP-0004",
@@ -169,7 +172,8 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": []
+    "groupib_stages": [],
+    "evidence_count": 0
   },
   {
     "id": "TP-0005",
@@ -208,7 +212,8 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": []
+    "groupib_stages": [],
+    "evidence_count": 0
   },
   {
     "id": "TP-0006",
@@ -252,7 +257,8 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": []
+    "groupib_stages": [],
+    "evidence_count": 0
   },
   {
     "id": "TP-0007",
@@ -302,7 +308,8 @@
       "Perform Fraud",
       "Monetization",
       "Laundering"
-    ]
+    ],
+    "evidence_count": 0
   },
   {
     "id": "TP-0008",
@@ -353,7 +360,8 @@
       "Perform Fraud",
       "Monetization",
       "Laundering"
-    ]
+    ],
+    "evidence_count": 0
   },
   {
     "id": "TP-0009",
@@ -388,7 +396,8 @@
     "mitre_attack": [],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": []
+    "groupib_stages": [],
+    "evidence_count": 0
   },
   {
     "id": "TP-0010",
@@ -425,7 +434,8 @@
     "mitre_attack": [],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": []
+    "groupib_stages": [],
+    "evidence_count": 0
   },
   {
     "id": "TP-0011",
@@ -472,7 +482,8 @@
       "Perform Fraud",
       "Monetization",
       "Laundering"
-    ]
+    ],
+    "evidence_count": 0
   },
   {
     "id": "TP-0012",
@@ -514,7 +525,8 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": []
+    "groupib_stages": [],
+    "evidence_count": 1
   },
   {
     "id": "TP-0013",
@@ -562,7 +574,8 @@
       "Account Access",
       "Defence Evasion",
       "Monetization"
-    ]
+    ],
+    "evidence_count": 0
   },
   {
     "id": "TP-0014",
@@ -613,6 +626,51 @@
       "Perform Fraud",
       "Monetization",
       "Laundering"
-    ]
+    ],
+    "evidence_count": 0
+  },
+  {
+    "id": "TP-0015",
+    "title": "Employment Fraud via Brand Impersonation",
+    "category": "ThreatPath",
+    "date": "2026-02-19",
+    "author": "FLAME Project",
+    "source": "domain_intel DEA investigation / FBI IC3 employment scam advisories",
+    "tlp": "WHITE",
+    "summary": "Actors impersonate legitimate employers — particularly in healthcare staffing, home care, and remote work sectors — by registering lookalike domains and creating fake job postings. Victims are \"hired\"...",
+    "sectors": [
+      "healthcare",
+      "staffing",
+      "employment"
+    ],
+    "fraud_types": [
+      "impersonation",
+      "advance-fee-fraud",
+      "identity-theft"
+    ],
+    "tags": [
+      "employment-fraud",
+      "brand-impersonation",
+      "job-scam",
+      "advance-fee",
+      "pii-harvesting",
+      "disposable-email",
+      "healthcare-staffing"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [
+      "T1566.001",
+      "T1583.001"
+    ],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [],
+    "evidence_count": 1
   }
 ]

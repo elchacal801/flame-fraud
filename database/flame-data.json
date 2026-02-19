@@ -628,5 +628,49 @@
       "Monetization",
       "Laundering"
     ]
+  },
+  {
+    "id": "TP-0015",
+    "title": "Employment Fraud via Brand Impersonation",
+    "category": "ThreatPath",
+    "date": "2026-02-19",
+    "author": "FLAME Project",
+    "source": "domain_intel DEA investigation / FBI IC3 employment scam advisories",
+    "tlp": "WHITE",
+    "summary": "Actors impersonate legitimate employers — particularly in healthcare staffing, home care, and remote work sectors — by registering lookalike domains and creating fake job postings. Victims are \"hired\" through a fake onboarding process that harvests PII (SSN, banking info, government ID) for identity theft, or are charged advance fees for equipment, training, or background checks. The FBI IC3 reported $367M in employment fraud losses in 2023, with fake job scams increasing 118% year-over-year. This threat path is distinct from BEC in that the victim is the job applicant, not an employee of the impersonated company.",
+    "file_path": "C:\\Users\\anon\\Documents\\anon\\flame-fraud\\ThreatPaths\\TP-0015-employment-fraud-brand-impersonation.md",
+    "sectors": [
+      "healthcare",
+      "staffing",
+      "employment"
+    ],
+    "fraud_types": [
+      "impersonation",
+      "advance-fee-fraud",
+      "identity-theft"
+    ],
+    "tags": [
+      "employment-fraud",
+      "brand-impersonation",
+      "job-scam",
+      "advance-fee",
+      "pii-harvesting",
+      "disposable-email",
+      "healthcare-staffing"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [
+      "T1566.001",
+      "T1583.001"
+    ],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": []
   }
 ]

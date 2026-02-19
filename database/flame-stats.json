@@ -1,9 +1,10 @@
 {
-  "total": 14,
-  "fraudTypes": 26,
+  "total": 15,
+  "fraudTypes": 28,
   "fraudTypeList": [
     "BEC",
     "account-takeover",
+    "advance-fee-fraud",
     "application-fraud",
     "check-fraud",
     "collusion",
@@ -13,6 +14,7 @@
     "deepfake",
     "disability-fraud",
     "fraudulent-claim",
+    "identity-theft",
     "impersonation",
     "insider-threat",
     "invoice-fraud",
@@ -29,21 +31,24 @@
     "vishing",
     "wire-fraud"
   ],
-  "sectors": 6,
+  "sectors": 9,
   "sectorList": [
     "banking",
     "credit-union",
     "cross-sector",
     "crypto",
+    "employment",
     "fintech",
-    "insurance"
+    "healthcare",
+    "insurance",
+    "staffing"
   ],
   "phaseCoverage": {
-    "P1": 14,
-    "P2": 14,
-    "P3": 14,
-    "P4": 14,
-    "P5": 14
+    "P1": 15,
+    "P2": 15,
+    "P3": 15,
+    "P4": 15,
+    "P5": 15
   },
   "topTags": [
     {
@@ -103,6 +108,10 @@
       "count": 1
     },
     {
+      "tag": "advance-fee",
+      "count": 1
+    },
+    {
       "tag": "agent-portal",
       "count": 1
     },
@@ -120,10 +129,6 @@
     },
     {
       "tag": "branch-operations",
-      "count": 1
-    },
-    {
-      "tag": "bust-out",
       "count": 1
     }
   ],
@@ -149,6 +154,17 @@
         "P5": 7
       },
       "total_tps": 7
+    },
+    {
+      "fraud_type": "advance-fee-fraud",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
     },
     {
       "fraud_type": "application-fraud",
@@ -250,15 +266,26 @@
       "total_tps": 1
     },
     {
+      "fraud_type": "identity-theft",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
       "fraud_type": "impersonation",
       "phases": {
-        "P1": 3,
-        "P2": 3,
-        "P3": 3,
-        "P4": 3,
-        "P5": 3
+        "P1": 4,
+        "P2": 4,
+        "P3": 4,
+        "P4": 4,
+        "P5": 4
       },
-      "total_tps": 3
+      "total_tps": 4
     },
     {
       "fraud_type": "insider-threat",
@@ -415,5 +442,5 @@
       "total_tps": 4
     }
   ],
-  "generatedAt": "1771479961.261446"
+  "generatedAt": "1771484099.457757"
 }

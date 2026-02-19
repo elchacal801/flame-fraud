@@ -102,6 +102,66 @@ def extract_summary(body: str) -> str:
     return "\n".join(summary_lines).strip()
 
 
+# Evidence ID pattern: ### EV-TPXXXX-YYYY-NNN: Title
+EVIDENCE_HEADER = re.compile(r"^###\s+(EV-[A-Z0-9-]+):\s+(.+)$")
+# Field patterns: - **Field**: Value
+EVIDENCE_FIELD = re.compile(r"^-\s+\*\*(.+?)\*\*:\s+(.+)$")
+
+
+def extract_evidence(body: str) -> list[dict]:
+    """Extract Operational Evidence entries from the body.
+
+    Parses the ## Operational Evidence section for structured evidence
+    entries identified by ### EV-* headers with bullet-point fields.
+    """
+    lines = body.split("\n")
+    in_section = False
+    entries = []
+    current = None
+
+    for line in lines:
+        stripped = line.strip()
+
+        # Detect entering the Operational Evidence section
+        if re.match(r"^##\s+Operational Evidence", stripped):
+            in_section = True
+            continue
+
+        # Detect leaving the section (next ## heading)
+        if in_section and re.match(r"^##\s+", stripped) and not re.match(r"^###", stripped):
+            if current:
+                entries.append(current)
+                current = None
+            break
+
+        if not in_section:
+            continue
+
+        # Check for evidence entry header
+        header_match = EVIDENCE_HEADER.match(stripped)
+        if header_match:
+            if current:
+                entries.append(current)
+            current = {
+                "evidence_id": header_match.group(1),
+                "title": header_match.group(2),
+            }
+            continue
+
+        # Check for field within current entry
+        if current:
+            field_match = EVIDENCE_FIELD.match(stripped)
+            if field_match:
+                key = field_match.group(1).lower().replace(" ", "_")
+                current[key] = field_match.group(2)
+
+    # Capture final entry if section ends without a ## boundary
+    if current:
+        entries.append(current)
+
+    return entries
+
+
 # ---------------------------------------------------------------------------
 # Database schema
 # ---------------------------------------------------------------------------
@@ -338,11 +398,15 @@ def _build_full_entry(conn: sqlite3.Connection, entry: dict) -> dict:
     return entry
 
 
-def export_index_json(conn: sqlite3.Connection, output_path: Path):
+def export_index_json(conn: sqlite3.Connection, output_path: Path,
+                      evidence_map: dict | None = None):
     """Export metadata-only index for fast frontend initial load."""
     cursor = conn.execute("SELECT * FROM submissions ORDER BY id")
     columns = [desc[0] for desc in cursor.description]
     index_entries = []
+
+    if evidence_map is None:
+        evidence_map = {}
 
     for row in cursor.fetchall():
         entry = dict(zip(columns, row))
@@ -351,6 +415,10 @@ def export_index_json(conn: sqlite3.Connection, output_path: Path):
         # Truncate summary for index (first 200 chars)
         full_summary = entry.get("summary", "")
         entry["summary"] = full_summary[:200] + ("..." if len(full_summary) > 200 else "")
+
+        # Add evidence count
+        sub_id = entry["id"]
+        entry["evidence_count"] = len(evidence_map.get(sub_id, []))
 
         # Remove body — not needed for browse view
         entry.pop("body", None)
@@ -367,11 +435,15 @@ def export_index_json(conn: sqlite3.Connection, output_path: Path):
     return len(index_entries)
 
 
-def export_content_files(conn: sqlite3.Connection, output_dir: Path):
+def export_content_files(conn: sqlite3.Connection, output_dir: Path,
+                         evidence_map: dict | None = None):
     """Export individual TP-XXXX.json files for lazy loading."""
     cursor = conn.execute("SELECT * FROM submissions ORDER BY id")
     columns = [desc[0] for desc in cursor.description]
     count = 0
+
+    if evidence_map is None:
+        evidence_map = {}
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -383,6 +455,9 @@ def export_content_files(conn: sqlite3.Connection, output_dir: Path):
         entry.pop("file_path", None)
 
         sub_id = entry["id"]
+        entry["evidence"] = evidence_map.get(sub_id, [])
+        entry["evidence_count"] = len(entry["evidence"])
+
         filepath = output_dir / f"{sub_id}.json"
         filepath.write_text(
             json.dumps(entry, indent=2, ensure_ascii=False),
@@ -461,6 +536,34 @@ def export_stats_json(conn: sqlite3.Connection, output_path: Path):
     return stats
 
 
+def export_evidence_index(evidence_map: dict, output_path: Path):
+    """Export cross-TP evidence index for deduplication and discovery.
+
+    Generates flame-evidence-index.json listing all evidence entries
+    across all threat paths with key metadata for fast lookup.
+    """
+    flat_entries = []
+    for tp_id, entries in sorted(evidence_map.items()):
+        for ev in entries:
+            flat_entries.append({
+                "evidence_id": ev.get("evidence_id", ""),
+                "tp_id": tp_id,
+                "title": ev.get("title", ""),
+                "source": ev.get("source", ""),
+                "cluster": ev.get("cluster", ""),
+                "domain_count": ev.get("domain_count", ""),
+                "confidence": ev.get("confidence", ""),
+                "cfpf_phase_coverage": ev.get("cfpf_phase_coverage", ""),
+            })
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(flat_entries, indent=2, ensure_ascii=False),
+        encoding="utf-8"
+    )
+    return len(flat_entries)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -512,9 +615,10 @@ def main():
     tech_count = load_techniques(conn, techniques_path)
     log.info("Loaded %d CFPF techniques", tech_count)
 
-    # Process each submission file
+    # Process each submission file — collect evidence per TP
     loaded = 0
     errors = 0
+    evidence_map: dict[str, list] = {}  # tp_id -> list of evidence dicts
     for filepath in md_files:
         meta = extract_frontmatter(filepath)
         if meta is None:
@@ -524,10 +628,23 @@ def main():
         body = extract_body(filepath)
         summary = extract_summary(body)
         load_submission(conn, meta, body, summary, filepath)
+
+        # Extract operational evidence from body
+        sub_id = meta.get("id", "")
+        ev_entries = extract_evidence(body)
+        if ev_entries:
+            evidence_map[sub_id] = ev_entries
+            log.info("  Loaded: %s (%s) — %d evidence entries",
+                     sub_id, meta.get("title", "?"), len(ev_entries))
+        else:
+            log.info("  Loaded: %s (%s)", sub_id, meta.get("title", "?"))
         loaded += 1
-        log.info("  Loaded: %s (%s)", meta.get("id", "?"), meta.get("title", "?"))
 
     conn.commit()
+
+    total_evidence = sum(len(v) for v in evidence_map.values())
+    log.info("Extracted %d evidence entries across %d TPs",
+             total_evidence, len(evidence_map))
 
     # Export JSON (legacy — backward compatibility)
     json_path = root / "database" / "flame-data.json"
@@ -536,12 +653,17 @@ def main():
 
     # Export v2 data files
     index_path = root / "database" / "flame-index.json"
-    idx_count = export_index_json(conn, index_path)
+    idx_count = export_index_json(conn, index_path, evidence_map)
     log.info("Exported %d submissions to %s (index)", idx_count, index_path)
 
     content_dir = root / "database" / "flame-content"
-    ct_count = export_content_files(conn, content_dir)
+    ct_count = export_content_files(conn, content_dir, evidence_map)
     log.info("Exported %d content files to %s", ct_count, content_dir)
+
+    # Export evidence index
+    ev_index_path = root / "database" / "flame-evidence-index.json"
+    ev_count = export_evidence_index(evidence_map, ev_index_path)
+    log.info("Exported %d evidence entries to %s", ev_count, ev_index_path)
 
     stats_path = root / "database" / "flame-stats.json"
     stats = export_stats_json(conn, stats_path)

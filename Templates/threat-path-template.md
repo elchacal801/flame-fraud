@@ -62,6 +62,7 @@ tags:                            # Additional descriptive tags
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 *How does the threat actor identify and prepare to target the victim?*
 
 | Technique | Description | Indicators |
@@ -74,6 +75,7 @@ tags:                            # Additional descriptive tags
 ---
 
 ### Phase 2: Initial Access
+
 *How does the threat actor gain their initial foothold?*
 
 | Technique | Description | Indicators |
@@ -88,6 +90,7 @@ tags:                            # Additional descriptive tags
 ---
 
 ### Phase 3: Positioning
+
 *How does the threat actor set up for the fraudulent action?*
 
 | Technique | Description | Indicators |
@@ -100,6 +103,7 @@ tags:                            # Additional descriptive tags
 ---
 
 ### Phase 4: Execution
+
 *How does the threat actor convert access into financial action?*
 
 | Technique | Description | Indicators |
@@ -112,6 +116,7 @@ tags:                            # Additional descriptive tags
 ---
 
 ### Phase 5: Monetization
+
 *How does the threat actor extract and launder the stolen funds?*
 
 | Technique | Description | Indicators |
@@ -128,12 +133,15 @@ tags:                            # Additional descriptive tags
 > *Optional but encouraged. Mapping to multiple frameworks helps practitioners who use different taxonomies find and apply this threat path.*
 
 **FT3 (Stripe Fraud Taxonomy):**
+
 - [FT3 tactic/technique IDs that correspond to this threat path's techniques]
 
 **MITRE ATT&CK:**
+
 - [ATT&CK technique IDs with brief description of relevance]
 
 **Group-IB Fraud Matrix:**
+
 - [Corresponding stages if known — reference only, not required]
 
 ---
@@ -145,11 +153,13 @@ tags:                            # Additional descriptive tags
 **Discovery Phase**: [Which phase is this scheme typically discovered at?]
 
 **Look Left** (what did you miss before discovery?):
+
 - [Earlier phase indicators that could have caught this sooner]
 - [Data sources that would reveal upstream activity]
 - [Teams that might have visibility into earlier phases]
 
 **Look Right** (what comes next after discovery?):
+
 - [Predicted next steps if the scheme isn't interrupted]
 - [Parallel schemes that might be running simultaneously]
 - [Monetization patterns to watch for]
@@ -171,16 +181,35 @@ tags:                            # Additional descriptive tags
 ## Detection Approaches
 
 ### Queries / Rules
+
 ```
 [SIEM query, Sigma rule, SQL query, or pseudocode for detecting this scheme.
 Specify the platform/language: Splunk SPL, KQL, Sigma, SQL, etc.]
 ```
 
 ### Behavioral Analytics
+
 [Description of behavioral patterns that could be modeled — anomalous session behavior, transaction velocity changes, communication pattern shifts, etc.]
 
 ### Cross-Team Correlation
+
 [What data from different teams (cyber, fraud, AML) should be correlated to detect this scheme?]
+
+---
+
+## Operational Evidence
+
+> Evidence entries are contributed by operational investigations and linked to this threat path. Each entry documents observed infrastructure, indicators, and investigation context. Evidence IDs use the format `EV-[TP-ID]-[YYYY]-[NNN]`.
+
+### EV-TPXXXX-YYYY-NNN: [Title]
+
+- **Source**: domain_intel investigation [YYYY-MM-DD]
+- **Cluster**: [IP] ([Provider], [Country])
+- **Domain Count**: [N] domains
+- **Key Indicators**: [comma-separated IOCs: nameserver patterns, hosting co-location, domain naming conventions]
+- **CFPF Phase Coverage**: [P1, P2, etc.]
+- **Confidence**: [High/Medium/Low]
+- **Summary**: [2-3 sentence narrative describing the observed infrastructure and its relationship to this threat path. Include what makes this cluster notable and how it maps to the CFPF phases above.]
 
 ---
 
