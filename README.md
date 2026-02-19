@@ -40,6 +40,10 @@ DetectionLogic/       Rules, queries, analytics (DL-XXXX, future)
 Templates/            Submission templates
 scripts/              Build and validation scripts
 database/             Generated SQLite + JSON (auto-built)
+├─ flame-data.json          Legacy flat export
+├─ flame-index.json         Metadata-only index (fast load)
+├─ flame-stats.json         Pre-computed aggregate statistics
+└─ flame-content/           Individual TP content files (lazy load)
 docs/                 Project documentation and design
 .github/              Workflows and issue templates
 ```
@@ -69,7 +73,7 @@ FLAME ships with **14 seed threat paths** covering major fraud categories:
 
 ### View the database
 
-Open `index.html` in a browser (via local server) or visit the [GitHub Pages site](https://github.com/flame-fraud/flame-fraud).
+Open `index.html` in a browser (via local server) or visit the [GitHub Pages site](https://elchacal801.github.io/flame-fraud/).
 
 ### Build the database locally
 
@@ -91,6 +95,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for submission guidelines.
 ## Contributing
 
 FLAME is community-driven. Contributions of threat paths, baselines, and detection logic are welcome from practitioners across all financial sectors. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## Documentation
+
+- [Project Design](docs/FLAME-project-design.md) — Architecture and roadmap
+- [Taxonomy Reference](docs/TAXONOMY.md) — Fraud types, sectors, CFPF phases, cross-framework mappings
+- [Competitive Landscape](docs/COMPETITIVE-LANDSCAPE.md) — How FLAME relates to other fraud frameworks
+- [Changelog](CHANGELOG.md) — Release history
 
 ## Credits
 

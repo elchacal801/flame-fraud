@@ -1,8 +1,8 @@
 /**
- * app.js - FLAME Frontend Application
+ * app.js - FLAME Frontend Application v2
  *
- * Handles rendering, filtering, search, detail view,
- * and taxonomy toggle for the FLAME threat path database.
+ * Search-driven discovery interface with card grid, lazy-loaded detail view,
+ * heat map, taxonomy toggle, and URL hash routing.
  */
 
 (function () {
@@ -12,15 +12,17 @@
     // Constants
     // -----------------------------------------------------------------------
 
-    const PHASE_INFO = {
-        P1: { label: 'P1', name: 'Recon', color: 'p1' },
-        P2: { label: 'P2', name: 'Initial Access', color: 'p2' },
-        P3: { label: 'P3', name: 'Positioning', color: 'p3' },
-        P4: { label: 'P4', name: 'Execution', color: 'p4' },
-        P5: { label: 'P5', name: 'Monetization', color: 'p5' },
+    var PHASE_INFO = {
+        P1: { label: 'P1', name: 'Recon', color: '#f97316' },
+        P2: { label: 'P2', name: 'Initial Access', color: '#ef4444' },
+        P3: { label: 'P3', name: 'Positioning', color: '#a855f7' },
+        P4: { label: 'P4', name: 'Execution', color: '#3b82f6' },
+        P5: { label: 'P5', name: 'Monetization', color: '#22c55e' },
     };
 
-    const GROUPIB_STAGES = [
+    var PHASE_ORDER = ['P1', 'P2', 'P3', 'P4', 'P5'];
+
+    var GROUPIB_STAGES = [
         'Reconnaissance', 'Resource Development', 'Trust Abuse',
         'End-user Interaction', 'Credential Access', 'Account Access',
         'Defence Evasion', 'Perform Fraud', 'Monetization', 'Laundering'
@@ -30,474 +32,50 @@
     // State
     // -----------------------------------------------------------------------
 
-    let allSubmissions = [];
-    let filteredSubmissions = [];
-    let activeFilters = {
+    var allSubmissions = [];
+    var filteredSubmissions = [];
+    var activeFilters = {
         cfpf_phases: new Set(),
         sectors: new Set(),
         fraud_types: new Set(),
     };
-    let searchQuery = '';
-    let selectedId = null;
-    let activeTaxonomy = 'cfpf'; // 'cfpf', 'mitre', 'groupib'
+    var searchQuery = '';
+    var activeTaxonomy = 'cfpf';
+    var viewState = 'browse'; // 'browse' | 'detail'
 
     // -----------------------------------------------------------------------
     // DOM References
     // -----------------------------------------------------------------------
 
-    const dom = {
-        searchInput: null,
-        submissionList: null,
-        resultsBar: null,
-        contentArea: null,
-        detailEmpty: null,
-        detailView: null,
-        statTotal: null,
-        statFraudTypes: null,
-        statSectors: null,
-        filterSectors: null,
-        filterFraudTypes: null,
-    };
+    var dom = {};
 
-    // -----------------------------------------------------------------------
-    // Initialization
-    // -----------------------------------------------------------------------
-
-    document.addEventListener('DOMContentLoaded', async function () {
-        // Cache DOM references
+    function cacheDom() {
         dom.searchInput = document.getElementById('search-input');
-        dom.submissionList = document.getElementById('submission-list');
+        dom.cardGrid = document.getElementById('card-grid');
         dom.resultsBar = document.getElementById('results-bar');
-        dom.contentArea = document.getElementById('content-area');
-        dom.detailEmpty = document.getElementById('detail-empty');
+        dom.browseView = document.getElementById('browse-view');
         dom.detailView = document.getElementById('detail-view');
+        dom.detailContent = document.getElementById('detail-content');
+        dom.backLink = document.getElementById('back-link');
         dom.statTotal = document.getElementById('stat-total');
         dom.statFraudTypes = document.getElementById('stat-fraud-types');
         dom.statSectors = document.getElementById('stat-sectors');
+        dom.filterCfpfPhases = document.getElementById('filter-cfpf-phases');
         dom.filterSectors = document.getElementById('filter-sectors');
         dom.filterFraudTypes = document.getElementById('filter-fraud-types');
-
-        // Bind events
-        dom.searchInput.addEventListener('input', debounce(onSearchInput, 200));
-
-        // Bind phase filter chips
-        document.querySelectorAll('#filter-phases .filter-chip').forEach(function (chip) {
-            chip.addEventListener('click', onFilterChipClick);
-        });
-
-        // About modal
-        var aboutModal = document.getElementById('about-modal');
-        var aboutBtn = document.getElementById('about-btn');
-        var aboutClose = document.getElementById('about-close');
-
-        if (aboutBtn && aboutModal) {
-            aboutBtn.addEventListener('click', function () {
-                aboutModal.classList.add('visible');
-            });
-            aboutClose.addEventListener('click', function () {
-                aboutModal.classList.remove('visible');
-            });
-            aboutModal.addEventListener('click', function (e) {
-                if (e.target === aboutModal) {
-                    aboutModal.classList.remove('visible');
-                }
-            });
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && aboutModal.classList.contains('visible')) {
-                    aboutModal.classList.remove('visible');
-                }
-            });
-        }
-
-        // Load data
-        try {
-            allSubmissions = await FlameData.load();
-            initializeUI();
-        } catch (err) {
-            dom.submissionList.innerHTML =
-                '<div class="loading">Failed to load data. Run build_database.py first.</div>';
-            console.error('Failed to load FLAME data:', err);
-        }
-    });
-
-    function initializeUI() {
-        // Update stats
-        var stats = FlameData.getStats();
-        dom.statTotal.textContent = stats.total;
-        dom.statFraudTypes.textContent = stats.fraudTypes;
-        dom.statSectors.textContent = stats.sectors;
-
-        // Build dynamic filter chips
-        buildFilterChips('sectors', dom.filterSectors, 'sectors');
-        buildFilterChips('fraud_types', dom.filterFraudTypes, 'fraud_types');
-
-        // Initial render
-        applyFilters();
-    }
-
-    // -----------------------------------------------------------------------
-    // Filter chips
-    // -----------------------------------------------------------------------
-
-    function buildFilterChips(dataField, container, filterKey) {
-        var values = FlameData.getUniqueValues(dataField);
-        container.innerHTML = '';
-        values.forEach(function (value) {
-            var chip = document.createElement('button');
-            chip.className = 'filter-chip';
-            chip.textContent = value;
-            chip.dataset.filter = filterKey;
-            chip.dataset.value = value;
-            chip.addEventListener('click', onFilterChipClick);
-            container.appendChild(chip);
-        });
-    }
-
-    function onFilterChipClick(e) {
-        var chip = e.currentTarget;
-        var filterKey = chip.dataset.filter;
-        var value = chip.dataset.value;
-
-        chip.classList.toggle('active');
-
-        if (activeFilters[filterKey].has(value)) {
-            activeFilters[filterKey].delete(value);
-        } else {
-            activeFilters[filterKey].add(value);
-        }
-
-        applyFilters();
-    }
-
-    // -----------------------------------------------------------------------
-    // Search
-    // -----------------------------------------------------------------------
-
-    function onSearchInput(e) {
-        searchQuery = e.target.value.trim().toLowerCase();
-        applyFilters();
-    }
-
-    // -----------------------------------------------------------------------
-    // Filtering
-    // -----------------------------------------------------------------------
-
-    function applyFilters() {
-        filteredSubmissions = allSubmissions.filter(function (item) {
-            // Search filter
-            if (searchQuery) {
-                var haystack = [
-                    item.id || '',
-                    item.title || '',
-                    item.summary || '',
-                    (item.tags || []).join(' '),
-                    (item.fraud_types || []).join(' '),
-                    (item.sectors || []).join(' '),
-                ].join(' ').toLowerCase();
-
-                if (haystack.indexOf(searchQuery) === -1) {
-                    return false;
-                }
-            }
-
-            // CFPF phase filter (OR within group)
-            if (activeFilters.cfpf_phases.size > 0) {
-                var phases = item.cfpf_phases || [];
-                var hasPhase = false;
-                activeFilters.cfpf_phases.forEach(function (p) {
-                    if (phases.indexOf(p) !== -1) hasPhase = true;
-                });
-                if (!hasPhase) return false;
-            }
-
-            // Sector filter (OR within group)
-            if (activeFilters.sectors.size > 0) {
-                var sectors = item.sectors || [];
-                var hasSector = false;
-                activeFilters.sectors.forEach(function (s) {
-                    if (sectors.indexOf(s) !== -1) hasSector = true;
-                });
-                if (!hasSector) return false;
-            }
-
-            // Fraud type filter (OR within group)
-            if (activeFilters.fraud_types.size > 0) {
-                var fraudTypes = item.fraud_types || [];
-                var hasFraud = false;
-                activeFilters.fraud_types.forEach(function (ft) {
-                    if (fraudTypes.indexOf(ft) !== -1) hasFraud = true;
-                });
-                if (!hasFraud) return false;
-            }
-
-            return true;
-        });
-
-        renderSubmissionList();
-    }
-
-    // -----------------------------------------------------------------------
-    // Submission list rendering
-    // -----------------------------------------------------------------------
-
-    function renderSubmissionList() {
-        dom.resultsBar.textContent = filteredSubmissions.length + ' of ' + allSubmissions.length + ' threat paths';
-
-        if (filteredSubmissions.length === 0) {
-            dom.submissionList.innerHTML = '<div class="loading">No matching threat paths.</div>';
-            return;
-        }
-
-        var html = '';
-        filteredSubmissions.forEach(function (item) {
-            var isActive = item.id === selectedId;
-            html += renderSubmissionItem(item, isActive);
-        });
-
-        dom.submissionList.innerHTML = html;
-
-        // Bind click events
-        dom.submissionList.querySelectorAll('.submission-item').forEach(function (el) {
-            el.addEventListener('click', function () {
-                selectSubmission(el.dataset.id);
-            });
-        });
-    }
-
-    function renderSubmissionItem(item, isActive) {
-        var phases = item.cfpf_phases || [];
-        var sectors = item.sectors || [];
-        var fraudTypes = item.fraud_types || [];
-
-        // Phase timeline dots
-        var timelineDots = '';
-        ['P1', 'P2', 'P3', 'P4', 'P5'].forEach(function (p) {
-            var activeClass = phases.indexOf(p) !== -1 ? ' active-' + p.toLowerCase() : '';
-            timelineDots += '<div class="phase-dot' + activeClass + '"></div>';
-        });
-
-        // Tags (show first 2 sectors and first 2 fraud types)
-        var tags = '';
-        sectors.slice(0, 2).forEach(function (s) {
-            tags += '<span class="tag tag-sector">' + escapeHtml(s) + '</span>';
-        });
-        fraudTypes.slice(0, 2).forEach(function (ft) {
-            tags += '<span class="tag tag-fraud">' + escapeHtml(ft) + '</span>';
-        });
-
-        return '<div class="submission-item' + (isActive ? ' active' : '') + '" data-id="' + escapeHtml(item.id) + '">' +
-            '<div class="submission-id">' + escapeHtml(item.id) + '</div>' +
-            '<div class="submission-title">' + escapeHtml(item.title) + '</div>' +
-            '<div class="submission-meta">' + tags + '</div>' +
-            '<div class="phase-timeline-compact">' + timelineDots + '</div>' +
-            '</div>';
-    }
-
-    // -----------------------------------------------------------------------
-    // Detail view
-    // -----------------------------------------------------------------------
-
-    function selectSubmission(id) {
-        selectedId = id;
-        var item = allSubmissions.find(function (s) { return s.id === id; });
-        if (!item) return;
-
-        // Update list selection
-        dom.submissionList.querySelectorAll('.submission-item').forEach(function (el) {
-            el.classList.toggle('active', el.dataset.id === id);
-        });
-
-        // Render detail view
-        renderDetailView(item);
-    }
-
-    function renderDetailView(item) {
-        dom.detailEmpty.style.display = 'none';
-        dom.detailView.style.display = 'block';
-
-        var phases = item.cfpf_phases || [];
-        var mitre = item.mitre_attack || [];
-        var groupib = item.groupib_stages || [];
-        var sectors = item.sectors || [];
-        var fraudTypes = item.fraud_types || [];
-        var tags = item.tags || [];
-        var ft3 = item.ft3_tactics || [];
-
-        // Build detail HTML
-        var html = '';
-
-        // Header
-        html += '<div class="detail-header">';
-        html += '<div class="detail-id">' + escapeHtml(item.id) + '</div>';
-        html += '<h2>' + escapeHtml(item.title) + '</h2>';
-
-        // Meta row
-        html += '<div class="detail-meta-row">';
-        html += '<span><span class="label">Author:</span> ' + escapeHtml(item.author || 'Unknown') + '</span>';
-        html += '<span><span class="label">Date:</span> ' + escapeHtml(item.date || 'N/A') + '</span>';
-        html += '<span><span class="label">TLP:</span> ' + escapeHtml(item.tlp || 'WHITE') + '</span>';
-        html += '<span><span class="label">Category:</span> ' + escapeHtml(item.category || 'ThreatPath') + '</span>';
-        html += '</div>';
-
-        // Source
-        if (item.source) {
-            html += '<div class="detail-meta-row">';
-            html += '<span><span class="label">Source:</span> ' + escapeHtml(item.source) + '</span>';
-            html += '</div>';
-        }
-
-        html += '</div>'; // end detail-header
-
-        // Taxonomy toggle
-        html += '<div class="taxonomy-toggle" id="taxonomy-toggle">';
-        html += '<button class="' + (activeTaxonomy === 'cfpf' ? 'active' : '') + '" data-taxonomy="cfpf">CFPF Phases</button>';
-        html += '<button class="' + (activeTaxonomy === 'mitre' ? 'active' : '') + '" data-taxonomy="mitre">MITRE ATT&CK</button>';
-        html += '<button class="' + (activeTaxonomy === 'groupib' ? 'active' : '') + '" data-taxonomy="groupib">Group-IB</button>';
-        html += '</div>';
-
-        // Phase timeline (CFPF view)
-        if (activeTaxonomy === 'cfpf') {
-            html += renderCfpfTimeline(phases);
-        } else if (activeTaxonomy === 'mitre') {
-            html += renderMitreView(mitre);
-        } else if (activeTaxonomy === 'groupib') {
-            html += renderGroupibView(groupib);
-        }
-
-        // Taxonomy tags
-        html += '<div class="taxonomy-section">';
-
-        // Sectors
-        if (sectors.length > 0) {
-            html += '<h3>Sectors</h3>';
-            html += '<div class="taxonomy-tags">';
-            sectors.forEach(function (s) {
-                html += '<span class="taxonomy-tag sector">' + escapeHtml(s) + '</span>';
-            });
-            html += '</div>';
-        }
-
-        // Fraud types
-        if (fraudTypes.length > 0) {
-            html += '<h3>Fraud Types</h3>';
-            html += '<div class="taxonomy-tags">';
-            fraudTypes.forEach(function (ft) {
-                html += '<span class="taxonomy-tag fraud-type">' + escapeHtml(ft) + '</span>';
-            });
-            html += '</div>';
-        }
-
-        // MITRE ATT&CK
-        if (mitre.length > 0) {
-            html += '<h3>MITRE ATT&CK Techniques</h3>';
-            html += '<div class="taxonomy-tags">';
-            mitre.forEach(function (t) {
-                html += '<span class="taxonomy-tag mitre">' + escapeHtml(t) + '</span>';
-            });
-            html += '</div>';
-        }
-
-        // Group-IB stages
-        if (groupib.length > 0) {
-            html += '<h3>Group-IB Fraud Matrix Stages</h3>';
-            html += '<div class="taxonomy-tags">';
-            groupib.forEach(function (s) {
-                html += '<span class="taxonomy-tag groupib">' + escapeHtml(s) + '</span>';
-            });
-            html += '</div>';
-        }
-
-        // FT3 tactics
-        if (ft3.length > 0) {
-            html += '<h3>Stripe FT3 Tactics</h3>';
-            html += '<div class="taxonomy-tags">';
-            ft3.forEach(function (t) {
-                html += '<span class="taxonomy-tag general">' + escapeHtml(t) + '</span>';
-            });
-            html += '</div>';
-        }
-
-        // Tags
-        if (tags.length > 0) {
-            html += '<h3>Tags</h3>';
-            html += '<div class="taxonomy-tags">';
-            tags.forEach(function (t) {
-                html += '<span class="taxonomy-tag general">' + escapeHtml(t) + '</span>';
-            });
-            html += '</div>';
-        }
-
-        html += '</div>'; // end taxonomy-section
-
-        // Summary (rendered as markdown)
-        if (item.summary) {
-            html += '<div class="detail-body">';
-            html += '<h2>Summary</h2>';
-            html += marked.parse(item.summary);
-            html += '</div>';
-        }
-
-        dom.detailView.innerHTML = html;
-
-        // Bind taxonomy toggle
-        dom.detailView.querySelectorAll('#taxonomy-toggle button').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                activeTaxonomy = btn.dataset.taxonomy;
-                renderDetailView(item);
-            });
-        });
-
-        // Scroll to top of detail
-        dom.contentArea.scrollTop = 0;
-    }
-
-    // -----------------------------------------------------------------------
-    // Taxonomy views
-    // -----------------------------------------------------------------------
-
-    function renderCfpfTimeline(phases) {
-        var html = '<div class="phase-timeline">';
-        ['P1', 'P2', 'P3', 'P4', 'P5'].forEach(function (p) {
-            var info = PHASE_INFO[p];
-            var covered = phases.indexOf(p) !== -1;
-            html += '<div class="phase-block ' + info.color + (covered ? ' covered' : '') + '">';
-            html += '<div class="phase-label">' + info.label + '</div>';
-            html += '<div class="phase-name">' + info.name + '</div>';
-            html += '</div>';
-        });
-        html += '</div>';
-        return html;
-    }
-
-    function renderMitreView(techniques) {
-        if (techniques.length === 0) {
-            return '<div class="taxonomy-section"><p style="color: var(--text-tertiary);">No MITRE ATT&CK techniques mapped for this threat path.</p></div>';
-        }
-        var html = '<div class="taxonomy-section">';
-        html += '<h3>MITRE ATT&CK Technique Mapping</h3>';
-        html += '<div class="taxonomy-tags" style="margin-top: 8px;">';
-        techniques.forEach(function (t) {
-            html += '<span class="taxonomy-tag mitre" style="font-size: 0.85rem; padding: 6px 14px;">' + escapeHtml(t) + '</span>';
-        });
-        html += '</div>';
-        html += '</div>';
-        return html;
-    }
-
-    function renderGroupibView(stages) {
-        if (stages.length === 0) {
-            return '<div class="taxonomy-section"><p style="color: var(--text-tertiary);">No Group-IB Fraud Matrix stages mapped for this threat path.</p></div>';
-        }
-
-        var html = '<div class="phase-timeline">';
-        GROUPIB_STAGES.forEach(function (stage) {
-            var covered = stages.indexOf(stage) !== -1;
-            html += '<div class="phase-block p5' + (covered ? ' covered' : '') + '" style="' + (covered ? 'background: var(--phase-p5-bg); border-bottom: 3px solid var(--phase-p5);' : '') + '">';
-            html += '<div class="phase-label" style="font-size: 0.6rem; ' + (covered ? 'color: var(--phase-p5);' : '') + '">' + escapeHtml(stage) + '</div>';
-            html += '</div>';
-        });
-        html += '</div>';
-        return html;
+        dom.filterActions = document.getElementById('filter-actions');
+        dom.clearFiltersBtn = document.getElementById('clear-filters-btn');
+        dom.filterCount = document.getElementById('filter-count');
+        dom.filterToggle = document.getElementById('filter-toggle');
+        dom.filterToggleCount = document.getElementById('filter-toggle-count');
+        dom.filterPanel = document.getElementById('filter-panel');
+        dom.aboutBtn = document.getElementById('about-btn');
+        dom.aboutModal = document.getElementById('about-modal');
+        dom.aboutClose = document.getElementById('about-close');
+        dom.heatMapBtn = document.getElementById('heat-map-btn');
+        dom.heatMapModal = document.getElementById('heat-map-modal');
+        dom.heatMapClose = document.getElementById('heat-map-close');
+        dom.heatMapBody = document.getElementById('heat-map-body');
     }
 
     // -----------------------------------------------------------------------
@@ -507,20 +85,668 @@
     function escapeHtml(str) {
         if (!str) return '';
         var div = document.createElement('div');
-        div.textContent = String(str);
+        div.appendChild(document.createTextNode(str));
         return div.innerHTML;
+    }
+
+    function formatLabel(str) {
+        if (!str) return '';
+        return str.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    }
+
+    function truncate(str, len) {
+        if (!str) return '';
+        if (str.length <= len) return str;
+        return str.substring(0, len).replace(/\s+\S*$/, '') + '…';
+    }
+
+    // -----------------------------------------------------------------------
+    // Initialization
+    // -----------------------------------------------------------------------
+
+    document.addEventListener('DOMContentLoaded', function () {
+        cacheDom();
+        bindEvents();
+
+        FlameData.load().then(function (data) {
+            allSubmissions = data;
+            initializeUI();
+            handleRoute();
+        }).catch(function (err) {
+            dom.cardGrid.innerHTML = '<div class="empty-state">Failed to load data. Please try again.</div>';
+            console.error(err);
+        });
+    });
+
+    function initializeUI() {
+        // Update stats
+        var stats = FlameData.getStats();
+        dom.statTotal.textContent = stats.total;
+        dom.statFraudTypes.textContent = stats.fraudTypes;
+        dom.statSectors.textContent = stats.sectors;
+
+        // Build filter chips
+        buildPhaseChips();
+        buildFilterChips('sectors', dom.filterSectors);
+        buildFilterChips('fraud_types', dom.filterFraudTypes);
+
+        // Initial render
+        applyFilters();
+    }
+
+    // -----------------------------------------------------------------------
+    // Event Binding
+    // -----------------------------------------------------------------------
+
+    function bindEvents() {
+        // Search
+        dom.searchInput.addEventListener('input', debounce(function () {
+            searchQuery = dom.searchInput.value.trim().toLowerCase();
+            applyFilters();
+        }, 200));
+
+        // Clear filters
+        dom.clearFiltersBtn.addEventListener('click', clearAllFilters);
+
+        // Back link
+        dom.backLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateTo('browse');
+        });
+
+        // Mobile filter toggle
+        dom.filterToggle.addEventListener('click', function () {
+            dom.filterPanel.classList.toggle('open');
+        });
+
+        // About modal
+        dom.aboutBtn.addEventListener('click', function () {
+            dom.aboutModal.style.display = 'flex';
+        });
+        dom.aboutClose.addEventListener('click', function () {
+            dom.aboutModal.style.display = 'none';
+        });
+        dom.aboutModal.addEventListener('click', function (e) {
+            if (e.target === dom.aboutModal) dom.aboutModal.style.display = 'none';
+        });
+
+        // Heat map modal
+        dom.heatMapBtn.addEventListener('click', function () {
+            renderHeatMap();
+            dom.heatMapModal.style.display = 'flex';
+        });
+        dom.heatMapClose.addEventListener('click', function () {
+            dom.heatMapModal.style.display = 'none';
+        });
+        dom.heatMapModal.addEventListener('click', function (e) {
+            if (e.target === dom.heatMapModal) dom.heatMapModal.style.display = 'none';
+        });
+
+        // Hash routing
+        window.addEventListener('hashchange', handleRoute);
     }
 
     function debounce(fn, delay) {
         var timer;
         return function () {
-            var context = this;
-            var args = arguments;
             clearTimeout(timer);
-            timer = setTimeout(function () {
-                fn.apply(context, args);
-            }, delay);
+            timer = setTimeout(fn, delay);
         };
     }
+
+    // -----------------------------------------------------------------------
+    // Routing
+    // -----------------------------------------------------------------------
+
+    function handleRoute() {
+        var hash = window.location.hash || '#browse';
+        if (hash.startsWith('#detail/')) {
+            var tpId = hash.replace('#detail/', '');
+            showDetailView(tpId);
+        } else {
+            showBrowseView();
+        }
+    }
+
+    function navigateTo(target, tpId) {
+        if (target === 'browse') {
+            window.location.hash = '#browse';
+        } else if (target === 'detail' && tpId) {
+            window.location.hash = '#detail/' + tpId;
+        }
+    }
+
+    function showBrowseView() {
+        viewState = 'browse';
+        dom.browseView.style.display = 'block';
+        dom.detailView.style.display = 'none';
+        dom.filterPanel.classList.remove('detail-active');
+    }
+
+    function showDetailView(tpId) {
+        viewState = 'detail';
+        dom.browseView.style.display = 'none';
+        dom.detailView.style.display = 'block';
+        dom.filterPanel.classList.add('detail-active');
+
+        // Show loading skeleton
+        dom.detailContent.innerHTML = '<div class="detail-skeleton"><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div><div class="skeleton-line w40"></div><div class="skeleton-block"></div></div>';
+
+        // Lazy load content
+        FlameData.loadContent(tpId).then(function (item) {
+            renderDetailView(item);
+        }).catch(function (err) {
+            dom.detailContent.innerHTML = '<div class="empty-state">Failed to load threat path content.</div>';
+            console.error(err);
+        });
+    }
+
+    // -----------------------------------------------------------------------
+    // Filter Chips
+    // -----------------------------------------------------------------------
+
+    function buildPhaseChips() {
+        var html = '';
+        PHASE_ORDER.forEach(function (phase) {
+            var info = PHASE_INFO[phase];
+            html += '<button class="chip phase-chip" data-filter="cfpf_phases" data-value="' + phase + '" style="--chip-color: ' + info.color + '">';
+            html += '<span class="chip-dot" style="background: ' + info.color + '"></span>';
+            html += info.label + ' ' + info.name;
+            html += '</button>';
+        });
+        dom.filterCfpfPhases.innerHTML = html;
+
+        dom.filterCfpfPhases.querySelectorAll('.chip').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                toggleFilter(btn.dataset.filter, btn.dataset.value, btn);
+            });
+        });
+    }
+
+    function buildFilterChips(field, container) {
+        var values = FlameData.getUniqueValues(field);
+        var html = '';
+        values.forEach(function (val) {
+            html += '<button class="chip" data-filter="' + field + '" data-value="' + escapeHtml(val) + '">';
+            html += formatLabel(val);
+            html += '</button>';
+        });
+        container.innerHTML = html;
+
+        container.querySelectorAll('.chip').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                toggleFilter(btn.dataset.filter, btn.dataset.value, btn);
+            });
+        });
+    }
+
+    function toggleFilter(filterType, value, btn) {
+        if (activeFilters[filterType].has(value)) {
+            activeFilters[filterType].delete(value);
+            btn.classList.remove('active');
+        } else {
+            activeFilters[filterType].add(value);
+            btn.classList.add('active');
+        }
+        updateFilterBadge();
+        applyFilters();
+    }
+
+    function clearAllFilters() {
+        activeFilters.cfpf_phases.clear();
+        activeFilters.sectors.clear();
+        activeFilters.fraud_types.clear();
+        searchQuery = '';
+        dom.searchInput.value = '';
+
+        document.querySelectorAll('.chip.active').forEach(function (btn) {
+            btn.classList.remove('active');
+        });
+
+        updateFilterBadge();
+        applyFilters();
+    }
+
+    function updateFilterBadge() {
+        var count = activeFilters.cfpf_phases.size + activeFilters.sectors.size + activeFilters.fraud_types.size;
+        if (count > 0) {
+            dom.filterActions.style.display = 'flex';
+            dom.filterCount.textContent = count;
+            dom.filterToggleCount.textContent = count;
+            dom.filterToggleCount.style.display = 'flex';
+        } else {
+            dom.filterActions.style.display = 'none';
+            dom.filterToggleCount.style.display = 'none';
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // Filtering & Rendering Cards
+    // -----------------------------------------------------------------------
+
+    function applyFilters() {
+        filteredSubmissions = allSubmissions.filter(function (item) {
+            // Search
+            if (searchQuery) {
+                var haystack = (
+                    (item.title || '') + ' ' +
+                    (item.summary || '') + ' ' +
+                    (item.id || '') + ' ' +
+                    (item.tags || []).join(' ') + ' ' +
+                    (item.fraud_types || []).join(' ') + ' ' +
+                    (item.sectors || []).join(' ')
+                ).toLowerCase();
+                if (haystack.indexOf(searchQuery) === -1) return false;
+            }
+
+            // CFPF phases
+            if (activeFilters.cfpf_phases.size > 0) {
+                var phases = item.cfpf_phases || [];
+                var match = false;
+                activeFilters.cfpf_phases.forEach(function (p) {
+                    if (phases.indexOf(p) !== -1) match = true;
+                });
+                if (!match) return false;
+            }
+
+            // Sectors
+            if (activeFilters.sectors.size > 0) {
+                var sectors = item.sectors || [];
+                var sMatch = false;
+                activeFilters.sectors.forEach(function (s) {
+                    if (sectors.indexOf(s) !== -1) sMatch = true;
+                });
+                if (!sMatch) return false;
+            }
+
+            // Fraud types
+            if (activeFilters.fraud_types.size > 0) {
+                var ft = item.fraud_types || [];
+                var ftMatch = false;
+                activeFilters.fraud_types.forEach(function (f) {
+                    if (ft.indexOf(f) !== -1) ftMatch = true;
+                });
+                if (!ftMatch) return false;
+            }
+
+            return true;
+        });
+
+        renderCardGrid();
+    }
+
+    function renderCardGrid() {
+        dom.resultsBar.textContent = filteredSubmissions.length + ' of ' + allSubmissions.length + ' threat paths';
+
+        if (filteredSubmissions.length === 0) {
+            dom.cardGrid.innerHTML = '<div class="empty-state">No matching threat paths found. Try adjusting your filters.</div>';
+            return;
+        }
+
+        var html = '';
+        filteredSubmissions.forEach(function (item, idx) {
+            html += renderCard(item, idx);
+        });
+        dom.cardGrid.innerHTML = html;
+
+        // Bind card clicks
+        dom.cardGrid.querySelectorAll('.tp-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                navigateTo('detail', card.dataset.id);
+            });
+            // Keyboard
+            card.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    navigateTo('detail', card.dataset.id);
+                }
+            });
+        });
+    }
+
+    function renderCard(item, idx) {
+        var phases = item.cfpf_phases || [];
+        var sectors = item.sectors || [];
+        var fraudTypes = item.fraud_types || [];
+        var summary = truncate(item.summary || '', 160);
+
+        var html = '<div class="tp-card" data-id="' + escapeHtml(item.id) + '" tabindex="0" role="button" style="--delay: ' + (idx * 0.04) + 's">';
+
+        // Card header
+        html += '<div class="card-header">';
+        html += '<span class="card-id">' + escapeHtml(item.id) + '</span>';
+        html += '<span class="card-date">' + escapeHtml(item.date || '') + '</span>';
+        html += '</div>';
+
+        // Title
+        html += '<h3 class="card-title">' + escapeHtml(item.title) + '</h3>';
+
+        // Summary
+        html += '<p class="card-summary">' + escapeHtml(summary) + '</p>';
+
+        // Phase dots
+        html += '<div class="card-phases">';
+        PHASE_ORDER.forEach(function (p) {
+            var active = phases.indexOf(p) !== -1;
+            var info = PHASE_INFO[p];
+            html += '<span class="phase-dot' + (active ? ' active' : '') + '" title="' + info.label + ': ' + info.name + '" style="--dot-color: ' + info.color + '">';
+            html += info.label;
+            html += '</span>';
+        });
+        html += '</div>';
+
+        // Tags row
+        html += '<div class="card-tags">';
+        sectors.forEach(function (s) {
+            html += '<span class="card-tag sector-tag">' + formatLabel(s) + '</span>';
+        });
+        fraudTypes.slice(0, 3).forEach(function (ft) {
+            html += '<span class="card-tag fraud-tag">' + formatLabel(ft) + '</span>';
+        });
+        if (fraudTypes.length > 3) {
+            html += '<span class="card-tag more-tag">+' + (fraudTypes.length - 3) + '</span>';
+        }
+        html += '</div>';
+
+        html += '</div>';
+        return html;
+    }
+
+    // -----------------------------------------------------------------------
+    // Detail View
+    // -----------------------------------------------------------------------
+
+    function renderDetailView(item) {
+        var phases = item.cfpf_phases || [];
+        var mitre = item.mitre_attack || [];
+        var groupib = item.groupib_stages || [];
+        var sectors = item.sectors || [];
+        var fraudTypes = item.fraud_types || [];
+        var tags = item.tags || [];
+        var ft3 = item.ft3_tactics || [];
+
+        var html = '';
+
+        // Header
+        html += '<div class="detail-header">';
+        html += '<div class="detail-id">' + escapeHtml(item.id) + '</div>';
+        html += '<h2 class="detail-title">' + escapeHtml(item.title) + '</h2>';
+        html += '<div class="detail-meta">';
+        html += '<span><strong>Author:</strong> ' + escapeHtml(item.author || 'Unknown') + '</span>';
+        html += '<span><strong>Date:</strong> ' + escapeHtml(item.date || 'N/A') + '</span>';
+        html += '<span><strong>TLP:</strong> <span class="tlp-badge">' + escapeHtml(item.tlp || 'WHITE') + '</span></span>';
+        html += '</div>';
+        if (item.source) {
+            html += '<div class="detail-source"><strong>Source:</strong> ';
+            if (item.source.startsWith('http')) {
+                html += '<a href="' + escapeHtml(item.source) + '" target="_blank" rel="noopener">' + escapeHtml(truncate(item.source, 80)) + '</a>';
+            } else {
+                html += escapeHtml(item.source);
+            }
+            html += '</div>';
+        }
+        html += '</div>';
+
+        // Taxonomy toggle
+        html += '<div class="taxonomy-toggle" id="taxonomy-toggle">';
+        html += '<button class="tax-btn' + (activeTaxonomy === 'cfpf' ? ' active' : '') + '" data-taxonomy="cfpf">CFPF Phases</button>';
+        html += '<button class="tax-btn' + (activeTaxonomy === 'mitre' ? ' active' : '') + '" data-taxonomy="mitre">MITRE ATT&CK</button>';
+        html += '<button class="tax-btn' + (activeTaxonomy === 'groupib' ? ' active' : '') + '" data-taxonomy="groupib">Group-IB</button>';
+        html += '</div>';
+
+        // Phase timeline / taxonomy view
+        if (activeTaxonomy === 'cfpf') {
+            html += renderCfpfTimeline(phases);
+        } else if (activeTaxonomy === 'mitre') {
+            html += renderMitreView(mitre);
+        } else if (activeTaxonomy === 'groupib') {
+            html += renderGroupibView(groupib);
+        }
+
+        // Taxonomy tags
+        html += '<div class="detail-taxonomy">';
+
+        if (sectors.length > 0) {
+            html += '<div class="tag-group"><h4>Sectors</h4><div class="tag-list">';
+            sectors.forEach(function (s) { html += '<span class="detail-tag sector-tag">' + escapeHtml(formatLabel(s)) + '</span>'; });
+            html += '</div></div>';
+        }
+        if (fraudTypes.length > 0) {
+            html += '<div class="tag-group"><h4>Fraud Types</h4><div class="tag-list">';
+            fraudTypes.forEach(function (ft) { html += '<span class="detail-tag fraud-tag">' + escapeHtml(formatLabel(ft)) + '</span>'; });
+            html += '</div></div>';
+        }
+        if (mitre.length > 0 && activeTaxonomy !== 'mitre') {
+            html += '<div class="tag-group"><h4>MITRE ATT&CK</h4><div class="tag-list">';
+            mitre.forEach(function (t) { html += '<span class="detail-tag mitre-tag">' + escapeHtml(t) + '</span>'; });
+            html += '</div></div>';
+        }
+        if (groupib.length > 0 && activeTaxonomy !== 'groupib') {
+            html += '<div class="tag-group"><h4>Group-IB Stages</h4><div class="tag-list">';
+            groupib.forEach(function (s) { html += '<span class="detail-tag groupib-tag">' + escapeHtml(s) + '</span>'; });
+            html += '</div></div>';
+        }
+        if (ft3.length > 0) {
+            html += '<div class="tag-group"><h4>Stripe FT3</h4><div class="tag-list">';
+            ft3.forEach(function (t) { html += '<span class="detail-tag ft3-tag">' + escapeHtml(t) + '</span>'; });
+            html += '</div></div>';
+        }
+        if (tags.length > 0) {
+            html += '<div class="tag-group"><h4>Tags</h4><div class="tag-list">';
+            tags.forEach(function (t) { html += '<span class="detail-tag general-tag">' + escapeHtml(t) + '</span>'; });
+            html += '</div></div>';
+        }
+
+        html += '</div>';
+
+        // Body content (rendered from markdown)
+        if (item.body) {
+            html += '<div class="detail-body" id="detail-body">';
+            html += renderMarkdown(item.body);
+            html += '</div>';
+        }
+
+        dom.detailContent.innerHTML = html;
+
+        // Post-render hooks
+        bindTaxonomyToggle(item);
+        addCopyButtons();
+        highlightLookLeftRight();
+
+        // Scroll to top
+        dom.detailView.scrollTop = 0;
+        window.scrollTo(0, 0);
+    }
+
+    // -----------------------------------------------------------------------
+    // Taxonomy Views
+    // -----------------------------------------------------------------------
+
+    function renderCfpfTimeline(phases) {
+        var html = '<div class="phase-timeline">';
+        PHASE_ORDER.forEach(function (phase, i) {
+            var info = PHASE_INFO[phase];
+            var active = phases.indexOf(phase) !== -1;
+            html += '<div class="timeline-phase' + (active ? ' active' : '') + '">';
+            html += '<div class="timeline-dot" style="background: ' + (active ? info.color : 'var(--color-surface-3)') + '"></div>';
+            html += '<div class="timeline-label">' + info.label + '</div>';
+            html += '<div class="timeline-name">' + info.name + '</div>';
+            html += '</div>';
+            if (i < PHASE_ORDER.length - 1) {
+                html += '<div class="timeline-connector' + (active ? ' active' : '') + '"></div>';
+            }
+        });
+        html += '</div>';
+        return html;
+    }
+
+    function renderMitreView(techniques) {
+        if (techniques.length === 0) {
+            return '<div class="taxonomy-empty">No MITRE ATT&CK mappings for this threat path.</div>';
+        }
+        var html = '<div class="mitre-grid">';
+        techniques.forEach(function (t) {
+            html += '<a class="mitre-card" href="https://attack.mitre.org/techniques/' + encodeURIComponent(t.replace('.', '/')) + '/" target="_blank" rel="noopener">';
+            html += '<span class="mitre-id">' + escapeHtml(t) + '</span>';
+            html += '<span class="mitre-link-icon">↗</span>';
+            html += '</a>';
+        });
+        html += '</div>';
+        return html;
+    }
+
+    function renderGroupibView(stages) {
+        if (stages.length === 0) {
+            return '<div class="taxonomy-empty">No Group-IB Fraud Matrix mappings for this threat path.</div>';
+        }
+        var html = '<div class="groupib-stages">';
+        GROUPIB_STAGES.forEach(function (stage, i) {
+            var active = stages.indexOf(stage) !== -1;
+            html += '<div class="groupib-stage' + (active ? ' active' : '') + '">';
+            html += '<span class="groupib-num">' + (i + 1) + '</span>';
+            html += '<span class="groupib-name">' + escapeHtml(stage) + '</span>';
+            html += '</div>';
+        });
+        html += '</div>';
+        return html;
+    }
+
+    function bindTaxonomyToggle(item) {
+        var toggleEl = document.getElementById('taxonomy-toggle');
+        if (!toggleEl) return;
+        toggleEl.querySelectorAll('.tax-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                activeTaxonomy = btn.dataset.taxonomy;
+                renderDetailView(item);
+            });
+        });
+    }
+
+    // -----------------------------------------------------------------------
+    // Markdown Rendering & Enhancements
+    // -----------------------------------------------------------------------
+
+    function renderMarkdown(text) {
+        if (typeof marked !== 'undefined') {
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                headerIds: false,
+            });
+            return marked.parse(text);
+        }
+        return '<pre>' + escapeHtml(text) + '</pre>';
+    }
+
+    function addCopyButtons() {
+        var codeBlocks = dom.detailContent.querySelectorAll('pre');
+        codeBlocks.forEach(function (pre) {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+
+            var btn = document.createElement('button');
+            btn.className = 'copy-btn';
+            btn.textContent = 'Copy';
+            btn.title = 'Copy to clipboard';
+            btn.addEventListener('click', function () {
+                var code = pre.querySelector('code') || pre;
+                navigator.clipboard.writeText(code.textContent).then(function () {
+                    btn.textContent = 'Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(function () {
+                        btn.textContent = 'Copy';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            });
+            wrapper.appendChild(btn);
+        });
+    }
+
+    function highlightLookLeftRight() {
+        var body = document.getElementById('detail-body');
+        if (!body) return;
+
+        // Find the "Look Left / Look Right" heading
+        var headings = body.querySelectorAll('h2');
+        headings.forEach(function (h) {
+            if (h.textContent.indexOf('Look Left') !== -1 || h.textContent.indexOf('Look Right') !== -1) {
+                // Wrap the section in a callout
+                var section = document.createElement('div');
+                section.className = 'look-callout';
+
+                var icon = document.createElement('div');
+                icon.className = 'look-callout-icon';
+                icon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+                h.classList.add('look-heading');
+                h.parentNode.insertBefore(section, h);
+                section.appendChild(icon);
+                section.appendChild(h);
+
+                // Move sibling elements until next h2
+                var next = section.nextSibling;
+                while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+                    var toMove = next;
+                    next = next.nextSibling;
+                    section.appendChild(toMove);
+                }
+            }
+        });
+    }
+
+    // -----------------------------------------------------------------------
+    // Heat Map
+    // -----------------------------------------------------------------------
+
+    function renderHeatMap() {
+        var stats = FlameData.getStats();
+        var matrix = stats.coverageMatrix || [];
+
+        if (matrix.length === 0) {
+            dom.heatMapBody.innerHTML = '<p>No coverage data available.</p>';
+            return;
+        }
+
+        // Find max count for color scaling
+        var maxCount = 0;
+        matrix.forEach(function (row) {
+            PHASE_ORDER.forEach(function (p) {
+                var val = row.phases[p] || 0;
+                if (val > maxCount) maxCount = val;
+            });
+        });
+
+        var html = '<div class="heat-map-grid">';
+
+        // Header row
+        html += '<div class="hm-cell hm-corner"></div>';
+        PHASE_ORDER.forEach(function (p) {
+            var info = PHASE_INFO[p];
+            html += '<div class="hm-cell hm-header" style="color: ' + info.color + '">' + info.label + '</div>';
+        });
+
+        // Data rows
+        matrix.forEach(function (row) {
+            html += '<div class="hm-cell hm-label" title="' + escapeHtml(row.fraud_type) + '">' + escapeHtml(formatLabel(row.fraud_type)) + '</div>';
+            PHASE_ORDER.forEach(function (p) {
+                var count = row.phases[p] || 0;
+                var intensity = maxCount > 0 ? count / maxCount : 0;
+                var alpha = count > 0 ? 0.15 + (intensity * 0.85) : 0;
+                html += '<div class="hm-cell hm-data" style="background: rgba(249, 115, 22, ' + alpha.toFixed(2) + ')" title="' + formatLabel(row.fraud_type) + ' × ' + p + ': ' + count + ' TPs">';
+                if (count > 0) html += count;
+                html += '</div>';
+            });
+        });
+
+        html += '</div>';
+        dom.heatMapBody.innerHTML = html;
+    }
+
+    // -----------------------------------------------------------------------
+    // End
+    // -----------------------------------------------------------------------
 
 })();

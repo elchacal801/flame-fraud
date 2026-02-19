@@ -1,0 +1,52 @@
+{
+  "id": "TP-0008",
+  "title": "SIM Swap to Cryptocurrency Exchange ATO",
+  "category": "ThreatPath",
+  "date": "2026-02-12",
+  "author": "FLAME Project",
+  "source": "FBI IC3 / DOJ SIM swap prosecutions / industry reporting",
+  "tlp": "WHITE",
+  "summary": "Actors social-engineer mobile carriers to transfer a victim's phone number to an actor-controlled SIM card, then use intercepted SMS-based MFA codes to take over cryptocurrency exchange accounts and drain digital assets. FBI IC3 reported $68M+ in SIM swap losses in 2021 alone, with individual losses frequently exceeding $1M for high-net-worth crypto holders. DOJ has prosecuted multiple SIM swap rings targeting crypto investors specifically.",
+  "body": "## Summary\n\nActors social-engineer mobile carriers to transfer a victim's phone number to an actor-controlled SIM card, then use intercepted SMS-based MFA codes to take over cryptocurrency exchange accounts and drain digital assets. FBI IC3 reported $68M+ in SIM swap losses in 2021 alone, with individual losses frequently exceeding $1M for high-net-worth crypto holders. DOJ has prosecuted multiple SIM swap rings targeting crypto investors specifically.\n\n## Threat Path Hypothesis\n\n> **Hypothesis**: Actors are targeting high-value cryptocurrency holders through SIM swap attacks at mobile carriers, using intercepted MFA codes to bypass exchange security and drain digital wallets, then laundering proceeds through mixing services and cross-chain bridges.\n\n**Confidence**: High — extensive DOJ prosecution history, FBI IC3 data, confirmed attack chains.\n**Estimated Impact**: $50,000 – $10,000,000+ per victim. Crypto's irreversibility makes recovery near-impossible.\n\n## CFPF Phase Mapping\n\n### Phase 1: Recon\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P1-005: Social media recon | Identify crypto holders through social media posts (trading screenshots, NFT displays, conference attendance, Discord/Telegram group membership) | Scraping of crypto-focused social media; monitoring of blockchain conference attendee lists |\n| CFPF-P1-004: Dark web acquisition | Purchase victim PII (SSN, DOB, account PINs, carrier account details) from dark web markets or data broker leaks | PII packages for sale referencing crypto investors |\n| Carrier employee recruitment | Bribe or recruit insiders at mobile carriers to execute SIM swaps without standard verification | Carrier insider activity outside normal patterns |\n\n### Phase 2: Initial Access\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P2-006: SIM swap | Contact mobile carrier impersonating victim (or via bribed insider) to port phone number to new SIM. Victim's phone immediately loses service. | Victim reports sudden loss of cellular service; unauthorized SIM change on carrier records |\n| SMS MFA interception | With phone number controlled, receive all SMS-based MFA codes for victim's accounts | MFA codes delivered to new device; login attempts immediately following SIM swap |\n| CFPF-P2-005: Credential access | Use previously obtained credentials (phishing, breach data, social engineering) combined with intercepted MFA to authenticate to exchange | Login from new device/IP with valid credentials + MFA |\n\n### Phase 3: Positioning\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P3-003: Contact info modification | Change email, phone, and recovery options on exchange account to actor-controlled addresses | Account recovery contact changes immediately after login from new device |\n| CFPF-P3-005: New MFA device | Enroll actor-controlled authenticator app, disable SMS MFA | MFA device changes following SIM swap window |\n| API key creation | Generate API keys for programmatic access to exchange account (enables faster, automated withdrawals) | New API key creation from anomalous session |\n\n### Phase 4: Execution\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| Cryptocurrency withdrawal | Drain all exchange balances — spot holdings, staking positions, DeFi deposits — to actor-controlled wallets | Maximum withdrawal activity; withdrawals to previously unused addresses; withdrawal of all asset types simultaneously |\n| NFT transfer | Transfer high-value NFTs to actor wallets | NFT transfers to new wallets during same session as crypto withdrawals |\n\n### Phase 5: Monetization\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P5-003: Crypto laundering | Funds routed through mixing services (Tornado Cash, Sinbad), cross-chain bridges, or chain-hopping (BTC → Monero → BTC) | Transactions to known mixer addresses; rapid cross-chain transfers; peel chain patterns |\n| Peer-to-peer off-ramping | Convert crypto to fiat through P2P OTC desks, LocalBitcoins-style platforms, or international exchanges with weak KYC | Fiat withdrawals at exchanges in low-oversight jurisdictions |\n\n## Controls & Mitigations\n\n| Phase | Control | Type |\n|-------|---------|------|\n| P1 | Carrier account PIN/passphrase (set on mobile account to prevent unauthorized SIM changes) | Preventive |\n| P1 | Carrier port-freeze / number lock | Preventive |\n| P2 | **Never use SMS-based MFA for high-value accounts** — hardware keys (YubiKey) or authenticator apps only | Preventive |\n| P3 | Exchange: flag and hold withdrawals when account recovery contacts change within 24-48hrs of login | Detective |\n| P4 | Exchange: mandatory 24-72hr withdrawal hold for new devices/IPs | Preventive |\n| P4 | Exchange: withdrawal address whitelisting with time-lock on additions | Preventive |\n| P5 | Blockchain analytics: flag transactions to known mixer/tumbler addresses | Detective |\n\n## Detection Approaches\n\n**Exchange-Side — SIM Swap Indicator Correlation**\n```\nFlag accounts where within a 24-hour window:\n  1. Login from new device AND\n  2. MFA method change AND\n  3. Contact info change AND\n  4. Withdrawal to new address\nConfidence: CRITICAL if all four present\n```\n\n**Carrier-Side — Anomalous SIM Change Detection**\n```\nFlag SIM changes where:\n  - Change requested through non-standard channel (call center vs. retail)\n  - Change followed by immediate account activity at financial services\n  - Customer has no prior SIM change history\n  - Multiple SIM changes across different customers by same representative\n```\n\n## References\n- FBI IC3 PSA: \"SIM Swapping\"\n- DOJ: \"Eight Individuals Charged in SIM Swap Conspiracy\" (various indictments)\n- Chainalysis: Crypto Crime Report (annual)\n- T-Mobile, AT&T carrier SIM swap prevention documentation\n\n## Revision History\n| Date | Author | Change |\n|------|--------|--------|\n| 2026-02-12 | FLAME Project | Initial submission |",
+  "sectors": [
+    "crypto",
+    "fintech",
+    "banking"
+  ],
+  "fraud_types": [
+    "account-takeover",
+    "crypto-laundering"
+  ],
+  "tags": [
+    "SIM-swap",
+    "cryptocurrency",
+    "MFA-bypass",
+    "carrier-social-engineering",
+    "high-value-individual"
+  ],
+  "cfpf_phases": [
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5"
+  ],
+  "mitre_attack": [
+    "T1111",
+    "T1078",
+    "T1657"
+  ],
+  "ft3_tactics": [],
+  "mitre_f3": [],
+  "groupib_stages": [
+    "Reconnaissance",
+    "Resource Development",
+    "Trust Abuse",
+    "Credential Access",
+    "Account Access",
+    "Defence Evasion",
+    "Perform Fraud",
+    "Monetization",
+    "Laundering"
+  ]
+}
