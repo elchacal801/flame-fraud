@@ -1,0 +1,43 @@
+{
+  "id": "TP-0002",
+  "title": "Business Email Compromise — Vendor Impersonation Wire Fraud",
+  "category": "ThreatPath",
+  "date": "2026-02-12",
+  "author": "FLAME Project",
+  "source": "FBI IC3 / FinCEN Advisory FIN-2019-A005 / multiple public reporting",
+  "tlp": "WHITE",
+  "summary": "Threat actors compromise or spoof vendor email accounts, then impersonate the vendor to redirect legitimate invoice payments to actor-controlled accounts. BEC caused $2.9B+ in reported losses in 2023 per FBI IC3. The scheme exploits trust relationships between businesses and their vendors, often going undetected until the legitimate vendor inquires about unpaid invoices weeks or months later.",
+  "body": "## Summary\n\nThreat actors compromise or spoof vendor email accounts, then impersonate the vendor to redirect legitimate invoice payments to actor-controlled accounts. BEC caused $2.9B+ in reported losses in 2023 per FBI IC3. The scheme exploits trust relationships between businesses and their vendors, often going undetected until the legitimate vendor inquires about unpaid invoices weeks or months later.\n\n## Threat Path Hypothesis\n\n> **Hypothesis**: Actors are compromising vendor email infrastructure or registering lookalike domains to intercept ongoing business relationships and redirect invoice payments via modified banking details, targeting accounts payable departments across all sectors.\n\n**Confidence**: High — most-reported financial cybercrime category globally.\n**Estimated Impact**: $50,000 – $5,000,000+ per incident. Median BEC loss ~$125,000.\n\n## CFPF Phase Mapping\n\n### Phase 1: Recon\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P1-005: Social media recon | Identify target company's vendors, AP staff, and payment workflows via LinkedIn, corporate websites, SEC filings, press releases | Unusual profile views on AP staff LinkedIn accounts |\n| CFPF-P1-003: Lookalike domain registration | Register domains resembling vendor (e.g., `vendorname-invoices.com`, `vendornarne.com`) | Domain monitoring alerts; CT log entries |\n| CFPF-P1-008: Target list compilation | Build target lists of companies with known vendor relationships from public contract data, supplier directories | N/A (pre-attack) |\n\n### Phase 2: Initial Access\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P2-004: Email phishing | Phish vendor employees to gain access to vendor's email system, or phish target company's AP staff directly | Credential harvesting URLs in emails to vendor employees |\n| CFPF-P2-007: Business email compromise | Gain access to vendor's actual email account, or establish convincing spoofed email infrastructure | Email forwarding rules created in vendor mailbox; authentication from unusual locations |\n\n### Phase 3: Positioning\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P3-007: Email forwarding rule | Create inbox rules in compromised vendor account to monitor invoice-related correspondence and suppress replies from legitimate vendor staff | New forwarding rules to external addresses; rules filtering keywords like \"payment\", \"invoice\", \"wire\" |\n| CFPF-P3-008: Data exfiltration | Harvest invoice templates, payment schedules, contract terms, and AP contact details from compromised email to craft convincing impersonation | Unusual mailbox search activity; bulk email export |\n\n### Phase 4: Execution\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P4-004: Fraudulent invoice submission | Send modified invoice with updated banking details from compromised or spoofed vendor email. Often timed to coincide with legitimate payment cycles. | Banking detail changes on invoices; invoices from slightly different email addresses; urgency language (\"updated bank details effective immediately\") |\n\n### Phase 5: Monetization\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P5-001: Domestic wire to mule | Funds wired to domestic mule accounts, often business accounts opened with fraudulent documentation | Recently opened business accounts receiving large inbound wires |\n| CFPF-P5-002: International wire | Funds wired to foreign accounts, commonly in West Africa, Southeast Asia, or Eastern Europe | Wire destinations to high-risk jurisdictions with no prior relationship |\n\n## Look Left / Look Right\n\n**Discovery Phase**: Typically **P4/P5** — discovered when the legitimate vendor contacts the target about unpaid invoices, sometimes 30-90 days after payment diversion.\n\n**Look Left**: Did the vendor's email account show signs of compromise (unusual login locations, forwarding rules) before the fraudulent invoice? Were there phishing campaigns targeting the vendor's employees in the weeks prior?\n\n**Look Right**: Are there parallel BEC campaigns using the same compromised vendor email against other customers of that vendor? Is the same mule network being used across multiple BEC schemes?\n\n## Controls & Mitigations\n\n| Phase | Control | Type |\n|-------|---------|------|\n| P2 | Implement DMARC/DKIM/SPF enforcement for vendor email validation | Preventive |\n| P3 | Monitor for email forwarding rule creation in M365/Google Workspace | Detective |\n| P4 | Mandatory out-of-band verification (phone call to known number) for any banking detail change on invoices | Preventive |\n| P4 | AP process: flag invoices where beneficiary bank differs from previous payments to same vendor | Detective |\n| P5 | Wire recall procedures within 24-72 hour window | Responsive |\n\n## Detection Approaches\n\n**Splunk — Invoice Banking Detail Change Detection**\n```spl\nindex=ap_system action=\"payment_update\"\n| eval prev_bank=coalesce(previous_routing_number, \"none\")\n| where prev_bank != routing_number AND prev_bank != \"none\"\n| table vendor_name, invoice_id, prev_bank, routing_number, modified_by, _time\n```\n\n**Email — Forwarding Rule Monitoring (M365)**\n```kql\nOfficeActivity\n| where Operation in (\"New-InboxRule\", \"Set-InboxRule\")\n| where Parameters has_any (\"ForwardTo\", \"ForwardAsAttachmentTo\", \"RedirectTo\")\n| project TimeGenerated, UserId, Parameters, ClientIP\n```\n\n## References\n- FBI IC3 2024 Internet Crime Report — BEC losses\n- FinCEN Advisory FIN-2019-A005: \"Advisory on Business Email Compromise\"\n- Abnormal Security: Annual BEC Trends Report\n\n## Revision History\n| Date | Author | Change |\n|------|--------|--------|\n| 2026-02-12 | FLAME Project | Initial submission |",
+  "sectors": [
+    "banking",
+    "cross-sector"
+  ],
+  "fraud_types": [
+    "BEC",
+    "wire-fraud",
+    "invoice-fraud",
+    "payment-diversion"
+  ],
+  "tags": [
+    "vendor-impersonation",
+    "accounts-payable",
+    "email-compromise",
+    "high-value"
+  ],
+  "cfpf_phases": [
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5"
+  ],
+  "mitre_attack": [
+    "T1566.001",
+    "T1534",
+    "T1114.003",
+    "T1657"
+  ],
+  "ft3_tactics": [],
+  "mitre_f3": [],
+  "groupib_stages": []
+}

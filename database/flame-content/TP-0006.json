@@ -1,0 +1,45 @@
+{
+  "id": "TP-0006",
+  "title": "Real Estate Wire Fraud — Closing Scam",
+  "category": "ThreatPath",
+  "date": "2026-02-12",
+  "author": "FLAME Project",
+  "source": "FBI IC3 / American Land Title Association (ALTA) reporting",
+  "tlp": "WHITE",
+  "summary": "Actors compromise email accounts of real estate agents, title companies, attorneys, or mortgage lenders to monitor pending transactions and send fraudulent wire instructions to homebuyers at closing. The scheme exploits the time-sensitive, high-value nature of real estate closings and the expectation that wire instructions will arrive via email. FBI IC3 reports real estate BEC as one of the fastest-growing BEC subcategories, with average losses of $150,000+ (often representing a buyer's entire down payment or full purchase price).",
+  "body": "## Summary\n\nActors compromise email accounts of real estate agents, title companies, attorneys, or mortgage lenders to monitor pending transactions and send fraudulent wire instructions to homebuyers at closing. The scheme exploits the time-sensitive, high-value nature of real estate closings and the expectation that wire instructions will arrive via email. FBI IC3 reports real estate BEC as one of the fastest-growing BEC subcategories, with average losses of $150,000+ (often representing a buyer's entire down payment or full purchase price).\n\n## Threat Path Hypothesis\n\n> **Hypothesis**: Actors are compromising email accounts within the real estate transaction chain (agent, title company, lender, attorney) to monitor pending closings and inject fraudulent wire instructions timed to coincide with legitimate closing fund requests.\n\n**Confidence**: High — extensively documented, FBI PSAs, ALTA industry alerts.\n**Estimated Impact**: $100,000 – $500,000+ per incident (often entire home purchase price).\n\n## CFPF Phase Mapping\n\n### Phase 1: Recon\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P1-005: Real estate transaction monitoring | Identify pending closings from MLS listings (status changes to \"pending/under contract\"), county recorder filings, or compromised email threads | Correlation between listing status changes and phishing campaigns |\n| CFPF-P1-003: Lookalike domain | Register domains resembling title companies or law firms | Domain registrations matching title company names in active transaction areas |\n\n### Phase 2: Initial Access\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P2-004: Email phishing | Target real estate professionals — agents, title officers, closing attorneys — to compromise their email accounts | Phishing campaigns themed around MLS access, e-signature platforms, or title company portals |\n| CFPF-P2-007: BEC | Gain access to an email account within the transaction chain to monitor closing timelines, amounts, and participants | Unusual login locations on real estate professional email accounts; mail forwarding rules |\n\n### Phase 3: Positioning\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P3-007: Email forwarding/filtering | Create inbox rules to monitor keywords like \"closing\", \"wire instructions\", \"escrow\", \"title\" and suppress legitimate wire instruction emails | New rules containing real estate keywords; rules forwarding to external addresses |\n| CFPF-P3-008: Transaction data harvesting | Extract closing details: buyer name, property address, closing date, amount, title company contact, lender details | Mailbox search queries for real estate terms from compromised account |\n| Timing calibration | Monitor email thread to identify exact moment legitimate wire instructions will be sent, then preempt or replace them | N/A (occurs within compromised mailbox) |\n\n### Phase 4: Execution\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| Fraudulent wire instruction injection | Send wire instructions from compromised or spoofed email, often minutes before or instead of legitimate instructions. Instructions direct closing funds to actor-controlled account. | Wire instructions from slightly different email address; instructions differing from previous communications; urgency language; last-minute \"updated\" banking details |\n\n### Phase 5: Monetization\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P5-001: Domestic wire to mule | Closing funds wired to domestic mule account, rapidly redistributed | Large incoming wire to recently opened account; immediate outbound transfers |\n| CFPF-P5-002: International wire | Funds wired directly to overseas accounts | International wire from domestic title/escrow transaction |\n\n## Look Left / Look Right\n\n**Discovery Phase**: **P4/P5** — discovered when title company or buyer realizes funds went to wrong account (sometimes within hours, sometimes days). Recovery success drops dramatically after 48 hours.\n\n**Look Left**: Which email in the transaction chain was compromised? Were there forwarding rules created in the weeks before closing? Was the real estate professional targeted by phishing prior to the transaction?\n\n**Look Right**: Is the same compromised email being used to target other pending transactions? Wire recall — has the receiving bank been notified within the recovery window?\n\n## Controls & Mitigations\n\n| Phase | Control | Type |\n|-------|---------|------|\n| P2 | MFA on all real estate professional email accounts | Preventive |\n| P3 | Real estate firms: monitor for email forwarding rules containing transaction keywords | Detective |\n| P4 | **Mandatory verbal verification** of wire instructions via phone call to known number (not from email) | Preventive |\n| P4 | Title companies: include \"we will NEVER change wire instructions via email\" disclaimer on all communications | Preventive |\n| P4 | Banks: enhanced scrutiny on large incoming wires to newly opened accounts | Detective |\n| P5 | Immediate wire recall protocol — financial institutions should have <2hr response SLA | Responsive |\n\n## Detection Approaches\n\n**Email — Wire Instruction Anomaly (M365 / Google Workspace)**\n```kql\nEmailEvents\n| where Subject has_any (\"wire\", \"closing\", \"escrow\", \"wiring instructions\")\n| extend sender_domain = tostring(split(SenderFromAddress, \"@\")[1])\n| where sender_domain !in (known_title_company_domains)\n| project Timestamp, SenderFromAddress, RecipientEmailAddress, Subject\n```\n\n## References\n- FBI IC3 PSA: \"Real Estate Wire Fraud\"\n- American Land Title Association (ALTA): Wire Fraud Prevention Best Practices\n- CertifID: Real Estate Wire Fraud Report (annual)\n\n## Revision History\n| Date | Author | Change |\n|------|--------|--------|\n| 2026-02-12 | FLAME Project | Initial submission |",
+  "sectors": [
+    "banking",
+    "cross-sector"
+  ],
+  "fraud_types": [
+    "BEC",
+    "wire-fraud",
+    "payment-diversion",
+    "impersonation"
+  ],
+  "tags": [
+    "real-estate",
+    "title-company",
+    "escrow",
+    "closing-funds",
+    "high-value",
+    "time-sensitive"
+  ],
+  "cfpf_phases": [
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5"
+  ],
+  "mitre_attack": [
+    "T1566.001",
+    "T1114.003",
+    "T1534",
+    "T1657"
+  ],
+  "ft3_tactics": [],
+  "mitre_f3": [],
+  "groupib_stages": []
+}

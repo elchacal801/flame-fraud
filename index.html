@@ -1,176 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FLAME -- Fraud Lifecycle Analysis &amp; Mitigation Exchange</title>
-    <meta name="description"
-        content="Open-source platform for sharing structured fraud detection intelligence across CFPF, FT3, MITRE ATT&CK, and Group-IB Fraud Matrix frameworks.">
-
-    <!-- Fonts -->
+    <title>FLAME — Fraud Lifecycle Analysis & Mitigation Exchange</title>
+    <meta name="description" content="FLAME is an open-source, community-driven platform for structured fraud detection intelligence. Browse threat paths mapped across CFPF, MITRE ATT&CK, Group-IB Fraud Matrix, and more.">
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet">
-
-    <!-- Marked.js for markdown rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
+
+    <!-- ================================================================ -->
+    <!-- Header                                                           -->
+    <!-- ================================================================ -->
+    <header class="site-header" id="site-header">
+        <div class="header-inner">
             <div class="header-brand">
-                <h1>FLAME</h1>
-                <span class="subtitle">Fraud Lifecycle Analysis &amp; Mitigation Exchange</span>
+                <h1 class="logo">
+                    <span class="logo-icon">🔥</span>
+                    <span class="logo-text">FLAME</span>
+                </h1>
+                <p class="tagline">Fraud Lifecycle Analysis &amp; Mitigation Exchange</p>
             </div>
-            <div class="header-nav">
-                <div class="header-stats">
-                    <span><span class="stat-value" id="stat-total">--</span> threat paths</span>
-                    <span><span class="stat-value" id="stat-fraud-types">--</span> fraud types</span>
-                    <span><span class="stat-value" id="stat-sectors">--</span> sectors</span>
+            <div class="header-stats" id="header-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-total">—</span>
+                    <span class="stat-label">Threat Paths</span>
                 </div>
-                <div class="header-links">
-                    <button class="header-link" id="about-btn" title="About FLAME">About</button>
-                    <a class="header-link" href="https://github.com/elchacal801/flame-fraud" target="_blank"
-                        rel="noopener noreferrer" title="View on GitHub">
-                        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
-                            <path
-                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-                        </svg>
-                        GitHub
-                    </a>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-fraud-types">—</span>
+                    <span class="stat-label">Fraud Types</span>
                 </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-sectors">—</span>
+                    <span class="stat-label">Sectors</span>
+                </div>
+                <button class="heat-map-btn" id="heat-map-btn" title="Coverage Heat Map">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                    </svg>
+                </button>
             </div>
-        </header>
+            <div class="header-actions">
+                <button class="about-btn" id="about-btn">About</button>
+                <a href="https://github.com/elchacal801/flame-fraud" class="github-link" target="_blank" rel="noopener">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
 
-        <!-- Main content -->
-        <div class="main-content">
-            <!-- Sidebar: search, filters, list -->
-            <aside class="sidebar">
+    <!-- ================================================================ -->
+    <!-- Main Layout                                                      -->
+    <!-- ================================================================ -->
+    <main class="app-layout" id="app-layout">
+
+        <!-- Filter Sidebar -->
+        <aside class="filter-panel" id="filter-panel">
+            <div class="filter-panel-inner">
                 <!-- Search -->
-                <div class="search-container">
-                    <input type="text" id="search-input" class="search-input" placeholder="Search threat paths..."
-                        autocomplete="off">
+                <div class="search-box">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="Search threat paths..." autocomplete="off">
                 </div>
 
-                <!-- Filters: CFPF Phases -->
-                <div class="filter-section">
-                    <h3>CFPF Phases</h3>
-                    <div class="filter-group" id="filter-phases">
-                        <button class="filter-chip" data-phase="P1" data-filter="cfpf_phases" data-value="P1">P1
-                            Recon</button>
-                        <button class="filter-chip" data-phase="P2" data-filter="cfpf_phases" data-value="P2">P2 Initial
-                            Access</button>
-                        <button class="filter-chip" data-phase="P3" data-filter="cfpf_phases" data-value="P3">P3
-                            Positioning</button>
-                        <button class="filter-chip" data-phase="P4" data-filter="cfpf_phases" data-value="P4">P4
-                            Execution</button>
-                        <button class="filter-chip" data-phase="P5" data-filter="cfpf_phases" data-value="P5">P5
-                            Monetization</button>
-                    </div>
+                <!-- Active Filters Bar -->
+                <div class="filter-actions" id="filter-actions" style="display:none;">
+                    <button class="clear-filters-btn" id="clear-filters-btn">
+                        Clear all <span class="filter-count" id="filter-count">0</span>
+                    </button>
                 </div>
 
-                <!-- Filters: Sectors -->
-                <div class="filter-section">
-                    <h3>Sectors</h3>
-                    <div class="filter-group" id="filter-sectors"></div>
+                <!-- CFPF Phases -->
+                <div class="filter-group">
+                    <h3 class="filter-group-title">CFPF Phases</h3>
+                    <div class="filter-chips" id="filter-cfpf-phases"></div>
                 </div>
 
-                <!-- Filters: Fraud Types -->
-                <div class="filter-section">
-                    <h3>Fraud Types</h3>
-                    <div class="filter-group" id="filter-fraud-types"></div>
+                <!-- Sectors -->
+                <div class="filter-group">
+                    <h3 class="filter-group-title">Sectors</h3>
+                    <div class="filter-chips" id="filter-sectors"></div>
                 </div>
 
-                <!-- Results count -->
+                <!-- Fraud Types -->
+                <div class="filter-group">
+                    <h3 class="filter-group-title">Fraud Types</h3>
+                    <div class="filter-chips" id="filter-fraud-types"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Filter Toggle -->
+        <button class="filter-toggle" id="filter-toggle" aria-label="Toggle filters">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/>
+            </svg>
+            <span class="filter-toggle-count" id="filter-toggle-count" style="display:none;">0</span>
+        </button>
+
+        <!-- Content Area -->
+        <div class="content-area" id="content-area">
+
+            <!-- Browse View (card grid) -->
+            <div class="browse-view" id="browse-view">
                 <div class="results-bar" id="results-bar">Loading...</div>
+                <div class="card-grid" id="card-grid"></div>
+            </div>
 
-                <!-- Submission list -->
-                <div class="submission-list" id="submission-list">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        Loading threat paths...
-                    </div>
+            <!-- Detail View -->
+            <div class="detail-view" id="detail-view" style="display:none;">
+                <a href="#browse" class="back-link" id="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/>
+                    </svg>
+                    All Threat Paths
+                </a>
+                <div class="detail-content" id="detail-content">
+                    <!-- Populated by JS -->
                 </div>
-            </aside>
+            </div>
 
-            <!-- Content area: detail view -->
-            <main class="content-area" id="content-area">
-                <div class="detail-empty" id="detail-empty">
-                    <h2>FLAME Threat Path Database</h2>
-                    <p>
-                        Select a threat path from the list to view its full analysis,
-                        CFPF phase mapping, detection approaches, and cross-framework taxonomy references.
-                    </p>
-                </div>
-                <div id="detail-view" style="display: none;"></div>
-            </main>
+        </div>
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- Heat Map Modal                                                   -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="heat-map-modal" style="display:none;">
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h2>Coverage Heat Map</h2>
+                <button class="modal-close" id="heat-map-close">&times;</button>
+            </div>
+            <div class="modal-body" id="heat-map-body">
+                <!-- Populated by JS -->
+            </div>
         </div>
     </div>
 
-    <!-- About Modal -->
-    <div class="modal-overlay" id="about-modal">
-        <div class="modal">
+    <!-- ================================================================ -->
+    <!-- About Modal                                                      -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="about-modal" style="display:none;">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2>About FLAME</h2>
-                <button class="modal-close" id="about-close" title="Close">&times;</button>
+                <button class="modal-close" id="about-close">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="modal-lead">
-                    Everyone built the dictionary. Nobody built the library.
-                </p>
-                <p>
-                    Between 2025 and 2026, five organizations independently concluded that fraud needs
-                    structured taxonomy frameworks. Stripe published FT3 (then abandoned it). MITRE
-                    announced F3 (still hasn't shipped). Group-IB released Fraud Matrix 2.0 (commercially
-                    gated). FS-ISAC assembled 300+ members for the Cyber Fraud Prevention Framework.
-                </p>
-                <p>
-                    The taxonomy layer is converging. The community knowledge exchange layer remains
-                    entirely unserved in open source.
-                </p>
-                <p>
-                    <strong>FLAME fills that gap.</strong> It is an open-source, community-driven platform
-                    for sharing structured fraud detection intelligence. Each submission maps simultaneously
-                    to multiple fraud taxonomies -- CFPF, MITRE ATT&amp;CK, Group-IB Fraud Matrix, Stripe FT3,
-                    and MITRE F3 -- so practitioners can use whichever framework their organization adopted.
-                </p>
-                <p>
-                    FLAME is not a taxonomy project. It is a knowledge exchange that sits on top of existing
-                    taxonomies, providing the operational intelligence -- threat paths, detection queries,
-                    investigation playbooks, and cross-team correlation guidance -- that no taxonomy alone delivers.
-                </p>
+                <p><strong>FLAME</strong> (Fraud Lifecycle Analysis &amp; Mitigation Exchange) is an open-source, community-driven platform for sharing structured fraud detection intelligence.</p>
+                <p>Each threat path maps fraud schemes across the <strong>FS-ISAC Cyber Fraud Prevention Framework (CFPF)</strong> five-phase lifecycle, with cross-references to MITRE ATT&amp;CK, Group-IB Fraud Matrix 2.0, and Stripe FT3.</p>
                 <h3>How It Works</h3>
                 <ul>
-                    <li><strong>Markdown-first:</strong> Threat paths are authored as structured markdown files.
-                        Markdown is the source of truth.</li>
-                    <li><strong>Framework-agnostic:</strong> Every submission maps across CFPF, MITRE ATT&amp;CK,
-                        Group-IB, FT3, and F3.</li>
-                    <li><strong>Community-driven:</strong> Submit threat paths via pull request, issue template, or
-                        AI-assisted intake from any URL.</li>
-                    <li><strong>Static and open:</strong> No backend, no accounts. Just a static frontend served via
-                        GitHub Pages.</li>
+                    <li><strong>Markdown-first</strong> — Human-readable, Git-versioned source of truth</li>
+                    <li><strong>Framework-agnostic</strong> — Map to any fraud taxonomy</li>
+                    <li><strong>AI-assisted intake</strong> — Submit a URL, get a structured threat path</li>
+                    <li><strong>Community-contributed</strong> — PRs welcome</li>
                 </ul>
-                <h3>Contribute</h3>
-                <p>
-                    FLAME grows through community contribution. If you have fraud intelligence to share,
-                    visit the <a href="https://github.com/elchacal801/flame-fraud" target="_blank"
-                        rel="noopener noreferrer">GitHub repository</a>
-                    and review the contributing guidelines.
-                </p>
+                <h3>License</h3>
+                <p>MIT License. Built by practitioners, for practitioners.</p>
+                <p><a href="https://github.com/elchacal801/flame-fraud" target="_blank" rel="noopener">View on GitHub →</a></p>
             </div>
         </div>
     </div>
 
+    <!-- ================================================================ -->
+    <!-- Footer                                                           -->
+    <!-- ================================================================ -->
+    <footer class="site-footer">
+        <p>FLAME Project · <a href="https://github.com/elchacal801/flame-fraud" target="_blank" rel="noopener">GitHub</a> · MIT License · © 2026</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="flame-data.js"></script>
     <script src="app.js"></script>
 </body>
-
 </html>

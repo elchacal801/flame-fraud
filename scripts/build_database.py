@@ -324,6 +324,143 @@ def _fetch_list(conn: sqlite3.Connection, table: str, col: str, sub_id: str) -> 
     return [r[0] for r in rows]
 
 
+def _build_full_entry(conn: sqlite3.Connection, entry: dict) -> dict:
+    """Attach all multi-value lists to a submission entry dict."""
+    sub_id = entry["id"]
+    entry["sectors"] = _fetch_list(conn, "submission_sectors", "sector", sub_id)
+    entry["fraud_types"] = _fetch_list(conn, "submission_fraud_types", "fraud_type", sub_id)
+    entry["tags"] = _fetch_list(conn, "submission_tags", "tag", sub_id)
+    entry["cfpf_phases"] = _fetch_list(conn, "submission_cfpf_phases", "phase", sub_id)
+    entry["mitre_attack"] = _fetch_list(conn, "submission_mitre_attack", "technique_id", sub_id)
+    entry["ft3_tactics"] = _fetch_list(conn, "submission_ft3_tactics", "tactic_id", sub_id)
+    entry["mitre_f3"] = _fetch_list(conn, "submission_mitre_f3", "technique_id", sub_id)
+    entry["groupib_stages"] = _fetch_list(conn, "submission_groupib_stages", "stage", sub_id)
+    return entry
+
+
+def export_index_json(conn: sqlite3.Connection, output_path: Path):
+    """Export metadata-only index for fast frontend initial load."""
+    cursor = conn.execute("SELECT * FROM submissions ORDER BY id")
+    columns = [desc[0] for desc in cursor.description]
+    index_entries = []
+
+    for row in cursor.fetchall():
+        entry = dict(zip(columns, row))
+        entry = _build_full_entry(conn, entry)
+
+        # Truncate summary for index (first 200 chars)
+        full_summary = entry.get("summary", "")
+        entry["summary"] = full_summary[:200] + ("..." if len(full_summary) > 200 else "")
+
+        # Remove body — not needed for browse view
+        entry.pop("body", None)
+        # Remove file_path — internal only
+        entry.pop("file_path", None)
+
+        index_entries.append(entry)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(index_entries, indent=2, ensure_ascii=False),
+        encoding="utf-8"
+    )
+    return len(index_entries)
+
+
+def export_content_files(conn: sqlite3.Connection, output_dir: Path):
+    """Export individual TP-XXXX.json files for lazy loading."""
+    cursor = conn.execute("SELECT * FROM submissions ORDER BY id")
+    columns = [desc[0] for desc in cursor.description]
+    count = 0
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    for row in cursor.fetchall():
+        entry = dict(zip(columns, row))
+        entry = _build_full_entry(conn, entry)
+
+        # Remove file_path — internal only
+        entry.pop("file_path", None)
+
+        sub_id = entry["id"]
+        filepath = output_dir / f"{sub_id}.json"
+        filepath.write_text(
+            json.dumps(entry, indent=2, ensure_ascii=False),
+            encoding="utf-8"
+        )
+        count += 1
+
+    return count
+
+
+def export_stats_json(conn: sqlite3.Connection, output_path: Path):
+    """Export pre-computed aggregate statistics."""
+    total = conn.execute("SELECT COUNT(*) FROM submissions").fetchone()[0]
+
+    fraud_types = conn.execute(
+        "SELECT DISTINCT fraud_type FROM submission_fraud_types ORDER BY fraud_type"
+    ).fetchall()
+    fraud_type_list = [r[0] for r in fraud_types]
+
+    sectors = conn.execute(
+        "SELECT DISTINCT sector FROM submission_sectors ORDER BY sector"
+    ).fetchall()
+    sector_list = [r[0] for r in sectors]
+
+    tags = conn.execute(
+        "SELECT tag, COUNT(*) as cnt FROM submission_tags GROUP BY tag ORDER BY cnt DESC"
+    ).fetchall()
+    top_tags = [{"tag": r[0], "count": r[1]} for r in tags[:20]]
+
+    # CFPF phase coverage: count of TPs per phase
+    phases = conn.execute(
+        "SELECT phase, COUNT(*) as cnt FROM submission_cfpf_phases GROUP BY phase ORDER BY phase"
+    ).fetchall()
+    phase_coverage = {r[0]: r[1] for r in phases}
+
+    # Coverage matrix: fraud_type × phase
+    coverage_matrix = []
+    for ft in fraud_type_list:
+        # Find all TPs with this fraud type
+        tp_rows = conn.execute(
+            "SELECT submission_id FROM submission_fraud_types WHERE fraud_type = ?",
+            (ft,)
+        ).fetchall()
+        tp_ids = [r[0] for r in tp_rows]
+        phases_for_ft = {}
+        for tp_id in tp_ids:
+            tp_phases = conn.execute(
+                "SELECT phase FROM submission_cfpf_phases WHERE submission_id = ?",
+                (tp_id,)
+            ).fetchall()
+            for p in tp_phases:
+                phases_for_ft[p[0]] = phases_for_ft.get(p[0], 0) + 1
+        coverage_matrix.append({
+            "fraud_type": ft,
+            "phases": phases_for_ft,
+            "total_tps": len(tp_ids)
+        })
+
+    stats = {
+        "total": total,
+        "fraudTypes": len(fraud_type_list),
+        "fraudTypeList": fraud_type_list,
+        "sectors": len(sector_list),
+        "sectorList": sector_list,
+        "phaseCoverage": phase_coverage,
+        "topTags": top_tags,
+        "coverageMatrix": coverage_matrix,
+        "generatedAt": str(Path(__file__).stat().st_mtime),
+    }
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(stats, indent=2, ensure_ascii=False),
+        encoding="utf-8"
+    )
+    return stats
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -392,10 +529,23 @@ def main():
 
     conn.commit()
 
-    # Export JSON
+    # Export JSON (legacy — backward compatibility)
     json_path = root / "database" / "flame-data.json"
     count = export_json(conn, json_path)
-    log.info("Exported %d submissions to %s", count, json_path)
+    log.info("Exported %d submissions to %s (legacy)", count, json_path)
+
+    # Export v2 data files
+    index_path = root / "database" / "flame-index.json"
+    idx_count = export_index_json(conn, index_path)
+    log.info("Exported %d submissions to %s (index)", idx_count, index_path)
+
+    content_dir = root / "database" / "flame-content"
+    ct_count = export_content_files(conn, content_dir)
+    log.info("Exported %d content files to %s", ct_count, content_dir)
+
+    stats_path = root / "database" / "flame-stats.json"
+    stats = export_stats_json(conn, stats_path)
+    log.info("Exported stats to %s (total=%d)", stats_path, stats["total"])
 
     conn.close()
 
