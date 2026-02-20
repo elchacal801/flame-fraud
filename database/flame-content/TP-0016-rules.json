@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0016",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT \n    c.customer_id, \n    c.account_id, \n    c.credit_limit, \n    SUM(t.amount) as total_drawn,\n    (SUM(t.amount) / c.credit_limit) as utilization_ratio\nFROM credit_accounts c\nJOIN transactions t ON c.account_id = t.account_id\nWHERE t.transaction_date >= CURRENT_DATE - INTERVAL '3 days'\nGROUP BY 1, 2, 3\nHAVING SUM(t.amount) / c.credit_limit > 0.85 \n   AND c.account_age_days > 180 -- Established accounts\n   AND c.historical_avg_utilization < 0.30; -- Previously low-balance",
+      "title": "SQL — Rapid Utilization Spike (Bust-Out Indicator)"
+    }
+  ]
+}

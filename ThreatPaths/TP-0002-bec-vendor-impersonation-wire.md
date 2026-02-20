@@ -21,7 +21,14 @@ cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1566.001, T1534, T1114.003, T1657]
 ft3_tactics: []                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
-groupib_stages: []               # Group-IB Fraud Matrix (reference)
+groupib_stages:
+  - "Reconnaissance"
+  - "Resource Development"
+  - "Trust Abuse"
+  - "Account Access"
+  - "Perform Fraud"
+  - "Monetization"
+  - "Laundering"
 tags:
   - vendor-impersonation
   - accounts-payable
@@ -44,6 +51,7 @@ Threat actors compromise or spoof vendor email accounts, then impersonate the ve
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P1-005: Social media recon | Identify target company's vendors, AP staff, and payment workflows via LinkedIn, corporate websites, SEC filings, press releases | Unusual profile views on AP staff LinkedIn accounts |
@@ -51,23 +59,27 @@ Threat actors compromise or spoof vendor email accounts, then impersonate the ve
 | CFPF-P1-008: Target list compilation | Build target lists of companies with known vendor relationships from public contract data, supplier directories | N/A (pre-attack) |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-004: Email phishing | Phish vendor employees to gain access to vendor's email system, or phish target company's AP staff directly | Credential harvesting URLs in emails to vendor employees |
 | CFPF-P2-007: Business email compromise | Gain access to vendor's actual email account, or establish convincing spoofed email infrastructure | Email forwarding rules created in vendor mailbox; authentication from unusual locations |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P3-007: Email forwarding rule | Create inbox rules in compromised vendor account to monitor invoice-related correspondence and suppress replies from legitimate vendor staff | New forwarding rules to external addresses; rules filtering keywords like "payment", "invoice", "wire" |
 | CFPF-P3-008: Data exfiltration | Harvest invoice templates, payment schedules, contract terms, and AP contact details from compromised email to craft convincing impersonation | Unusual mailbox search activity; bulk email export |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P4-004: Fraudulent invoice submission | Send modified invoice with updated banking details from compromised or spoofed vendor email. Often timed to coincide with legitimate payment cycles. | Banking detail changes on invoices; invoices from slightly different email addresses; urgency language ("updated bank details effective immediately") |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P5-001: Domestic wire to mule | Funds wired to domestic mule accounts, often business accounts opened with fraudulent documentation | Recently opened business accounts receiving large inbound wires |
@@ -94,6 +106,7 @@ Threat actors compromise or spoof vendor email accounts, then impersonate the ve
 ## Detection Approaches
 
 **Splunk — Invoice Banking Detail Change Detection**
+
 ```spl
 index=ap_system action="payment_update"
 | eval prev_bank=coalesce(previous_routing_number, "none")
@@ -102,6 +115,7 @@ index=ap_system action="payment_update"
 ```
 
 **Email — Forwarding Rule Monitoring (M365)**
+
 ```kql
 OfficeActivity
 | where Operation in ("New-InboxRule", "Set-InboxRule")
@@ -110,11 +124,13 @@ OfficeActivity
 ```
 
 ## References
+
 - FBI IC3 2024 Internet Crime Report — BEC losses
 - FinCEN Advisory FIN-2019-A005: "Advisory on Business Email Compromise"
 - Abnormal Security: Annual BEC Trends Report
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

@@ -1,0 +1,17 @@
+name: Generate New Threat Path
+description: Submit a URL to automatically generate a FLAME threat path using AI
+title: "[TP Request] "
+labels: ["enhancement", "ai-generation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a URL to a news article, DOJ press release, or threat intelligence report. The FLAME AI ingestion script will read the article and automatically generate a draft Threat Path.
+  - type: input
+    id: source_url
+    attributes:
+      label: Source URL
+      description: The URL containing the threat intelligence to build a path from.
+      placeholder: "https://www.justice.gov/usao-..."
+    validations:
+      required: true

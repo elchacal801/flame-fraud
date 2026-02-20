@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0015",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT d.domain_name, d.creation_date, d.registrar\nFROM recently_registered_domains d\nJOIN mx_records m ON d.domain_id = m.domain_id\nJOIN ssl_certificates s ON d.domain_id = s.domain_id\nWHERE d.domain_name SIMILAR TO '%(health|staffing|rightathome)%'\nAND d.creation_date >= CURRENT_DATE - INTERVAL '90 days'\nAND d.hosting_provider IN ('Hostinger', 'GoDaddy', 'OVH')\nAND m.mx_domain != d.domain_name\nAND s.issuer = 'Let''s Encrypt'\nAND DATEDIFF('day', d.creation_date, s.issue_date) <= 3;",
+      "title": "Domain-Based Detection"
+    }
+  ]
+}

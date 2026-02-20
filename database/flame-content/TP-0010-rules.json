@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0010",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT c.claim_id, c.claimant_id, c.provider_id, c.claim_amount\nFROM claims c\nJOIN policies p ON c.policy_id = p.policy_id\nJOIN providers prov ON c.provider_id = prov.provider_id\nWHERE DATEDIFF('day', p.effective_date, c.filing_date) <= 90\nAND prov.risk_tier = 'High'\nAND c.claim_amount > (\n    SELECT PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY claim_amount) FROM claims\n);",
+      "title": "Predictive Model — Claim Risk Scoring"
+    }
+  ]
+}

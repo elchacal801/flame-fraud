@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0008",
+  "rules": [
+    {
+      "type": "sigma",
+      "content": "title: New Device Login After SIM Swap\nstatus: experimental\ndescription: Detects a new device login following a recently detected SIM and MFA change.\nlogsource:\n    category: application\n    product: exchange_platform\ndetection:\n    selection_login:\n        EventName: 'UserLogin'\n        DeviceIsNew: true\n    selection_mfa:\n        EventName: 'MFAMethodChanged'\n    selection_contact:\n        EventName: 'ContactInfoChanged'\n    selection_withdraw:\n        EventName: 'CryptoWithdrawal'\n        AddressIsNew: true\n    timeframe: 24h\n    condition: selection_login and selection_mfa and selection_contact and selection_withdraw",
+      "title": "Exchange-Side — SIM Swap Indicator Correlation"
+    }
+  ]
+}

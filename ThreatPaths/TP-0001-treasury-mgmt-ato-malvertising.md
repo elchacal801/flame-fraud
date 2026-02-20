@@ -227,7 +227,7 @@ tags:
 
 ---
 
-## Case Studies & References
+## References
 
 - **FS-ISAC Cyber Fraud Prevention Framework (2025)**: Primary source. Treasury management ATO case study appears on pages 8-9, documenting the cross-functional investigation that traced malvertising → vishing → ATO → wire fraud chain. Reports ~10 attacks/day, six-to-seven-figure losses, and 8-month prevention after addressing malvertising. [PDF](https://www.fsisac.com/hubfs/Knowledge/Fraud/CyberFraudPreventionFramework.pdf)
 

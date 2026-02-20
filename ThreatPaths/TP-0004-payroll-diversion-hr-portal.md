@@ -20,7 +20,13 @@ cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1566.001, T1078, T1657]
 ft3_tactics: []                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
-groupib_stages: []               # Group-IB Fraud Matrix (reference)
+groupib_stages:
+  - "Reconnaissance"
+  - "Resource Development"
+  - "Trust Abuse"
+  - "Account Access"
+  - "Perform Fraud"
+  - "Monetization"
 tags:
   - HR-portal
   - direct-deposit
@@ -43,18 +49,21 @@ Actors compromise employee self-service HR portals (Workday, ADP, UKG, etc.) to 
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P1-005: Social media recon | Identify target organization's HR portal vendor (often visible on employee LinkedIn profiles or corporate job postings) | N/A |
 | CFPF-P1-003: Lookalike domain | Register domains mimicking HR portal login pages (e.g., `workday-login-[company].com`) | Domain registrations containing HR vendor names + target company |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-004: Email phishing | Send phishing emails impersonating HR department — "Update your direct deposit for tax season" / "Verify your benefits enrollment" / "Action required: payroll system migration" | Phishing emails referencing HR portal by name; credential harvesting pages mimicking specific HR vendor |
 | CFPF-P2-005: Credential stuffing | Use breached credentials to access HR portals (many employees reuse personal passwords for corporate self-service) | Failed login spikes on HR portal; successful logins from anomalous locations |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Direct deposit modification | Change bank routing and account number for direct deposit to actor-controlled account | Deposit changes from new IPs/devices; changes outside enrollment windows; multiple employees changing deposits in short period |
@@ -62,11 +71,13 @@ Actors compromise employee self-service HR portals (Workday, ADP, UKG, etc.) to 
 | Tax form harvesting | Download W-2s, pay stubs, or tax documents for identity theft (secondary objective) | Document downloads from unusual sessions |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P4-005: Payroll diversion | Next payroll cycle processes with modified direct deposit info, sending employee's pay to actor's account | ACH credits to newly specified account; deposit to account with no prior relationship to employee |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P5-005: Prepaid card loading | Funds deposited to prepaid debit cards, rapidly withdrawn or spent | Payroll ACH deposits to prepaid card programs |
@@ -93,6 +104,7 @@ Actors compromise employee self-service HR portals (Workday, ADP, UKG, etc.) to 
 ## Detection Approaches
 
 **Sigma — Multiple Direct Deposit Changes from Anomalous Source**
+
 ```yaml
 title: HR Portal - Bulk Direct Deposit Modifications
 status: experimental
@@ -111,11 +123,13 @@ tags:
 ```
 
 ## References
+
 - FBI IC3 PSA I-091819-PSA: "Cybercriminals Use Social Engineering and Technical Attacks to Circumvent Multi-Factor Authentication"
 - FBI IC3 PSA: "Business Email Compromise: Payroll Diversion"
 - KnowBe4: Payroll Diversion Phishing Trends
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

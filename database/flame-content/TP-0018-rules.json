@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0018",
+  "rules": [
+    {
+      "type": "spl",
+      "content": "index=onboarding action=\"document_verification\"\n| stats count dc(applicant_name) as distinct_names sum(eval(status=\"rejected_ai_suspected\")) as deepfake_rejects by device_fingerprint, source_ip\n| where count > 3 AND distinct_names > 2\n| table device_fingerprint, source_ip, count, distinct_names, deepfake_rejects\n| sort - deepfake_rejects",
+      "title": "Splunk — Detecting Shared Device Fingerprints Across Multiple AI Onboarding Attempts"
+    }
+  ]
+}

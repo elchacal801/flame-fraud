@@ -19,7 +19,12 @@ cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: []
 ft3_tactics: []                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
-groupib_stages: []               # Group-IB Fraud Matrix (reference)
+groupib_stages:
+  - "Reconnaissance"
+  - "Resource Development"
+  - "Trust Abuse"
+  - "Perform Fraud"
+  - "Monetization"
 tags:
   - disability
   - group-benefits
@@ -44,6 +49,7 @@ Actors file fraudulent long-term or short-term disability claims using fabricate
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Policy benefit analysis | Identify employers with generous disability coverage, understand elimination periods, benefit formulas, and definition of disability provisions | Targeted applications to employers with rich benefits; inquiries about disability policy details during onboarding |
@@ -51,12 +57,14 @@ Actors file fraudulent long-term or short-term disability claims using fabricate
 | Occupational targeting | Target occupations where disability is harder to objectively verify — subjective conditions (chronic pain, mental health, fatigue syndromes) in sedentary occupations | Claim concentration in specific subjective diagnosis categories |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Claim filing | Submit disability claim with supporting medical documentation from treating provider. Initial filing often cites acute event (injury, surgery) but transitions to chronic subjective condition. | Claim filed shortly after policy effective date; claim diagnosis difficult to objectively verify; initial documentation unusually thorough (suggests pre-preparation) |
 | CFPF-P2-009: Insider access (variant) | In some schemes, HR or benefits administrators collude to file claims on behalf of fictitious employees or to backdate coverage | Claims from employees with minimal employment history; claims coinciding with recent enrollment |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Documentation chain construction | Build a medical record trail supporting ongoing disability — regular office visits, imaging, referrals — creating a paper trail that's difficult to challenge | Unusually consistent documentation cadence; provider notes that read as template-driven; diagnoses that escalate in severity timed to elimination period end |
@@ -64,12 +72,14 @@ Actors file fraudulent long-term or short-term disability claims using fabricate
 | Physician shopping | Obtain supporting documentation from multiple providers to strengthen claim and counter IME (Independent Medical Exam) findings | Multiple providers for same condition; provider changes when existing provider offers improving prognosis |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P4-006: Fraudulent insurance claim | Carrier approves claim based on medical documentation; benefit payments begin after elimination period. Claimant continues to provide periodic certification of ongoing disability. | Monthly/quarterly benefit payments to claimant; periodic recertification accepted based on ongoing provider documentation |
 | Benefit stacking | File disability claims across multiple carriers simultaneously (employer group + individual policy + Social Security Disability) | SIU cross-referencing reveals claims at multiple carriers; SSDI award concurrent with private disability claim |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Direct benefit payment | Monthly disability benefit payments deposited to claimant's account — payments continue as long as claim remains approved | Ongoing monthly payments; claimant lifestyle inconsistent with stated level of disability |
@@ -98,21 +108,21 @@ Actors file fraudulent long-term or short-term disability claims using fabricate
 ## Detection Approaches
 
 **Predictive Model — Claim Risk Scoring**
-```
-Features for fraud scoring model:
-  - Days from policy effective date to claim filing
-  - Diagnosis category (subjective vs. objective)
-  - Provider claim volume and approval rate vs. peers
-  - Claimant employment tenure
-  - Documentation completeness at initial filing (paradoxically, overly complete docs are a flag)
-  - Number of provider changes during claim
-  - Claim duration vs. diagnosis-specific benchmarks
-  - Concurrent claims at index bureaus
-  
-Flag claims scoring above threshold for SIU referral
+
+```sql
+SELECT c.claim_id, c.claimant_id, c.provider_id, c.claim_amount
+FROM claims c
+JOIN policies p ON c.policy_id = p.policy_id
+JOIN providers prov ON c.provider_id = prov.provider_id
+WHERE DATEDIFF('day', p.effective_date, c.filing_date) <= 90
+AND prov.risk_tier = 'High'
+AND c.claim_amount > (
+    SELECT PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY claim_amount) FROM claims
+);
 ```
 
 **Graph Analytics — Provider Ring Detection**
+
 ```
 Build provider-claimant graph:
   - Nodes: providers and claimants
@@ -133,12 +143,14 @@ This threat path is uniquely relevant to Unum's business as a leading disability
 **Cross-functional opportunity**: Claims adjusters see Phases 3-5. SIU sees Phase 4 investigation findings. Cybersecurity could contribute by monitoring for data breaches that expose policyholder information (enabling targeted claim fraud) and for AI-generated document detection.
 
 ## References
+
 - DOJ: Various disability fraud prosecution press releases
 - Coalition Against Insurance Fraud: annual reports
 - NICB: Insurance Fraud Reporting
 - Unum Group / industry: Claims fraud detection best practices
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

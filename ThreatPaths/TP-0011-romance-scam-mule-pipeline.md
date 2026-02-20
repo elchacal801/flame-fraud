@@ -51,12 +51,14 @@ Actors operating from organized scam compounds (primarily Southeast Asia) cultiv
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Victim profiling | Identify targets on dating apps (Tinder, Bumble, Hinge), social media (Facebook, Instagram), and messaging platforms. Target demographics: lonely, recently divorced/widowed, elderly, financially stable. | Fake profile creation at scale on dating platforms; profiles using stolen photos |
 | Fake persona creation | Build convincing fake identities — attractive photos (often stolen from social media), fabricated backstories (military, oil rig worker, overseas doctor) | Reverse image search matches to stolen photos; profiles with limited connection history |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-002: Social engineering (long-game) | Initiate contact, build relationship over weeks-months. Move conversation from dating platform to private messaging (WhatsApp, Telegram). Establish emotional dependency. | Communication pattern: rapid escalation from platform to private messaging; refusal to video call or meet in person |
@@ -65,24 +67,28 @@ Actors operating from organized scam compounds (primarily Southeast Asia) cultiv
 ### Phase 3: Positioning
 
 **Track A: Direct Scam**
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Crisis fabrication | Introduce urgent financial need — medical emergency, legal trouble, business opportunity, customs fees | Requests for money framed as temporary/emergency |
 | Investment platform introduction (pig butchering) | Introduce victim to fake crypto investment platform that shows fabricated returns, encouraging larger and larger deposits | Victim sending funds to unregistered exchange addresses; victim accessing unfamiliar trading platforms |
 
 **Track B: Mule Recruitment**
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Financial favor requests | Ask victim to receive and forward money as a "favor" — "My business account is frozen, can you receive this payment for me?" | Victim's account receiving large inbound wires from unknown sources |
 | Job scam overlay | Offer victim a "work from home" job as a "payment processor" or "financial assistant" | Victim opens new bank accounts; victim advertising for payment processing jobs |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | **Track A**: Direct fund extraction | Victim sends money via wire, crypto, gift cards, or P2P payments to actor. Pig butchering variant: victim deposits to fake exchange, withdrawals blocked, then "tax" or "fee" demanded. | Wires to unknown overseas recipients; crypto to unregistered exchanges; gift card purchases at unusual volumes |
 | **Track B**: Mule account usage | Victim's bank account used to receive and forward funds from other fraud schemes (BEC wires, check deposits, ATO proceeds). Victim believes they're doing a favor for their partner. | Account receiving and forwarding funds from multiple unrelated sources; rapid inbound-outbound transaction patterns |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P5-002: International wire | Victim wires directly to overseas accounts or forwards received funds internationally | Wires to Southeast Asia, West Africa, or crypto-friendly jurisdictions |
@@ -146,15 +152,26 @@ A novel technique documented by Group-IB: Victim A is manipulated into sending m
 ## Detection Approaches
 
 **Mule Account Behavioral Pattern**
-```
-Flag accounts where within rolling 30-day window:
-  - Inbound transactions from 3+ unrelated sources AND
-  - Outbound transfers within 48hrs of each inbound AND
-  - Outbound destinations are international wires, crypto, or P2P AND
-  - Account holder demographics don't match expected payment processor profile
+
+```sql
+SELECT account_id
+FROM transactions
+WHERE transaction_type = 'INBOUND'
+AND timestamp >= CURRENT_DATE - INTERVAL '30 days'
+GROUP BY account_id
+HAVING COUNT(DISTINCT sender_id) >= 3
+AND EXISTS (
+    SELECT 1 FROM transactions t_out
+    WHERE t_out.account_id = transactions.account_id
+    AND t_out.transaction_type = 'OUTBOUND'
+    AND t_out.destination_type IN ('INTERNATIONAL_WIRE', 'CRYPTO', 'P2P')
+    AND t_out.timestamp >= transactions.timestamp
+    AND t_out.timestamp <= transactions.timestamp + INTERVAL '48 hours'
+);
 ```
 
 **Mule Evolution Detection — Layered Telemetry (informed by Group-IB META-region research)**
+
 ```
 Flag sessions where ANY of:
   - GPS coordinates mismatch SIM network country (MCC/MNC)
@@ -166,6 +183,7 @@ Flag sessions where ANY of:
 ```
 
 **Credential Handoff Detection**
+
 ```
 Flag accounts where:
   - New device login occurs after 1-2 weeks of low-activity "trust building" AND
@@ -185,6 +203,7 @@ This threat path is the connective tissue of fraud. Mule networks recruited thro
 **Cross-FLAME connections**: TP-0001 (treasury ATO) → funds wire to mule from this pipeline. TP-0002 (BEC) → mule account receives diverted invoice payment. TP-0006 (real estate wire) → mule account receives closing funds. TP-0009 (check fraud) → mule account opened by recruited mule.
 
 ## References
+
 - FBI IC3 2024 Internet Crime Report: Romance Scams
 - FinCEN Advisory FIN-2020-A008: "Advisory on Imposter Scams and Money Mule Schemes"
 - INTERPOL: Operation First Light (scam compound raids)
@@ -192,6 +211,7 @@ This threat path is the connective tissue of fraud. Mule networks recruited thro
 - Group-IB Fraud Intelligence: "Evolving Mule Tactics" report (6-stage mule evolution analysis, META region Q4 2023 – Q1 2025, detection methodology)
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0021",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT \n    p.national_provider_identifier,\n    p.provider_name,\n    c.date_of_service,\n    SUM(c.estimated_procedure_minutes) as total_minutes_billed\nFROM healthcare_claims c\nJOIN providers p ON c.provider_id = p.provider_id\nWHERE c.date_of_service >= CURRENT_DATE - INTERVAL '30 days'\nGROUP BY 1, 2, 3\nHAVING SUM(c.estimated_procedure_minutes) > 1080 -- 18 hours of direct patient care\nORDER BY total_minutes_billed DESC;",
+      "title": "SQL — \"Impossible Day\" Logic (Overbilling Indicator)"
+    }
+  ]
+}

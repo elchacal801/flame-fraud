@@ -14,6 +14,7 @@ Exit codes:
     1 - One or more files failed validation
 """
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -41,26 +42,16 @@ VALID_ID_PREFIXES = {
 
 VALID_TLP = {"WHITE", "GREEN", "AMBER", "RED"}
 
-VALID_SECTORS = {
-    "banking", "insurance", "credit-union", "investment",
-    "fintech", "payments", "crypto", "healthcare",
-    "government", "cross-sector",
-}
-
-VALID_FRAUD_TYPES = {
-    "account-takeover", "BEC", "wire-fraud", "ACH-fraud",
-    "check-fraud", "invoice-fraud", "payment-diversion",
-    "synthetic-identity", "new-account-fraud", "application-fraud",
-    "phishing", "vishing", "smishing",
-    "insurance-fraud", "fraudulent-claim", "premium-diversion",
-    "disability-fraud", "provider-fraud",
-    "insider-threat", "collusion", "data-theft",
-    "money-mule", "crypto-laundering",
-    "deepfake", "impersonation",
-    "credential-stuffing", "romance-scam",
-    "payroll-diversion", "malvertising",
-    "authorized-push-payment",
-}
+TAXONOMY_FILE = Path(__file__).resolve().parent.parent / "flame_taxonomy.json"
+try:
+    with open(TAXONOMY_FILE, "r", encoding="utf-8") as _f:
+        _tax = json.load(_f)
+        VALID_SECTORS = set(_tax.get("sectors", []))
+        VALID_FRAUD_TYPES = set(_tax.get("fraud_types", []))
+except Exception as _e:
+    print(f"WARNING: Failed to load taxonomy from {TAXONOMY_FILE}: {_e}", file=sys.stderr)
+    VALID_SECTORS = set()
+    VALID_FRAUD_TYPES = set()
 
 REQUIRED_FRONTMATTER_FIELDS = [
     "id", "title", "category", "date", "author", "source",
@@ -70,6 +61,9 @@ REQUIRED_FRONTMATTER_FIELDS = [
 REQUIRED_BODY_SECTIONS = [
     "Summary",
     "CFPF Phase Mapping",
+    "Detection Approaches",
+    "Controls & Mitigations",
+    "References",
 ]
 
 # Matches code-fenced YAML blocks

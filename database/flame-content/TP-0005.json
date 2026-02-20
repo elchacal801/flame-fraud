@@ -36,7 +36,14 @@
   ],
   "ft3_tactics": [],
   "mitre_f3": [],
-  "groupib_stages": [],
+  "groupib_stages": [
+    "Reconnaissance",
+    "Resource Development",
+    "Trust Abuse",
+    "Account Access",
+    "Perform Fraud",
+    "Monetization"
+  ],
   "evidence": [],
   "evidence_count": 0
 }

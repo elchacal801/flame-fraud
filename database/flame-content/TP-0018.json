@@ -1,0 +1,45 @@
+{
+  "id": "TP-0018",
+  "title": "Deepfake Document Fraud",
+  "category": "ThreatPath",
+  "date": "2026-02-20",
+  "author": "FLAME Project",
+  "source": "Internal Knowledge Base",
+  "tlp": "WHITE",
+  "summary": "Deepfake document fraud targets the Know Your Customer (KYC) and remote account onboarding processes. Criminals utilize advanced generative AI models (GANs, diffusion models) to manufacture highly realistic, synthetic identifying documents (e.g., driver's licenses, passports, utility bills) that match the details of a synthetic or stolen identity. This bypasses automated optical character recognition (OCR) and facial recognition checks used by financial institutions during self-service digital onboarding.\n\n---",
+  "body": "---\n\n## Summary\n\nDeepfake document fraud targets the Know Your Customer (KYC) and remote account onboarding processes. Criminals utilize advanced generative AI models (GANs, diffusion models) to manufacture highly realistic, synthetic identifying documents (e.g., driver's licenses, passports, utility bills) that match the details of a synthetic or stolen identity. This bypasses automated optical character recognition (OCR) and facial recognition checks used by financial institutions during self-service digital onboarding.\n\n---\n\n## Threat Path Hypothesis\n\n> **Hypothesis**: Threat actors leverage low-cost, publicly available generative AI tooling to create photo-realistic identity documents that can defeat automated remote identity verification controls, allowing them to open vast numbers of fraudulent accounts with stolen or synthetic PII for downstream exploitation (mule networks or bust-outs).\n\n**Confidence**: High — Widely observed accelerating trend across the fintech and banking sector. Vendors specializing in document verification report a massive spike in deepfake ID submissions.\n\n**Estimated Impact**: Initial impact is creating a \"sleeper\" account. The downstream impact (when the account is used for muling or bust-outs) ranges from thousands to millions of dollars. The primary issue is the sheer volume and velocity enabled by automated generation.\n\n---\n\n## CFPF Phase Mapping\n\n### Phase 1: Recon\n\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P1-001: Tool acquisition | Threat actors source AI generation tools (often via Telegram or dark web forums like \"OnlyFakes\") that specifically specialize in template-based generation of KYC documents. | (External to financial institution) |\n\n**Data Sources**: Dark web monitoring, specialized cyber threat intelligence.\n\n---\n\n### Phase 2: Initial Access\n\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P2-001: Remote Account Opening | The actor attempts to open a new digital account using the AI-generated document and a live-injected or deepfake video selfie to bypass liveness checks. | Micro-anomalies in uploaded photo or video (lighting inconsistencies, blurring around text, unnatural facial movements in liveness checks); matching Exif metadata across supposedly distinct applicants. |\n\n**Data Sources**: Document verification vendor logs, KYC metadata, webcam/camera feed metrics.\n\n---\n\n### Phase 3: Positioning\n\n| Technique | Description | Indicators |\n|-----------|-------------|------------|\n| CFPF-P3-001: Sleeper Account Maturation | Accounts successfully created with deepfake documents are allowed to \"age\" to bypass neo-account restrictions before being sold as drop accounts. | Initial funding of account with bare minimum amounts; subsequent dormancy for 30-90 days. |\n\n**Data Sources**: Account activity monitoring, login frequency analytics.\n\n---\n\n## Look Left / Look Right Analysis\n\n**Discovery Phase**: Frequently discovered at **Phase 2** if the document vendor has robust AI detection, or later at **Phase 5** when the account is flagged for money laundering or bust-out behavior.\n\n**Look Left**:\n\n- Could document verification metadata have flagged the anomaly earlier? Frequently, the deepfake images lack normal physical artifacts (lens distortion, natural shadows) or contain AI-specific artifacts.\n- Analysis of application velocity from similar device fingerprints or IP ranges.\n\n**Look Right**:\n\n- If untracked, these accounts populate the institution's customer base with dormant \"sleeper cells\" ready to be activated for massive money mule networks or organized loan fraud.\n\n---\n\n## Controls & Mitigations\n\n| Phase | Control | Type | Owner |\n|-------|---------|------|-------|\n| P2 | Active/Passive Liveness Detection (requiring specific physical responses) | Preventive | KYC/Onboarding |\n| P2 | Injection Attack Prevention (preventing virtual cameras from feeding the onboarding flow) | Preventive | Digital Channels |\n| P2 | Specialized deepfake detection algorithms (spectral analysis of images) | Detective | Fraud Strategy |\n| P3 | Sleeper Account Monitoring (flagging sudden activity after 90 days of dormancy) | Detective | Transaction Monitoring |\n\n---\n\n## Detection Approaches\n\n### Queries / Rules\n\n**Splunk — Detecting Shared Device Fingerprints Across Multiple AI Onboarding Attempts**\n\n```spl\nindex=onboarding action=\"document_verification\"\n| stats count dc(applicant_name) as distinct_names sum(eval(status=\"rejected_ai_suspected\")) as deepfake_rejects by device_fingerprint, source_ip\n| where count > 3 AND distinct_names > 2\n| table device_fingerprint, source_ip, count, distinct_names, deepfake_rejects\n| sort - deepfake_rejects\n```\n\n### Behavioral Analytics\n\n- **Application Behavior**: Flag applicants taking zero time to \"take a photo\" or whose interaction times are superhumanly fast, suggesting automated injection rather than a human holding a camera.\n- **Biometric Matching**: Cross-reference the facial embeddings generated during the liveness check against the institution's existing customer database to find \"one face, many identities\" scenarios.\n\n---\n\n## References\n\n- FLAME Project Internal Knowledge Base.\n- Document Verification Industry Reports (e.g., Onfido, Socure, ID R&D regarding GenAI threats).\n\n---\n\n## Revision History\n\n| Date | Author | Change |\n|------|--------|--------|\n| 2026-02-20 | FLAME Project | Initial creation |",
+  "sectors": [
+    "banking",
+    "credit-union",
+    "fintech"
+  ],
+  "fraud_types": [
+    "documentary-fraud",
+    "identity-theft",
+    "synthetic-identity",
+    "new-account-fraud"
+  ],
+  "tags": [
+    "deepfake",
+    "kyc-bypass",
+    "onboarding",
+    "synthetic-identity"
+  ],
+  "cfpf_phases": [
+    "P1",
+    "P2",
+    "P3"
+  ],
+  "mitre_attack": [
+    "T1583"
+  ],
+  "ft3_tactics": [],
+  "mitre_f3": [],
+  "groupib_stages": [
+    "Resource Development",
+    "Trust Abuse",
+    "Account Access"
+  ],
+  "evidence": [],
+  "evidence_count": 0
+}

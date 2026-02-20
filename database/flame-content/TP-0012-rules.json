@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0012",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT t.transaction_id, t.account_id\nFROM transactions t\nJOIN active_calls c ON t.customer_phone = c.phone_number\nJOIN customer_profiles cp ON t.account_id = cp.account_id\nWHERE t.beneficiary_is_new = TRUE\nAND t.amount > 5000\nAND cp.age > 60\nAND c.call_start <= t.timestamp \nAND c.call_end >= t.timestamp;",
+      "title": "Real-Time Transaction Risk Scoring"
+    }
+  ]
+}
