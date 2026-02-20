@@ -1,5 +1,5 @@
 {
-  "total": 23,
+  "total": 24,
   "fraudTypes": 44,
   "fraudTypeList": [
     "BEC",
@@ -70,11 +70,15 @@
   },
   "topTags": [
     {
+      "tag": "commercial-banking",
+      "count": 3
+    },
+    {
       "tag": "high-value",
       "count": 3
     },
     {
-      "tag": "commercial-banking",
+      "tag": "b2b-payments",
       "count": 2
     },
     {
@@ -143,10 +147,6 @@
     },
     {
       "tag": "android-malware",
-      "count": 1
-    },
-    {
-      "tag": "app-fraud",
       "count": 1
     }
   ],
@@ -624,5 +624,5 @@
       "total_tps": 5
     }
   ],
-  "generatedAt": "2026-02-20T06:18:46.344300+00:00"
+  "generatedAt": "2026-02-20T06:26:26.930161+00:00"
 }

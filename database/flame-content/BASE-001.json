@@ -1,0 +1,25 @@
+{
+  "id": "BASE-001",
+  "title": "Commercial Wire Velocity Baseline",
+  "category": "Baseline",
+  "date": "2026-02-20",
+  "author": "FLAME Project",
+  "source": "",
+  "tlp": "WHITE",
+  "summary": "",
+  "body": "## Description\n\nThis baseline document defines the \"normal\" operating parameters for commercial wire transfers within the SME (Small to Medium Enterprise) banking sector, used to contextualize detection rules for TP-0002 (BEC), TP-0019 (Business Identity Theft), and TP-0020 (Supply Chain Payment Fraud).\n\n## Normal Patterns\n\n* **Approval Latency:** The average time between wire initiation and secondary approval is typically **2-4 hours** during business days. Approvals executed within < 10 seconds of initiation represent high anomalous velocity (indicative of ATO or collusive insider).\n* **Beneficiary Novelty:** For established businesses (> 1 year old), **85%** of weekly outbound wire volume is directed to existing, historical beneficiaries.\n* **Volume Spikes:** Normal accounts exhibit a standard deviation of no more than **200%** week-over-week in total outbound volume, unless preceded by a corresponding inbound funding event.\n\n## Application to Detection\n\nDetection rules should use these baselines to set thresholds. For instance, a rule looking for \"abnormal volume\" should trigger at >3 standard deviations (or >300% WoW increase) to drastically reduce false positives.",
+  "sectors": [],
+  "fraud_types": [],
+  "tags": [
+    "b2b-payments",
+    "wire-transfer",
+    "commercial-banking"
+  ],
+  "cfpf_phases": [],
+  "mitre_attack": [],
+  "ft3_tactics": [],
+  "mitre_f3": [],
+  "groupib_stages": [],
+  "evidence": [],
+  "evidence_count": 0
+}
