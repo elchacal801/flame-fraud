@@ -1,28 +1,5 @@
 [
   {
-    "id": "BASE-001",
-    "title": "Commercial Wire Velocity Baseline",
-    "category": "Baseline",
-    "date": "2026-02-20",
-    "author": "FLAME Project",
-    "source": "",
-    "tlp": "WHITE",
-    "summary": "",
-    "sectors": [],
-    "fraud_types": [],
-    "tags": [
-      "b2b-payments",
-      "wire-transfer",
-      "commercial-banking"
-    ],
-    "cfpf_phases": [],
-    "mitre_attack": [],
-    "ft3_tactics": [],
-    "mitre_f3": [],
-    "groupib_stages": [],
-    "evidence_count": 0
-  },
-  {
     "id": "TP-0001",
     "title": "Treasury Management ATO via Malvertising and Vishing",
     "category": "ThreatPath",
