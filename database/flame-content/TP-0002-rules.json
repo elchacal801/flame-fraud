@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0002",
+  "rules": [
+    {
+      "type": "spl",
+      "content": "index=ap_system action=\"payment_update\"\n| eval prev_bank=coalesce(previous_routing_number, \"none\")\n| where prev_bank != routing_number AND prev_bank != \"none\"\n| table vendor_name, invoice_id, prev_bank, routing_number, modified_by, _time",
+      "title": "Splunk — Invoice Banking Detail Change Detection"
+    }
+  ]
+}

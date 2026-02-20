@@ -30,6 +30,9 @@ jobs:
       - name: Build database
         run: python scripts/build_database.py
 
+      - name: Export STIX bundle
+        run: python scripts/export_flame_stix.py
+
       - name: Commit updated database
         run: |
           git config user.name "github-actions[bot]"

@@ -1,0 +1,50 @@
+[
+  {
+    "type": "spl",
+    "content": "index=treasury_mgmt (action=\"beneficiary_change\" OR action=\"wire_transfer\")\n| transaction account_id maxspan=24h\n| where eventcount > 1\n| search action=\"beneficiary_change\" AND action=\"wire_transfer\"\n| eval time_delta=round((latest - earliest)/3600, 2)\n| where time_delta < 24\n| table account_id, time_delta, _time, action, amount, beneficiary_name, ip_address, device_id\n| sort - amount",
+    "title": "Splunk — Beneficiary Change → Wire Transfer Correlation (Phase 3→4)",
+    "tp_id": "TP-0001"
+  },
+  {
+    "type": "sigma",
+    "content": "title: Treasury Platform - New Authorized User from Anomalous Source\nstatus: experimental\ndescription: Detects addition of authorized users on treasury management platforms from IP addresses or devices not previously associated with the account.\nlogsource:\n    product: treasury_management\n    service: audit\ndetection:\n    selection:\n        action: \"add_authorized_user\"\n    filter_known:\n        source_ip|cidr:\n            - '10.0.0.0/8'        # Expected corporate ranges\n            - '172.16.0.0/12'\n    condition: selection and not filter_known\nlevel: high\ntags:\n    - attack.persistence\n    - cfpf.phase3.positioning",
+    "title": "Sigma — New Authorized User from Unusual Location (Phase 3)",
+    "tp_id": "TP-0001"
+  },
+  {
+    "type": "spl",
+    "content": "index=ap_system action=\"payment_update\"\n| eval prev_bank=coalesce(previous_routing_number, \"none\")\n| where prev_bank != routing_number AND prev_bank != \"none\"\n| table vendor_name, invoice_id, prev_bank, routing_number, modified_by, _time",
+    "title": "Splunk — Invoice Banking Detail Change Detection",
+    "tp_id": "TP-0002"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT account_id, identity_id,\n       MAX(utilization_pct) - LAG(MAX(utilization_pct), 30) \n         OVER (PARTITION BY identity_id ORDER BY report_date) as util_change_30d\nFROM credit_monitoring\nWHERE report_date >= CURRENT_DATE - INTERVAL '90 days'\nGROUP BY account_id, identity_id\nHAVING util_change_30d > 60  -- 60%+ utilization jump in 30 days\nORDER BY util_change_30d DESC;",
+    "title": "SQL — Bust-Out Velocity Detection",
+    "tp_id": "TP-0003"
+  },
+  {
+    "type": "sigma",
+    "content": "title: HR Portal - Bulk Direct Deposit Modifications\nstatus: experimental\ndescription: Multiple employees modifying direct deposit within short window from unusual IPs\nlogsource:\n    product: hr_portal\n    service: audit\ndetection:\n    selection:\n        action: \"modify_direct_deposit\"\n    timeframe: 72h\n    condition: selection | count(distinct employee_id) by source_ip > 3\nlevel: critical\ntags:\n    - cfpf.phase3.positioning",
+    "title": "Sigma — Multiple Direct Deposit Changes from Anomalous Source",
+    "tp_id": "TP-0004"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT agent_id, agency_name, \n       old_routing_number, new_routing_number,\n       change_timestamp, session_ip, device_fingerprint\nFROM agent_payment_changes\nWHERE change_timestamp >= CURRENT_DATE - INTERVAL '30 days'\n  AND old_routing_number != new_routing_number\n  AND session_ip NOT IN (SELECT known_ip FROM agent_known_locations WHERE agent_id = agent_payment_changes.agent_id)\nORDER BY change_timestamp DESC;",
+    "title": "SQL — Agent Portal Payment Routing Anomaly",
+    "tp_id": "TP-0005"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT d.account_id, d.device_fingerprint, d.check_amount,\n       COUNT(*) OVER (PARTITION BY d.device_fingerprint) as deposits_from_device,\n       a.account_open_date, DATEDIFF(day, a.account_open_date, d.deposit_date) as account_age_days\nFROM mobile_deposits d\nJOIN accounts a ON d.account_id = a.account_id\nWHERE d.check_amount > 1000\n  AND DATEDIFF(day, a.account_open_date, d.deposit_date) < 30\n  AND deposits_from_device > 3\nORDER BY d.device_fingerprint, d.deposit_date;",
+    "title": "SQL — Suspicious Mobile Deposit Patterns",
+    "tp_id": "TP-0009"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT account_id, \n       SUM(points_redeemed) as total_redeemed,\n       COUNT(DISTINCT gift_card_id) as cards_generated,\n       MIN(session_ip) as source_ip\nFROM redemption_log\nWHERE redemption_date >= CURRENT_DATE - INTERVAL '7 days'\nGROUP BY account_id\nHAVING total_redeemed > 10000  -- threshold\n   AND cards_generated > 2\n   AND source_ip NOT IN (SELECT known_ip FROM account_known_ips WHERE account_id = redemption_log.account_id)\nORDER BY total_redeemed DESC;",
+    "title": "Post-Auth — Account Drain Pattern",
+    "tp_id": "TP-0013"
+  }
+]

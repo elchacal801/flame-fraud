@@ -1,4 +1,5 @@
 pyyaml
 requests
 beautifulsoup4
+stix2>=3.0.0
 
