@@ -361,7 +361,7 @@ def load_techniques(conn: sqlite3.Connection, techniques_path: Path):
 
 def export_json(conn: sqlite3.Connection, output_path: Path):
     """Export the database to a flat JSON array for the frontend."""
-    cursor = conn.execute("SELECT * FROM submissions ORDER BY id")
+    cursor = conn.execute("SELECT * FROM submissions WHERE lower(category) = 'threatpath' ORDER BY id")
     columns = [desc[0] for desc in cursor.description]
     submissions = []
 
@@ -420,7 +420,7 @@ def _build_full_entry(conn: sqlite3.Connection, entry: dict) -> dict:
 def export_index_json(conn: sqlite3.Connection, output_path: Path,
                       evidence_map: dict | None = None):
     """Export metadata-only index for fast frontend initial load."""
-    cursor = conn.execute("SELECT * FROM submissions ORDER BY id")
+    cursor = conn.execute("SELECT * FROM submissions WHERE lower(category) = 'threatpath' ORDER BY id")
     columns = [desc[0] for desc in cursor.description]
     index_entries = []
 
@@ -457,7 +457,7 @@ def export_index_json(conn: sqlite3.Connection, output_path: Path,
 def export_content_files(conn: sqlite3.Connection, output_dir: Path,
                          evidence_map: dict | None = None):
     """Export individual TP-XXXX.json files for lazy loading."""
-    cursor = conn.execute("SELECT * FROM submissions ORDER BY id")
+    cursor = conn.execute("SELECT * FROM submissions WHERE lower(category) = 'threatpath' ORDER BY id")
     columns = [desc[0] for desc in cursor.description]
     count = 0
 
@@ -489,26 +489,26 @@ def export_content_files(conn: sqlite3.Connection, output_dir: Path,
 
 def export_stats_json(conn: sqlite3.Connection, output_path: Path):
     """Export pre-computed aggregate statistics."""
-    total = conn.execute("SELECT COUNT(*) FROM submissions").fetchone()[0]
+    total = conn.execute("SELECT COUNT(*) FROM submissions WHERE lower(category) = 'threatpath'").fetchone()[0]
 
     fraud_types = conn.execute(
-        "SELECT DISTINCT fraud_type FROM submission_fraud_types ORDER BY fraud_type"
+        "SELECT DISTINCT fraud_type FROM submission_fraud_types sft JOIN submissions s ON sft.submission_id = s.id WHERE lower(s.category) = 'threatpath' ORDER BY fraud_type"
     ).fetchall()
     fraud_type_list = [r[0] for r in fraud_types]
 
     sectors = conn.execute(
-        "SELECT DISTINCT sector FROM submission_sectors ORDER BY sector"
+        "SELECT DISTINCT sector FROM submission_sectors ss JOIN submissions s ON ss.submission_id = s.id WHERE lower(s.category) = 'threatpath' ORDER BY sector"
     ).fetchall()
     sector_list = [r[0] for r in sectors]
 
     tags = conn.execute(
-        "SELECT tag, COUNT(*) as cnt FROM submission_tags GROUP BY tag ORDER BY cnt DESC"
+        "SELECT tag, COUNT(*) as cnt FROM submission_tags st JOIN submissions s ON st.submission_id = s.id WHERE lower(s.category) = 'threatpath' GROUP BY tag ORDER BY cnt DESC"
     ).fetchall()
     top_tags = [{"tag": r[0], "count": r[1]} for r in tags[:20]]
 
     # CFPF phase coverage: count of TPs per phase
     phases = conn.execute(
-        "SELECT phase, COUNT(*) as cnt FROM submission_cfpf_phases GROUP BY phase ORDER BY phase"
+        "SELECT phase, COUNT(*) as cnt FROM submission_cfpf_phases sp JOIN submissions s ON sp.submission_id = s.id WHERE lower(s.category) = 'threatpath' GROUP BY phase ORDER BY phase"
     ).fetchall()
     phase_coverage = {r[0]: r[1] for r in phases}
 
@@ -517,7 +517,7 @@ def export_stats_json(conn: sqlite3.Connection, output_path: Path):
     for ft in fraud_type_list:
         # Find all TPs with this fraud type
         tp_rows = conn.execute(
-            "SELECT submission_id FROM submission_fraud_types WHERE fraud_type = ?",
+            "SELECT sft.submission_id FROM submission_fraud_types sft JOIN submissions s ON sft.submission_id = s.id WHERE sft.fraud_type = ? AND lower(s.category) = 'threatpath'",
             (ft,)
         ).fetchall()
         tp_ids = [r[0] for r in tp_rows]
@@ -596,7 +596,7 @@ def export_index_md(conn: sqlite3.Connection, output_path: Path, stats: dict):
         "| ID | Title | Fraud Types | Sectors | CFPF Phases |",
         "|----|-------|-------------|---------|-------------|"
     ]
-    cursor = conn.execute("SELECT id, title FROM submissions ORDER BY id")
+    cursor = conn.execute("SELECT id, title FROM submissions WHERE lower(category) = 'threatpath' ORDER BY id")
     for row in cursor.fetchall():
         sub_id = row[0]
         title = row[1]
@@ -639,8 +639,8 @@ def export_index_md(conn: sqlite3.Connection, output_path: Path, stats: dict):
         lines.append(f"| {sec.title().replace('-', ' ')} | {tps} |")
 
     # Framework stats
-    mitre_count = conn.execute("SELECT COUNT(DISTINCT submission_id) FROM submission_mitre_attack").fetchone()[0]
-    groupib_count = conn.execute("SELECT COUNT(DISTINCT submission_id) FROM submission_groupib_stages").fetchone()[0]
+    mitre_count = conn.execute("SELECT COUNT(DISTINCT sm.submission_id) FROM submission_mitre_attack sm JOIN submissions s ON sm.submission_id = s.id WHERE lower(s.category) = 'threatpath'").fetchone()[0]
+    groupib_count = conn.execute("SELECT COUNT(DISTINCT sg.submission_id) FROM submission_groupib_stages sg JOIN submissions s ON sg.submission_id = s.id WHERE lower(s.category) = 'threatpath'").fetchone()[0]
 
     lines.append("")
     lines.append("## Framework Coverage Status")
