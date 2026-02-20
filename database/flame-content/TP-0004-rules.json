@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0004",
+  "rules": [
+    {
+      "type": "sigma",
+      "content": "title: HR Portal - Bulk Direct Deposit Modifications\nstatus: experimental\ndescription: Multiple employees modifying direct deposit within short window from unusual IPs\nlogsource:\n    product: hr_portal\n    service: audit\ndetection:\n    selection:\n        action: \"modify_direct_deposit\"\n    timeframe: 72h\n    condition: selection | count(distinct employee_id) by source_ip > 3\nlevel: critical\ntags:\n    - cfpf.phase3.positioning",
+      "title": "Sigma — Multiple Direct Deposit Changes from Anomalous Source"
+    }
+  ]
+}

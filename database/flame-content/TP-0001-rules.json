@@ -1,0 +1,15 @@
+{
+  "tp_id": "TP-0001",
+  "rules": [
+    {
+      "type": "spl",
+      "content": "index=treasury_mgmt (action=\"beneficiary_change\" OR action=\"wire_transfer\")\n| transaction account_id maxspan=24h\n| where eventcount > 1\n| search action=\"beneficiary_change\" AND action=\"wire_transfer\"\n| eval time_delta=round((latest - earliest)/3600, 2)\n| where time_delta < 24\n| table account_id, time_delta, _time, action, amount, beneficiary_name, ip_address, device_id\n| sort - amount",
+      "title": "Splunk — Beneficiary Change → Wire Transfer Correlation (Phase 3→4)"
+    },
+    {
+      "type": "sigma",
+      "content": "title: Treasury Platform - New Authorized User from Anomalous Source\nstatus: experimental\ndescription: Detects addition of authorized users on treasury management platforms from IP addresses or devices not previously associated with the account.\nlogsource:\n    product: treasury_management\n    service: audit\ndetection:\n    selection:\n        action: \"add_authorized_user\"\n    filter_known:\n        source_ip|cidr:\n            - '10.0.0.0/8'        # Expected corporate ranges\n            - '172.16.0.0/12'\n    condition: selection and not filter_known\nlevel: high\ntags:\n    - attack.persistence\n    - cfpf.phase3.positioning",
+      "title": "Sigma — New Authorized User from Unusual Location (Phase 3)"
+    }
+  ]
+}

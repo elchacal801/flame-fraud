@@ -1,0 +1,989 @@
+{
+    "type": "bundle",
+    "id": "bundle--caa34e10-1f6a-5226-b6fd-2ca27dd968d7",
+    "objects": [
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.82978Z",
+            "modified": "2026-02-20T00:16:39.82978Z",
+            "name": "FLAME Project",
+            "description": "Fraud Lifecycle Attack Map & Encyclopedia \u2014 open-source framework for structured fraud threat intelligence.",
+            "identity_class": "organization",
+            "external_references": [
+                {
+                    "source_name": "FLAME GitHub",
+                    "url": "https://github.com/elchacal801/flame-fraud"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--b7f6b91e-fc69-5750-95c2-ea682ae1b6ca",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.830565Z",
+            "modified": "2026-02-20T00:16:39.830565Z",
+            "name": "Treasury Management ATO via Malvertising and Vishing",
+            "description": "Threat actors target commercial banking customers using a multi-phase scheme that begins with search engine malvertising (poisoned ads impersonating bank login pages), transitions to vishing (phone-ba...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "account-takeover",
+                "vishing",
+                "wire-fraud",
+                "malvertising"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0001",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0001"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1583/001/",
+                    "external_id": "T1583.001"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1566/002/",
+                    "external_id": "T1566.002"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1656/",
+                    "external_id": "T1656"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                },
+                {
+                    "source_name": "Reference",
+                    "url": "https://www.fsisac.com/hubfs/Knowledge/Fraud/CyberFraudPreventionFramework.pdf"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--a632e261-0cb9-5215-98b8-c7572ded5b39",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.851894Z",
+            "modified": "2026-02-20T00:16:39.851894Z",
+            "name": "Business Email Compromise \u2014 Vendor Impersonation Wire Fraud",
+            "description": "Threat actors compromise or spoof vendor email accounts, then impersonate the vendor to redirect legitimate invoice payments to actor-controlled accounts. BEC caused $2.9B+ in reported losses in 2023 ...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "BEC",
+                "wire-fraud",
+                "invoice-fraud",
+                "payment-diversion"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0002",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0002"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1566/001/",
+                    "external_id": "T1566.001"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1534/",
+                    "external_id": "T1534"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1114/003/",
+                    "external_id": "T1114.003"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--09a3f7b1-c8f6-5ef9-b0a4-ef622ffe012e",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.868784Z",
+            "modified": "2026-02-20T00:16:39.868784Z",
+            "name": "Synthetic Identity \u2014 Credit Card Bust-Out",
+            "description": "Actors create fictitious identities by combining real SSNs (often belonging to children, elderly, deceased, or immigrants) with fabricated PII. They then \"nurture\" these synthetic identities over mont...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "synthetic-identity",
+                "new-account-fraud",
+                "application-fraud"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0003",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0003"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--b9131a84-29ed-5cb6-bc67-5704e0649d2e",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.881469Z",
+            "modified": "2026-02-20T00:16:39.881469Z",
+            "name": "Payroll Diversion via HR Portal Compromise",
+            "description": "Actors compromise employee self-service HR portals (Workday, ADP, UKG, etc.) to change direct deposit routing information, diverting paychecks to actor-controlled accounts. Often combined with email r...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "payroll-diversion",
+                "BEC",
+                "phishing",
+                "account-takeover"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0004",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0004"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1566/001/",
+                    "external_id": "T1566.001"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1078/",
+                    "external_id": "T1078"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--7070c464-0ace-5f82-8413-1df62851ff78",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.899433Z",
+            "modified": "2026-02-20T00:16:39.899433Z",
+            "name": "Insurance Premium Diversion via Agent Portal ATO",
+            "description": "Actors compromise insurance agent portals to modify policy payment routing, diverting premium payments from policyholders to actor-controlled accounts. Alternatively, actors gain access to agent trust...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "account-takeover",
+                "premium-diversion",
+                "phishing"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0005",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0005"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1566/001/",
+                    "external_id": "T1566.001"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1078/",
+                    "external_id": "T1078"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--31da98be-9600-502b-bc9f-455fece7601f",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.912119Z",
+            "modified": "2026-02-20T00:16:39.912119Z",
+            "name": "Real Estate Wire Fraud \u2014 Closing Scam",
+            "description": "Actors compromise email accounts of real estate agents, title companies, attorneys, or mortgage lenders to monitor pending transactions and send fraudulent wire instructions to homebuyers at closing. ...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "BEC",
+                "wire-fraud",
+                "payment-diversion",
+                "impersonation"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0006",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0006"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1566/001/",
+                    "external_id": "T1566.001"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1114/003/",
+                    "external_id": "T1114.003"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1534/",
+                    "external_id": "T1534"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--c97aa293-c269-5878-bd44-0ba1da231563",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.924333Z",
+            "modified": "2026-02-20T00:16:39.924333Z",
+            "name": "Deepfake Voice Authorization for Wire Transfer",
+            "description": "Actors use AI-generated voice deepfakes to impersonate executives, clients, or authorized signers during phone-based wire transfer authorization. The first publicly documented case (2019) involved a U...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "wire-fraud",
+                "impersonation",
+                "BEC",
+                "deepfake"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0007",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0007"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1656/",
+                    "external_id": "T1656"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--04e082e8-6ecd-5d4f-bcfe-864a3b720ae1",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.946811Z",
+            "modified": "2026-02-20T00:16:39.946811Z",
+            "name": "SIM Swap to Cryptocurrency Exchange ATO",
+            "description": "Actors social-engineer mobile carriers to transfer a victim's phone number to an actor-controlled SIM card, then use intercepted SMS-based MFA codes to take over cryptocurrency exchange accounts and d...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "account-takeover",
+                "crypto-laundering"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0008",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0008"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1111/",
+                    "external_id": "T1111"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1078/",
+                    "external_id": "T1078"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--138eba1c-8f23-563f-80c6-be9c23d37986",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.958968Z",
+            "modified": "2026-02-20T00:16:39.958968Z",
+            "name": "Check Washing and Fraudulent Mobile Deposit",
+            "description": "Actors steal checks from USPS mailboxes (using stolen arrow keys or by fishing mail from collection boxes), chemically wash the payee and amount fields, then rewrite checks to themselves or accomplice...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "check-fraud"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0009",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0009"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--2a031095-12ca-53a6-8c1b-ef4cf456bee8",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.974795Z",
+            "modified": "2026-02-20T00:16:39.974795Z",
+            "name": "Disability Insurance Fraud via Fabricated Medical Documentation",
+            "description": "Actors file fraudulent long-term or short-term disability claims using fabricated, exaggerated, or collusively obtained medical documentation. Schemes range from individual claimants exaggerating symp...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "fraudulent-claim",
+                "disability-fraud",
+                "provider-fraud"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0010",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0010"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--3261af70-ce08-5231-b480-94be9b73b142",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:39.987562Z",
+            "modified": "2026-02-20T00:16:39.987562Z",
+            "name": "Romance Scam to Money Mule Recruitment Pipeline",
+            "description": "Actors operating from organized scam compounds (primarily Southeast Asia) cultivate fake romantic or investment relationships with victims over weeks to months, then exploit the relationship to either...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "romance-scam",
+                "money-mule"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0011",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0011"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1656/",
+                    "external_id": "T1656"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--482ed5ca-2cf5-56e8-ba45-635162a54f6c",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.000555Z",
+            "modified": "2026-02-20T00:16:40.000555Z",
+            "name": "Authorized Push Payment Fraud \u2014 Tech Support / Bank Impersonation",
+            "description": "Actors contact victims impersonating bank fraud departments, tech support (Microsoft, Apple, Amazon), or government agencies (IRS, SSA), convincing them that their accounts are compromised and they mu...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "vishing",
+                "impersonation",
+                "account-takeover"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0012",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0012"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1656/",
+                    "external_id": "T1656"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--ce8c4766-646d-5113-b7c0-2814a14369f2",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.013788Z",
+            "modified": "2026-02-20T00:16:40.013788Z",
+            "name": "Credential Stuffing to Loyalty Point / Gift Card Account Drain",
+            "description": "Actors use large-scale credential stuffing (automated testing of stolen username/password pairs from unrelated breaches) against loyalty program portals, bank rewards platforms, and gift card balance-...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "credential-stuffing",
+                "account-takeover"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0013",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0013"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1110/004/",
+                    "external_id": "T1110.004"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1078/",
+                    "external_id": "T1078"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--0bd27ede-7e1a-5e1f-8a41-ad022dcced96",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.039295Z",
+            "modified": "2026-02-20T00:16:40.039295Z",
+            "name": "Insider-Enabled Account Fraud at Financial Institution",
+            "description": "Employees of financial institutions abuse their legitimate system access to commit or enable fraud \u2014 opening accounts with stolen identities, modifying customer records to facilitate unauthorized tran...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "insider-threat",
+                "collusion",
+                "account-takeover",
+                "data-theft"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0014",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0014"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1078/",
+                    "external_id": "T1078"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1530/",
+                    "external_id": "T1530"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1657/",
+                    "external_id": "T1657"
+                }
+            ]
+        },
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--b93367e9-78bd-5756-9fe8-7dd5a4fa1f2b",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.051618Z",
+            "modified": "2026-02-20T00:16:40.051618Z",
+            "name": "Employment Fraud via Brand Impersonation",
+            "description": "Actors impersonate legitimate employers \u2014 particularly in healthcare staffing, home care, and remote work sectors \u2014 by registering lookalike domains and creating fake job postings. Victims are \"hired\"...",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P1-reconnaissance"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P2-initial-access"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P3-positioning"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P4-execution"
+                },
+                {
+                    "kill_chain_name": "cfpf",
+                    "phase_name": "P5-monetization"
+                }
+            ],
+            "labels": [
+                "impersonation",
+                "advance-fee-fraud",
+                "identity-theft"
+            ],
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ],
+            "external_references": [
+                {
+                    "source_name": "FLAME Project",
+                    "description": "Threat Path TP-0015",
+                    "url": "https://elchacal801.github.io/flame-fraud/?tp=TP-0015"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1566/001/",
+                    "external_id": "T1566.001"
+                },
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1583/001/",
+                    "external_id": "T1583.001"
+                }
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--d686aa49-dee7-5e2b-9ea1-9b02603cafab",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.063539Z",
+            "modified": "2026-02-20T00:16:40.063539Z",
+            "relationship_type": "related-to",
+            "source_ref": "attack-pattern--3261af70-ce08-5231-b480-94be9b73b142",
+            "target_ref": "attack-pattern--b7f6b91e-fc69-5750-95c2-ea682ae1b6ca",
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--146bab54-f33d-51ca-926d-05fa4f6747d7",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.063988Z",
+            "modified": "2026-02-20T00:16:40.063988Z",
+            "relationship_type": "related-to",
+            "source_ref": "attack-pattern--3261af70-ce08-5231-b480-94be9b73b142",
+            "target_ref": "attack-pattern--a632e261-0cb9-5215-98b8-c7572ded5b39",
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--a2013917-dcb9-58bb-9752-4697331a6757",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.06448Z",
+            "modified": "2026-02-20T00:16:40.06448Z",
+            "relationship_type": "related-to",
+            "source_ref": "attack-pattern--3261af70-ce08-5231-b480-94be9b73b142",
+            "target_ref": "attack-pattern--31da98be-9600-502b-bc9f-455fece7601f",
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--adda37d1-644e-5488-955c-acd9b3650f09",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.06491Z",
+            "modified": "2026-02-20T00:16:40.06491Z",
+            "relationship_type": "related-to",
+            "source_ref": "attack-pattern--3261af70-ce08-5231-b480-94be9b73b142",
+            "target_ref": "attack-pattern--138eba1c-8f23-563f-80c6-be9c23d37986",
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1d1c0bfb-5373-5bae-95bb-22b07448dbad",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.065293Z",
+            "modified": "2026-02-20T00:16:40.065293Z",
+            "relationship_type": "related-to",
+            "source_ref": "attack-pattern--0bd27ede-7e1a-5e1f-8a41-ad022dcced96",
+            "target_ref": "attack-pattern--7070c464-0ace-5f82-8413-1df62851ff78",
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ]
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--504f4fbc-9d41-5052-a481-7a7a44b11ab2",
+            "created_by_ref": "identity--65554659-7398-56b2-af55-de72293f4025",
+            "created": "2026-02-20T00:16:40.06566Z",
+            "modified": "2026-02-20T00:16:40.06566Z",
+            "relationship_type": "related-to",
+            "source_ref": "attack-pattern--b93367e9-78bd-5756-9fe8-7dd5a4fa1f2b",
+            "target_ref": "attack-pattern--09a3f7b1-c8f6-5ef9-b0a4-ef622ffe012e",
+            "object_marking_refs": [
+                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0003",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT account_id, identity_id,\n       MAX(utilization_pct) - LAG(MAX(utilization_pct), 30) \n         OVER (PARTITION BY identity_id ORDER BY report_date) as util_change_30d\nFROM credit_monitoring\nWHERE report_date >= CURRENT_DATE - INTERVAL '90 days'\nGROUP BY account_id, identity_id\nHAVING util_change_30d > 60  -- 60%+ utilization jump in 30 days\nORDER BY util_change_30d DESC;",
+      "title": "SQL — Bust-Out Velocity Detection"
+    }
+  ]
+}

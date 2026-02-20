@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0013",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT account_id, \n       SUM(points_redeemed) as total_redeemed,\n       COUNT(DISTINCT gift_card_id) as cards_generated,\n       MIN(session_ip) as source_ip\nFROM redemption_log\nWHERE redemption_date >= CURRENT_DATE - INTERVAL '7 days'\nGROUP BY account_id\nHAVING total_redeemed > 10000  -- threshold\n   AND cards_generated > 2\n   AND source_ip NOT IN (SELECT known_ip FROM account_known_ips WHERE account_id = redemption_log.account_id)\nORDER BY total_redeemed DESC;",
+      "title": "Post-Auth — Account Drain Pattern"
+    }
+  ]
+}

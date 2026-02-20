@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0009",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT d.account_id, d.device_fingerprint, d.check_amount,\n       COUNT(*) OVER (PARTITION BY d.device_fingerprint) as deposits_from_device,\n       a.account_open_date, DATEDIFF(day, a.account_open_date, d.deposit_date) as account_age_days\nFROM mobile_deposits d\nJOIN accounts a ON d.account_id = a.account_id\nWHERE d.check_amount > 1000\n  AND DATEDIFF(day, a.account_open_date, d.deposit_date) < 30\n  AND deposits_from_device > 3\nORDER BY d.device_fingerprint, d.deposit_date;",
+      "title": "SQL — Suspicious Mobile Deposit Patterns"
+    }
+  ]
+}
