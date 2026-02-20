@@ -5,6 +5,11 @@
       "type": "spl",
       "content": "index=ap_system action=\"payment_update\"\n| eval prev_bank=coalesce(previous_routing_number, \"none\")\n| where prev_bank != routing_number AND prev_bank != \"none\"\n| table vendor_name, invoice_id, prev_bank, routing_number, modified_by, _time",
       "title": "Splunk — Invoice Banking Detail Change Detection"
+    },
+    {
+      "type": "kql",
+      "content": "OfficeActivity\n| where Operation in (\"New-InboxRule\", \"Set-InboxRule\")\n| where Parameters has_any (\"ForwardTo\", \"ForwardAsAttachmentTo\", \"RedirectTo\")\n| project TimeGenerated, UserId, Parameters, ClientIP",
+      "title": "Email — Forwarding Rule Monitoring (M365)"
     }
   ]
 }

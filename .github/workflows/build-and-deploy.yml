@@ -1,0 +1,90 @@
+name: FLAME Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ThreatPaths/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'Baselines/**'
+      - 'DetectionLogic/**'
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pytest
+        run: python -m pytest tests/ -v --tb=short
+
+  validate:
+    name: Validate Submissions
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate all threat paths
+        run: |
+          for f in ThreatPaths/TP-*.md; do
+            echo "Validating $f..."
+            python scripts/validate_submission.py "$f"
+          done
+
+  build:
+    name: Build Database & STIX
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build FLAME database
+        run: python scripts/build_database.py
+
+      - name: Export STIX bundle
+        run: python scripts/export_flame_stix.py
+
+      - name: Commit artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A database/ flame-stix-bundle.json flame-stats.json docs/ 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: rebuild database, STIX bundle, and stats [skip ci]"
+            git push
+          fi

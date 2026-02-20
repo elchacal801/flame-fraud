@@ -21,13 +21,16 @@ Environment variables:
 """
 
 import argparse
+import ipaddress
 import json
 import os
 import re
+import socket
 import sys
 import unicodedata
 from datetime import date
 from pathlib import Path
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -51,6 +54,56 @@ OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 MAX_ARTICLE_CHARS = 30000  # truncate long articles to fit context
 MAX_TOKENS = 8000          # max response tokens
+MAX_RESPONSE_BYTES = 10 * 1024 * 1024  # 10 MB max response size
+
+
+# ---------------------------------------------------------------------------
+# URL validation (SSRF protection)
+# ---------------------------------------------------------------------------
+
+def _validate_url(url: str) -> None:
+    """Validate a URL against SSRF attacks.
+
+    Checks scheme (http/https only), resolves hostname, and blocks
+    private/internal/loopback/link-local/cloud-metadata IP ranges.
+    """
+    parsed = urlparse(url)
+
+    # Scheme validation
+    if parsed.scheme not in ("http", "https"):
+        print(f"ERROR: URL scheme '{parsed.scheme}' not allowed. Use http or https.",
+              file=sys.stderr)
+        sys.exit(1)
+
+    hostname = parsed.hostname
+    if not hostname:
+        print("ERROR: URL has no hostname.", file=sys.stderr)
+        sys.exit(1)
+
+    # Resolve hostname to IP and check against blocklist
+    try:
+        resolved = socket.getaddrinfo(hostname, None)
+    except socket.gaierror:
+        print(f"ERROR: Cannot resolve hostname: {hostname}", file=sys.stderr)
+        sys.exit(1)
+
+    for family, _, _, _, sockaddr in resolved:
+        ip_str = sockaddr[0]
+        try:
+            addr = ipaddress.ip_address(ip_str)
+        except ValueError:
+            continue
+
+        if (addr.is_private or addr.is_loopback or addr.is_reserved
+                or addr.is_link_local or addr.is_multicast):
+            print(f"ERROR: URL resolves to blocked IP range ({ip_str}). "
+                  f"Internal/private addresses are not allowed.", file=sys.stderr)
+            sys.exit(1)
+
+        # Block AWS/GCP/Azure metadata endpoints
+        if ip_str in ("169.254.169.254", "metadata.google.internal"):
+            print("ERROR: Cloud metadata endpoint blocked.", file=sys.stderr)
+            sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -59,6 +112,8 @@ MAX_TOKENS = 8000          # max response tokens
 
 def fetch_url_content(url: str) -> str:
     """Fetch a URL and extract readable text content."""
+    _validate_url(url)
+
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -68,8 +123,20 @@ def fetch_url_content(url: str) -> str:
     }
 
     try:
-        resp = requests.get(url, headers=headers, timeout=30, allow_redirects=True)
+        resp = requests.get(url, headers=headers, timeout=30, allow_redirects=True,
+                            stream=True)
         resp.raise_for_status()
+
+        # Check content length before reading full body
+        content_length = resp.headers.get("content-length")
+        if content_length and int(content_length) > MAX_RESPONSE_BYTES:
+            print(f"ERROR: Response too large ({content_length} bytes, "
+                  f"max {MAX_RESPONSE_BYTES}).", file=sys.stderr)
+            sys.exit(1)
+
+        # Read with size limit
+        content = resp.content[:MAX_RESPONSE_BYTES]
+        text_content = content.decode(resp.encoding or "utf-8", errors="replace")
     except requests.RequestException as e:
         print(f"ERROR: Failed to fetch URL: {e}", file=sys.stderr)
         sys.exit(1)
@@ -82,7 +149,7 @@ def fetch_url_content(url: str) -> str:
                f"The AI should note this is a PDF source and work with available metadata.]"
 
     # Parse HTML
-    soup = BeautifulSoup(resp.text, "html.parser")
+    soup = BeautifulSoup(text_content, "html.parser")
 
     # Remove script, style, nav, footer, header elements
     for tag in soup(["script", "style", "nav", "footer", "header", "aside",

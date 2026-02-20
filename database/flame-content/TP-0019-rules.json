@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0019",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT \n    a.application_id, \n    a.business_name, \n    a.applicant_email,\n    d.domain_age_days,\n    s.days_since_last_amendment\nFROM commercial_applications a\nLEFT JOIN domain_intel d ON SPLIT_PART(a.applicant_email, '@', 2) = d.domain_name\nLEFT JOIN sos_data s ON a.tax_id = s.tax_id\nWHERE d.domain_age_days < 180 \n  AND s.days_since_last_amendment < 60\n  AND a.loan_amount_requested > 50000;",
+      "title": "SQL — High-Risk Commercial Application (Recent Filing + Young Domain)"
+    }
+  ]
+}

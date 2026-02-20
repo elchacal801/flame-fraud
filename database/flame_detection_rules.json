@@ -18,6 +18,12 @@
     "tp_id": "TP-0002"
   },
   {
+    "type": "kql",
+    "content": "OfficeActivity\n| where Operation in (\"New-InboxRule\", \"Set-InboxRule\")\n| where Parameters has_any (\"ForwardTo\", \"ForwardAsAttachmentTo\", \"RedirectTo\")\n| project TimeGenerated, UserId, Parameters, ClientIP",
+    "title": "Email — Forwarding Rule Monitoring (M365)",
+    "tp_id": "TP-0002"
+  },
+  {
     "type": "sql",
     "content": "SELECT account_id, identity_id,\n       MAX(utilization_pct) - LAG(MAX(utilization_pct), 30) \n         OVER (PARTITION BY identity_id ORDER BY report_date) as util_change_30d\nFROM credit_monitoring\nWHERE report_date >= CURRENT_DATE - INTERVAL '90 days'\nGROUP BY account_id, identity_id\nHAVING util_change_30d > 60  -- 60%+ utilization jump in 30 days\nORDER BY util_change_30d DESC;",
     "title": "SQL — Bust-Out Velocity Detection",
@@ -36,6 +42,30 @@
     "tp_id": "TP-0005"
   },
   {
+    "type": "kql",
+    "content": "EmailEvents\n| where Subject has_any (\"wire\", \"closing\", \"escrow\", \"wiring instructions\")\n| extend sender_domain = tostring(split(SenderFromAddress, \"@\")[1])\n| where sender_domain !in (known_title_company_domains)\n| project Timestamp, SenderFromAddress, RecipientEmailAddress, Subject",
+    "title": "Email — Wire Instruction Anomaly (M365 / Google Workspace)",
+    "tp_id": "TP-0006"
+  },
+  {
+    "type": "sigma",
+    "content": "title: Suspicious Inbox Rule Creation\nstatus: experimental\ndescription: Detects the creation of inbox rules looking for real estate keywords like wire, closing, escrow to suppress legitimate communication.\nlogsource:\n    product: m365\n    service: exchange\ndetection:\n    selection:\n        ActionType: 'New-InboxRule'\n        RuleParameters|contains:\n            - 'wire'\n            - 'closing'\n            - 'escrow'\n    condition: selection",
+    "title": "Email — Suspicious Inbox Rule Creation (M365)",
+    "tp_id": "TP-0006"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT * FROM wire_authorizations \nWHERE auth_method = 'voice_only' \nAND amount > 50000 \nAND NOT EXISTS (\n    SELECT 1 FROM email_approvals WHERE wire_id = wire_authorizations.id\n);",
+    "title": "Process-Based Detection",
+    "tp_id": "TP-0007"
+  },
+  {
+    "type": "sigma",
+    "content": "title: New Device Login After SIM Swap\nstatus: experimental\ndescription: Detects a new device login following a recently detected SIM and MFA change.\nlogsource:\n    category: application\n    product: exchange_platform\ndetection:\n    selection_login:\n        EventName: 'UserLogin'\n        DeviceIsNew: true\n    selection_mfa:\n        EventName: 'MFAMethodChanged'\n    selection_contact:\n        EventName: 'ContactInfoChanged'\n    selection_withdraw:\n        EventName: 'CryptoWithdrawal'\n        AddressIsNew: true\n    timeframe: 24h\n    condition: selection_login and selection_mfa and selection_contact and selection_withdraw",
+    "title": "Exchange-Side — SIM Swap Indicator Correlation",
+    "tp_id": "TP-0008"
+  },
+  {
     "type": "sql",
     "content": "SELECT d.account_id, d.device_fingerprint, d.check_amount,\n       COUNT(*) OVER (PARTITION BY d.device_fingerprint) as deposits_from_device,\n       a.account_open_date, DATEDIFF(day, a.account_open_date, d.deposit_date) as account_age_days\nFROM mobile_deposits d\nJOIN accounts a ON d.account_id = a.account_id\nWHERE d.check_amount > 1000\n  AND DATEDIFF(day, a.account_open_date, d.deposit_date) < 30\n  AND deposits_from_device > 3\nORDER BY d.device_fingerprint, d.deposit_date;",
     "title": "SQL — Suspicious Mobile Deposit Patterns",
@@ -43,8 +73,92 @@
   },
   {
     "type": "sql",
+    "content": "SELECT c.claim_id, c.claimant_id, c.provider_id, c.claim_amount\nFROM claims c\nJOIN policies p ON c.policy_id = p.policy_id\nJOIN providers prov ON c.provider_id = prov.provider_id\nWHERE DATEDIFF('day', p.effective_date, c.filing_date) <= 90\nAND prov.risk_tier = 'High'\nAND c.claim_amount > (\n    SELECT PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY claim_amount) FROM claims\n);",
+    "title": "Predictive Model — Claim Risk Scoring",
+    "tp_id": "TP-0010"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT account_id\nFROM transactions\nWHERE transaction_type = 'INBOUND'\nAND timestamp >= CURRENT_DATE - INTERVAL '30 days'\nGROUP BY account_id\nHAVING COUNT(DISTINCT sender_id) >= 3\nAND EXISTS (\n    SELECT 1 FROM transactions t_out\n    WHERE t_out.account_id = transactions.account_id\n    AND t_out.transaction_type = 'OUTBOUND'\n    AND t_out.destination_type IN ('INTERNATIONAL_WIRE', 'CRYPTO', 'P2P')\n    AND t_out.timestamp >= transactions.timestamp\n    AND t_out.timestamp <= transactions.timestamp + INTERVAL '48 hours'\n);",
+    "title": "Mule Account Behavioral Pattern",
+    "tp_id": "TP-0011"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT t.transaction_id, t.account_id\nFROM transactions t\nJOIN active_calls c ON t.customer_phone = c.phone_number\nJOIN customer_profiles cp ON t.account_id = cp.account_id\nWHERE t.beneficiary_is_new = TRUE\nAND t.amount > 5000\nAND cp.age > 60\nAND c.call_start <= t.timestamp \nAND c.call_end >= t.timestamp;",
+    "title": "Real-Time Transaction Risk Scoring",
+    "tp_id": "TP-0012"
+  },
+  {
+    "type": "sql",
     "content": "SELECT account_id, \n       SUM(points_redeemed) as total_redeemed,\n       COUNT(DISTINCT gift_card_id) as cards_generated,\n       MIN(session_ip) as source_ip\nFROM redemption_log\nWHERE redemption_date >= CURRENT_DATE - INTERVAL '7 days'\nGROUP BY account_id\nHAVING total_redeemed > 10000  -- threshold\n   AND cards_generated > 2\n   AND source_ip NOT IN (SELECT known_ip FROM account_known_ips WHERE account_id = redemption_log.account_id)\nORDER BY total_redeemed DESC;",
     "title": "Post-Auth — Account Drain Pattern",
     "tp_id": "TP-0013"
+  },
+  {
+    "type": "sigma",
+    "content": "title: Anomalous Internal Account Access Volume\nstatus: experimental\ndescription: Detects when an employee accesses 3x their baseline account volume within 24 hours\nlogsource:\n    product: core_banking\n    service: ueba\ndetection:\n    selection:\n        action: \"account_view\"\n    timeframe: 24h\n    condition: selection | count(distinct account_id) by employee_id > 3 * baseline_volume_24h\nlevel: high\ntags:\n    - cfpf.phase2.initial_access\n    - insider.threat",
+    "title": "UEBA — Employee Access Anomaly Scoring",
+    "tp_id": "TP-0014"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT d.domain_name, d.creation_date, d.registrar\nFROM recently_registered_domains d\nJOIN mx_records m ON d.domain_id = m.domain_id\nJOIN ssl_certificates s ON d.domain_id = s.domain_id\nWHERE d.domain_name SIMILAR TO '%(health|staffing|rightathome)%'\nAND d.creation_date >= CURRENT_DATE - INTERVAL '90 days'\nAND d.hosting_provider IN ('Hostinger', 'GoDaddy', 'OVH')\nAND m.mx_domain != d.domain_name\nAND s.issuer = 'Let''s Encrypt'\nAND DATEDIFF('day', d.creation_date, s.issue_date) <= 3;",
+    "title": "Domain-Based Detection",
+    "tp_id": "TP-0015"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT \n    c.customer_id, \n    c.account_id, \n    c.credit_limit, \n    SUM(t.amount) as total_drawn,\n    (SUM(t.amount) / c.credit_limit) as utilization_ratio\nFROM credit_accounts c\nJOIN transactions t ON c.account_id = t.account_id\nWHERE t.transaction_date >= CURRENT_DATE - INTERVAL '3 days'\nGROUP BY 1, 2, 3\nHAVING SUM(t.amount) / c.credit_limit > 0.85 \n   AND c.account_age_days > 180 -- Established accounts\n   AND c.historical_avg_utilization < 0.30; -- Previously low-balance",
+    "title": "SQL — Rapid Utilization Spike (Bust-Out Indicator)",
+    "tp_id": "TP-0016"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT \n    c.customer_id,\n    c.age,\n    w.wire_amount,\n    w.beneficiary_name,\n    w.wire_date\nFROM customers c\nJOIN wire_outbound w ON c.account_id = w.account_id\nWHERE c.age >= 60\n  AND w.wire_amount > 25000\n  AND w.beneficiary_name SIMILAR TO '%(coinbase|kraken|binance|gemini)%'\n  AND NOT EXISTS (\n      -- Detect if this is their first time wiring to crypto\n      SELECT 1 FROM wire_outbound w_old \n      WHERE w_old.account_id = c.account_id \n        AND w_old.wire_date < CURRENT_DATE - INTERVAL '30 days'\n        AND w_old.beneficiary_name SIMILAR TO '%(coinbase|kraken|binance|gemini)%'\n  );",
+    "title": "SQL — High-Value Outbound to Crypto Exchange (Elder Financial Exploitation Indicator)",
+    "tp_id": "TP-0017"
+  },
+  {
+    "type": "spl",
+    "content": "index=onboarding action=\"document_verification\"\n| stats count dc(applicant_name) as distinct_names sum(eval(status=\"rejected_ai_suspected\")) as deepfake_rejects by device_fingerprint, source_ip\n| where count > 3 AND distinct_names > 2\n| table device_fingerprint, source_ip, count, distinct_names, deepfake_rejects\n| sort - deepfake_rejects",
+    "title": "Splunk — Detecting Shared Device Fingerprints Across Multiple AI Onboarding Attempts",
+    "tp_id": "TP-0018"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT \n    a.application_id, \n    a.business_name, \n    a.applicant_email,\n    d.domain_age_days,\n    s.days_since_last_amendment\nFROM commercial_applications a\nLEFT JOIN domain_intel d ON SPLIT_PART(a.applicant_email, '@', 2) = d.domain_name\nLEFT JOIN sos_data s ON a.tax_id = s.tax_id\nWHERE d.domain_age_days < 180 \n  AND s.days_since_last_amendment < 60\n  AND a.loan_amount_requested > 50000;",
+    "title": "SQL — High-Risk Commercial Application (Recent Filing + Young Domain)",
+    "tp_id": "TP-0019"
+  },
+  {
+    "type": "sigma",
+    "content": "title: Supply Chain Fraud - Suspicious Inbox Rule Creation\nstatus: active\ndescription: Detects creation of inbox rules common in Invoice Fraud/BEC to hide communications from the victim.\nlogsource:\n    product: m365\n    service: exchange\ndetection:\n    selection:\n        operation: 'New-InboxRule'\n    keywords:\n        - '*invoice*'\n        - '*payment*'\n        - '*wire*'\n        - '*bank*'\n        - '*updated detail*'\n    actions:\n        - '*MoveToFolder*'\n        - '*Delete*'\n        - '*MarkAsRead*'\n    condition: selection and keywords and actions\nlevel: high\ntags:\n    - attack.t1562.012\n    - cfpf.phase3.positioning",
+    "title": "Sigma — Malicious Inbox Rule Creation (Positioning)",
+    "tp_id": "TP-0020"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT \n    t.transaction_id,\n    t.originator_company_name,\n    t.amount,\n    t.beneficiary_name,\n    t.beneficiary_routing_number,\n    t.beneficiary_account_number\nFROM b2b_wire_transfers t\nWHERE t.amount > 50000 \n  AND NOT EXISTS (\n      -- Has this company ever paid this specific routing/account combo before?\n      SELECT 1 FROM b2b_wire_transfers t_hist\n      WHERE t_hist.originator_id = t.originator_id\n        AND t_hist.beneficiary_routing_number = t.beneficiary_routing_number\n        AND t_hist.beneficiary_account_number = t.beneficiary_account_number\n        AND t_hist.transaction_date < CURRENT_DATE\n  );",
+    "title": "SQL — B2B Payment to First-Time Beneficiary",
+    "tp_id": "TP-0020"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT \n    p.national_provider_identifier,\n    p.provider_name,\n    c.date_of_service,\n    SUM(c.estimated_procedure_minutes) as total_minutes_billed\nFROM healthcare_claims c\nJOIN providers p ON c.provider_id = p.provider_id\nWHERE c.date_of_service >= CURRENT_DATE - INTERVAL '30 days'\nGROUP BY 1, 2, 3\nHAVING SUM(c.estimated_procedure_minutes) > 1080 -- 18 hours of direct patient care\nORDER BY total_minutes_billed DESC;",
+    "title": "SQL — \"Impossible Day\" Logic (Overbilling Indicator)",
+    "tp_id": "TP-0021"
+  },
+  {
+    "type": "sql",
+    "content": "SELECT \n    a.account_id,\n    COUNT(DISTINCT t.originator_name) as distinct_state_agencies,\n    SUM(t.amount) as total_government_deposits,\n    MAX(t.transaction_date) as latest_deposit\nFROM ach_inbound t\nJOIN accounts a ON t.account_id = a.account_id\nWHERE t.sec_code = 'PPD' \n  AND t.originator_name SIMILAR TO '%(UI|UNEMPLOYMENT|TREAS 310|TAX REF)% '\n  AND t.transaction_date >= CURRENT_DATE - INTERVAL '30 days'\nGROUP BY 1\nHAVING COUNT(*) > 2 -- More than 2 distinct benefit deposits\n   AND COUNT(DISTINCT t.receiver_name) > 1; -- For different individuals",
+    "title": "SQL — Multiple UI/Tax Deposits to Single Account (Mule Indicator)",
+    "tp_id": "TP-0022"
+  },
+  {
+    "type": "sigma",
+    "content": "title: Mobile Banking - Impossible Navigation Speed (ATS Indicator)\nstatus: experimental\ndescription: Detects when the time between app launch, login, and transaction initiation is faster than humanly possible, indicating an Automated Transfer System.\nlogsource:\n    product: mobile_banking\n    service: telemetry\ndetection:\n    selection:\n        action: 'transaction_initiated'\n    condition: selection | time_since(session_start) < 4s\nlevel: high\ntags:\n    - attack.t1624\n    - cfpf.phase4.execution",
+    "title": "Sigma — Fast Navigation ATS Anomaly (Conceptual)",
+    "tp_id": "TP-0023"
   }
 ]

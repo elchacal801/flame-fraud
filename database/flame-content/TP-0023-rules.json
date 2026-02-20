@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0023",
+  "rules": [
+    {
+      "type": "sigma",
+      "content": "title: Mobile Banking - Impossible Navigation Speed (ATS Indicator)\nstatus: experimental\ndescription: Detects when the time between app launch, login, and transaction initiation is faster than humanly possible, indicating an Automated Transfer System.\nlogsource:\n    product: mobile_banking\n    service: telemetry\ndetection:\n    selection:\n        action: 'transaction_initiated'\n    condition: selection | time_since(session_start) < 4s\nlevel: high\ntags:\n    - attack.t1624\n    - cfpf.phase4.execution",
+      "title": "Sigma — Fast Navigation ATS Anomaly (Conceptual)"
+    }
+  ]
+}

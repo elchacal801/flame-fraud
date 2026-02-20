@@ -1,0 +1,19 @@
+title: Mule Account Velocity Pattern
+id: 5a4b11f2-7b0b-4de0-8fb3-a8c3d7031911
+status: experimental
+description: Detects rapid inbound transfers from multiple unique senders followed by immediate outbound movement, typical of money mule activity. This rule is a shared component applicable to TP-0001, TP-0002, TP-0011, and TP-0022.
+logsource:
+    product: banking
+    service: transaction_monitoring
+detection:
+    selection_inbound:
+        transaction_type: 'ACH_IN'
+    timeframe: 30d
+    condition: selection_inbound | count(distinct originator_name) by account_id > 3
+    
+    # Needs correlation with rapid outbound (ideally via an Event Query Language or Splunk transaction command)
+level: high
+tags:
+    - attack.t1583
+    - cfpf.phase5.monetization
+    - flame.shared

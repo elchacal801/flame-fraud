@@ -1,11 +1,15 @@
 {
-  "total": 15,
-  "fraudTypes": 28,
+  "total": 23,
+  "fraudTypes": 44,
   "fraudTypeList": [
     "BEC",
     "account-takeover",
     "advance-fee-fraud",
     "application-fraud",
+    "authorized-push-payment",
+    "benefit-fraud",
+    "business-email-compromise",
+    "bust-out",
     "check-fraud",
     "collusion",
     "credential-stuffing",
@@ -13,25 +17,37 @@
     "data-theft",
     "deepfake",
     "disability-fraud",
+    "documentary-fraud",
+    "first-party-fraud",
     "fraudulent-claim",
+    "healthcare-fraud",
     "identity-theft",
     "impersonation",
     "insider-threat",
+    "investment-scam",
     "invoice-fraud",
+    "loan-fraud",
     "malvertising",
+    "malware",
     "money-mule",
     "new-account-fraud",
     "payment-diversion",
     "payroll-diversion",
+    "phantom-billing",
     "phishing",
     "premium-diversion",
     "provider-fraud",
     "romance-scam",
+    "social-engineering",
     "synthetic-identity",
+    "tax-fraud",
+    "unauthorized-transaction",
+    "upcoding",
+    "vendor-impersonation",
     "vishing",
     "wire-fraud"
   ],
-  "sectors": 9,
+  "sectors": 11,
   "sectorList": [
     "banking",
     "credit-union",
@@ -39,16 +55,18 @@
     "crypto",
     "employment",
     "fintech",
+    "government",
     "healthcare",
     "insurance",
+    "investment",
     "staffing"
   ],
   "phaseCoverage": {
-    "P1": 15,
-    "P2": 15,
-    "P3": 15,
-    "P4": 15,
-    "P5": 15
+    "P1": 22,
+    "P2": 20,
+    "P3": 23,
+    "P4": 22,
+    "P5": 22
   },
   "topTags": [
     {
@@ -56,7 +74,15 @@
       "count": 3
     },
     {
+      "tag": "commercial-banking",
+      "count": 2
+    },
+    {
       "tag": "elder-fraud",
+      "count": 2
+    },
+    {
+      "tag": "pig-butchering",
       "count": 2
     },
     {
@@ -116,19 +142,11 @@
       "count": 1
     },
     {
-      "tag": "authorized-push-payment",
+      "tag": "android-malware",
       "count": 1
     },
     {
-      "tag": "automated-attack",
-      "count": 1
-    },
-    {
-      "tag": "bank-impersonation",
-      "count": 1
-    },
-    {
-      "tag": "branch-operations",
+      "tag": "app-fraud",
       "count": 1
     }
   ],
@@ -147,13 +165,13 @@
     {
       "fraud_type": "account-takeover",
       "phases": {
-        "P1": 7,
-        "P2": 7,
-        "P3": 7,
-        "P4": 7,
-        "P5": 7
+        "P1": 9,
+        "P2": 9,
+        "P3": 9,
+        "P4": 9,
+        "P5": 9
       },
-      "total_tps": 7
+      "total_tps": 9
     },
     {
       "fraud_type": "advance-fee-fraud",
@@ -171,6 +189,48 @@
       "phases": {
         "P1": 1,
         "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "authorized-push-payment",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "benefit-fraud",
+      "phases": {
+        "P1": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "business-email-compromise",
+      "phases": {
+        "P1": 2,
+        "P2": 2,
+        "P3": 2,
+        "P4": 2,
+        "P5": 2
+      },
+      "total_tps": 2
+    },
+    {
+      "fraud_type": "bust-out",
+      "phases": {
+        "P1": 1,
         "P3": 1,
         "P4": 1,
         "P5": 1
@@ -255,6 +315,25 @@
       "total_tps": 1
     },
     {
+      "fraud_type": "documentary-fraud",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "first-party-fraud",
+      "phases": {
+        "P1": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
       "fraud_type": "fraudulent-claim",
       "phases": {
         "P1": 1,
@@ -266,15 +345,24 @@
       "total_tps": 1
     },
     {
-      "fraud_type": "identity-theft",
+      "fraud_type": "healthcare-fraud",
       "phases": {
-        "P1": 1,
-        "P2": 1,
         "P3": 1,
         "P4": 1,
         "P5": 1
       },
       "total_tps": 1
+    },
+    {
+      "fraud_type": "identity-theft",
+      "phases": {
+        "P1": 4,
+        "P2": 3,
+        "P3": 4,
+        "P4": 3,
+        "P5": 3
+      },
+      "total_tps": 4
     },
     {
       "fraud_type": "impersonation",
@@ -299,6 +387,17 @@
       "total_tps": 1
     },
     {
+      "fraud_type": "investment-scam",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
       "fraud_type": "invoice-fraud",
       "phases": {
         "P1": 1,
@@ -310,7 +409,29 @@
       "total_tps": 1
     },
     {
+      "fraud_type": "loan-fraud",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
       "fraud_type": "malvertising",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "malware",
       "phases": {
         "P1": 1,
         "P2": 1,
@@ -334,13 +455,13 @@
     {
       "fraud_type": "new-account-fraud",
       "phases": {
-        "P1": 1,
-        "P2": 1,
-        "P3": 1,
+        "P1": 2,
+        "P2": 2,
+        "P3": 2,
         "P4": 1,
         "P5": 1
       },
-      "total_tps": 1
+      "total_tps": 2
     },
     {
       "fraud_type": "payment-diversion",
@@ -358,6 +479,15 @@
       "phases": {
         "P1": 1,
         "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "phantom-billing",
+      "phases": {
         "P3": 1,
         "P4": 1,
         "P5": 1
@@ -409,7 +539,59 @@
       "total_tps": 1
     },
     {
+      "fraud_type": "social-engineering",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
       "fraud_type": "synthetic-identity",
+      "phases": {
+        "P1": 3,
+        "P2": 2,
+        "P3": 3,
+        "P4": 2,
+        "P5": 2
+      },
+      "total_tps": 3
+    },
+    {
+      "fraud_type": "tax-fraud",
+      "phases": {
+        "P1": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "unauthorized-transaction",
+      "phases": {
+        "P1": 1,
+        "P2": 1,
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "upcoding",
+      "phases": {
+        "P3": 1,
+        "P4": 1,
+        "P5": 1
+      },
+      "total_tps": 1
+    },
+    {
+      "fraud_type": "vendor-impersonation",
       "phases": {
         "P1": 1,
         "P2": 1,
@@ -433,14 +615,14 @@
     {
       "fraud_type": "wire-fraud",
       "phases": {
-        "P1": 4,
-        "P2": 4,
-        "P3": 4,
-        "P4": 4,
-        "P5": 4
+        "P1": 5,
+        "P2": 5,
+        "P3": 5,
+        "P4": 5,
+        "P5": 5
       },
-      "total_tps": 4
+      "total_tps": 5
     }
   ],
-  "generatedAt": "1771484945.473398"
+  "generatedAt": "2026-02-20T06:18:46.344300+00:00"
 }

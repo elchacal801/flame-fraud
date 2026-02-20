@@ -53,6 +53,7 @@ Employees of financial institutions abuse their legitimate system access to comm
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Internal control mapping | Insider identifies detection thresholds, monitoring gaps, review cadences, and system access boundaries through normal job activity | Unusual access to policy/procedure documentation; queries about audit processes |
@@ -60,12 +61,14 @@ Employees of financial institutions abuse their legitimate system access to comm
 | External actor recruitment (collusion variant) | Insider connects with external fraud actors who provide stolen identities, receive funds, or fence stolen data | Communications between employee and known fraud actors (often discovered retrospectively) |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-009: Insider access abuse | Insider uses legitimate credentials and system access — no technical compromise needed. Access is authorized; the intent is not. | Employee accessing accounts outside their normal portfolio or branch; off-hours system access; access volume spikes |
 | Fraudulent account opening | Insider opens new accounts using stolen, synthetic, or deceased individual identities — bypassing KYC checks they're responsible for | New accounts with PII matching breach data; accounts where employee is the sole contact; accounts with no customer-initiated activity |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P3-002: Modify account information | Change beneficiary info, contact details, or payment routing on existing customer accounts to redirect funds | Account modifications performed by employee on accounts outside their assignment; modifications with no corresponding customer request |
@@ -74,6 +77,7 @@ Employees of financial institutions abuse their legitimate system access to comm
 | Customer data exfiltration | Export customer PII, account details, or transaction histories for use by external fraud rings | Bulk data access or export; USB usage; email of customer data to personal accounts; screenshot activity |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P4-001: Unauthorized wire/transfer | Initiate wire transfers, ACH payments, or internal transfers from customer accounts to insider-controlled or accomplice accounts | Transfers initiated by employee from customer accounts with no customer authorization; transfers to accounts linked to employee |
@@ -82,6 +86,7 @@ Employees of financial institutions abuse their legitimate system access to comm
 | Cash manipulation (branch) | Teller or branch employee manipulates cash transactions — skimming, kiting, or fictitious deposits | Cash drawer discrepancies; CTR structuring below $10K; balancing anomalies |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Direct fund diversion | Stolen funds sent to insider's own accounts or immediate family | Transfers to accounts with same surname/address as employee |
@@ -113,22 +118,27 @@ Employees of financial institutions abuse their legitimate system access to comm
 ## Detection Approaches
 
 **UEBA — Employee Access Anomaly Scoring**
-```
-Model baseline per employee:
-  - Normal account access volume per day
-  - Normal account access scope (branch, portfolio, geography)
-  - Normal time-of-day patterns
-  - Normal transaction types and volumes
 
-Flag when employee deviates from baseline:
-  - Accessing accounts outside their portfolio/branch
-  - Accessing dormant or recently deceased customer accounts
-  - Transaction volume spikes
-  - Off-hours access patterns
-  - Transactions that consistently fall just below monitoring thresholds
+```yaml
+title: Anomalous Internal Account Access Volume
+status: experimental
+description: Detects when an employee accesses 3x their baseline account volume within 24 hours
+logsource:
+    product: core_banking
+    service: ueba
+detection:
+    selection:
+        action: "account_view"
+    timeframe: 24h
+    condition: selection | count(distinct account_id) by employee_id > 3 * baseline_volume_24h
+level: high
+tags:
+    - cfpf.phase2.initial_access
+    - insider.threat
 ```
 
 **Graph Analytics — Employee-Account-Beneficiary Relationship**
+
 ```
 Build graph: Employee → Accounts Accessed → Beneficiaries/Transfers
 Flag when:
@@ -144,12 +154,14 @@ Insider fraud is the hardest threat path to detect because the actor has legitim
 **Insurance sector specificity**: At insurance companies, insider risk extends to claims adjusters (inflating settlements), underwriters (approving high-risk policies for kickbacks), and agents (premium diversion per TP-0005). The positioning phase often looks like normal job activity — the key differentiator is the pattern of decisions, not any single event.
 
 ## References
+
 - ACFE: Report to the Nations (biennial) — occupational fraud statistics
 - FDIC: Enforcement Decisions (insider fraud)
 - DOJ: Bank fraud prosecution press releases
 - CERT National Insider Threat Center: Common Sense Guide
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

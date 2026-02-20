@@ -21,7 +21,13 @@ cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1566.001, T1583.001]
 ft3_tactics: []
 mitre_f3: []
-groupib_stages: []
+groupib_stages:
+  - "Reconnaissance"
+  - "Resource Development"
+  - "Trust Abuse"
+  - "End-user Interaction"
+  - "Perform Fraud"
+  - "Monetization"
 tags:
   - employment-fraud
   - brand-impersonation
@@ -109,14 +115,17 @@ Actors impersonate legitimate employers — particularly in healthcare staffing,
 
 ### Domain-Based Detection
 
-```
-Flag domains where:
-  - Domain name contains known employer brand name + variation
-  - Domain registered within 90 days
-  - Hosting on budget providers (Hostinger, GoDaddy shared)
-  - MX records point to separate email infrastructure
-  - SSL certificate issued by Let's Encrypt within days of registration
-  - Multiple employer-impersonation domains share IP/nameserver
+```sql
+SELECT d.domain_name, d.creation_date, d.registrar
+FROM recently_registered_domains d
+JOIN mx_records m ON d.domain_id = m.domain_id
+JOIN ssl_certificates s ON d.domain_id = s.domain_id
+WHERE d.domain_name SIMILAR TO '%(health|staffing|rightathome)%'
+AND d.creation_date >= CURRENT_DATE - INTERVAL '90 days'
+AND d.hosting_provider IN ('Hostinger', 'GoDaddy', 'OVH')
+AND m.mx_domain != d.domain_name
+AND s.issuer = 'Let''s Encrypt'
+AND DATEDIFF('day', d.creation_date, s.issue_date) <= 3;
 ```
 
 ### Job Board Anomaly Detection

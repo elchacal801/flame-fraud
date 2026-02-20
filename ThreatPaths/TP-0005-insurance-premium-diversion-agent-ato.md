@@ -19,7 +19,13 @@ cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1566.001, T1078, T1657]
 ft3_tactics: []                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
-groupib_stages: []               # Group-IB Fraud Matrix (reference)
+groupib_stages:
+  - "Reconnaissance"
+  - "Resource Development"
+  - "Trust Abuse"
+  - "Account Access"
+  - "Perform Fraud"
+  - "Monetization"
 tags:
   - insurance-agent
   - agent-portal

@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0022",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT \n    a.account_id,\n    COUNT(DISTINCT t.originator_name) as distinct_state_agencies,\n    SUM(t.amount) as total_government_deposits,\n    MAX(t.transaction_date) as latest_deposit\nFROM ach_inbound t\nJOIN accounts a ON t.account_id = a.account_id\nWHERE t.sec_code = 'PPD' \n  AND t.originator_name SIMILAR TO '%(UI|UNEMPLOYMENT|TREAS 310|TAX REF)% '\n  AND t.transaction_date >= CURRENT_DATE - INTERVAL '30 days'\nGROUP BY 1\nHAVING COUNT(*) > 2 -- More than 2 distinct benefit deposits\n   AND COUNT(DISTINCT t.receiver_name) > 1; -- For different individuals",
+      "title": "SQL — Multiple UI/Tax Deposits to Single Account (Mule Indicator)"
+    }
+  ]
+}

@@ -20,7 +20,14 @@ cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1656, T1657]
 ft3_tactics: []                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
-groupib_stages: []               # Group-IB Fraud Matrix (reference)
+groupib_stages:
+  - "Reconnaissance"
+  - "Resource Development"
+  - "Trust Abuse"
+  - "End-user Interaction"
+  - "Perform Fraud"
+  - "Monetization"
+  - "Laundering"
 tags:
   - authorized-push-payment
   - APP-fraud
@@ -107,13 +114,16 @@ Actors contact victims impersonating bank fraud departments, tech support (Micro
 
 **Real-Time Transaction Risk Scoring**
 
-```
-Flag transactions where:
-  - Account holder is on active phone call during online banking session (carrier integration)
-  - Transfer to new beneficiary + amount > threshold + customer age > 60
-  - Customer overrode fraud warning prompt
-  - Multiple transfers to same new beneficiary within 48hrs
-  - Remote access software active on customer's device during banking session
+```sql
+SELECT t.transaction_id, t.account_id
+FROM transactions t
+JOIN active_calls c ON t.customer_phone = c.phone_number
+JOIN customer_profiles cp ON t.account_id = cp.account_id
+WHERE t.beneficiary_is_new = TRUE
+AND t.amount > 5000
+AND cp.age > 60
+AND c.call_start <= t.timestamp 
+AND c.call_end >= t.timestamp;
 ```
 
 ## Operational Evidence

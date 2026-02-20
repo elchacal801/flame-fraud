@@ -53,6 +53,7 @@ Actors use AI-generated voice deepfakes to impersonate executives, clients, or a
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P1-005: Executive voice harvesting | Collect audio samples of target executives from earnings calls, conference presentations, YouTube, podcasts, media interviews | Unusual access patterns to corporate media pages; social engineering to elicit voice samples |
@@ -60,23 +61,27 @@ Actors use AI-generated voice deepfakes to impersonate executives, clients, or a
 | CFPF-P1-006: Callback infrastructure | Set up phone infrastructure with caller ID spoofing to appear as executive's number or corporate main line | VoIP setup with corporate number spoofing capability |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Deepfake voice call | Call treasury operations or wire processing team using AI-generated voice of CEO/CFO/authorized signer. Establish urgency: "I need an emergency wire processed before market close" | Call from executive during unusual hours; unusual urgency; request deviating from standard process |
 | CFPF-P2-002: Vishing (enhanced) | Combine deepfake voice with social engineering knowledge from recon — reference real deals, real contacts, real deadlines to increase credibility | Caller demonstrates knowledge of internal matters but requests process exceptions |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Authority assertion | Use impersonated executive authority to override standard verification procedures — "I'm authorizing this personally, skip the usual process" | Requests to bypass controls; pushback when verification procedures are followed |
 | Urgency/secrecy framing | Frame request as confidential acquisition, regulatory matter, or time-sensitive deal to prevent verification with others | "Don't discuss this with anyone else"; "This is confidential M&A activity" |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P4-001: Unauthorized wire | Treasury/finance staff processes wire transfer based on deepfake-authorized request | Wire to new beneficiary authorized only by phone; deviation from dual-authorization log; no corresponding email trail for voice-authorized wire |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P5-002: International wire | Funds wired to overseas accounts (frequently Hong Kong, Singapore, UK intermediary banks) | International wire to new counterparty with no contract on file |
@@ -95,11 +100,13 @@ Actors use AI-generated voice deepfakes to impersonate executives, clients, or a
 | Defence Evasion | Layered transactions, Shell Companies and Fronts, Payment by Legitimate Account Owner |
 
 **Notable Group-IB intelligence additions:**
+
 - The scheme extends beyond traditional voice calls — actors also use **messaging platforms (WhatsApp)** to deliver the impersonation, sending initial messages that establish a pretext before transitioning to deepfake voice calls
 - The target chain involves **cross-organizational impersonation**: actors impersonate a C-level executive at Institution A to manipulate a C-level executive at Institution B, exploiting established business relationships between organizations
 - Defence evasion is a key post-execution phase: funds are routed through **layered transactions** and **shell companies/fronts** to obscure the trail, and in some cases the victim organization's legitimate account owner is manipulated into authorizing the payment themselves (Payment by Legitimate Account Owner), further complicating attribution
 
 **MITRE ATT&CK:**
+
 - T1656: Impersonation
 - T1657: Financial Theft
 
@@ -125,16 +132,18 @@ Actors use AI-generated voice deepfakes to impersonate executives, clients, or a
 ## Detection Approaches
 
 **Process-Based Detection**
-```
-Flag wire requests where:
-  - Authorization was voice-only (no email/ticket trail)
-  - Beneficiary is new (no prior payment history)
-  - Request invoked urgency or secrecy
-  - Request asked to bypass standard dual-authorization
-  - Authorization call originated from external/spoofed number
+
+```sql
+SELECT * FROM wire_authorizations 
+WHERE auth_method = 'voice_only' 
+AND amount > 50000 
+AND NOT EXISTS (
+    SELECT 1 FROM email_approvals WHERE wire_id = wire_authorizations.id
+);
 ```
 
 **Behavioral Analytics**
+
 - Monitor for pattern of "test calls" to treasury/finance staff in weeks before a fraudulent authorization attempt — actors often probe processes before executing
 - Flag wire requests that deviate from the executive's normal authorization patterns (different amounts, different beneficiaries, different times of day)
 
@@ -143,6 +152,7 @@ Flag wire requests where:
 This threat path is evolving rapidly. In 2019, deepfake voice was novel and expensive. By 2025-2026, real-time voice cloning is available through commercial APIs for under $50/month. The Arup case (2024) demonstrated a multi-person deepfake video call — the entire authorization meeting was synthetic. Controls that rely on "call them back to verify" are necessary but may not be sufficient as voice cloning improves. Organizations should move toward out-of-band verification methods that don't rely on voice.
 
 ## References
+
 - Wall Street Journal: "Fraudsters Used AI to Mimic CEO's Voice in Unusual Cybercrime Case" (2019)
 - Arup Engineering deepfake video call fraud ($25M, 2024)
 - Regula: "The Deepfake Trends 2024" survey
@@ -150,6 +160,7 @@ This threat path is evolving rapidly. In 2019, deepfake voice was novel and expe
 - Group-IB Fraud Intelligence: "C-level impersonation Using Deepvoice" scheme report (technique-level Fraud Matrix mapping)
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

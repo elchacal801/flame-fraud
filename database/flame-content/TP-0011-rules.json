@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0011",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT account_id\nFROM transactions\nWHERE transaction_type = 'INBOUND'\nAND timestamp >= CURRENT_DATE - INTERVAL '30 days'\nGROUP BY account_id\nHAVING COUNT(DISTINCT sender_id) >= 3\nAND EXISTS (\n    SELECT 1 FROM transactions t_out\n    WHERE t_out.account_id = transactions.account_id\n    AND t_out.transaction_type = 'OUTBOUND'\n    AND t_out.destination_type IN ('INTERNATIONAL_WIRE', 'CRYPTO', 'P2P')\n    AND t_out.timestamp >= transactions.timestamp\n    AND t_out.timestamp <= transactions.timestamp + INTERVAL '48 hours'\n);",
+      "title": "Mule Account Behavioral Pattern"
+    }
+  ]
+}

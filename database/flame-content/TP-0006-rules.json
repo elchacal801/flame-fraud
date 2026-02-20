@@ -1,0 +1,15 @@
+{
+  "tp_id": "TP-0006",
+  "rules": [
+    {
+      "type": "kql",
+      "content": "EmailEvents\n| where Subject has_any (\"wire\", \"closing\", \"escrow\", \"wiring instructions\")\n| extend sender_domain = tostring(split(SenderFromAddress, \"@\")[1])\n| where sender_domain !in (known_title_company_domains)\n| project Timestamp, SenderFromAddress, RecipientEmailAddress, Subject",
+      "title": "Email — Wire Instruction Anomaly (M365 / Google Workspace)"
+    },
+    {
+      "type": "sigma",
+      "content": "title: Suspicious Inbox Rule Creation\nstatus: experimental\ndescription: Detects the creation of inbox rules looking for real estate keywords like wire, closing, escrow to suppress legitimate communication.\nlogsource:\n    product: m365\n    service: exchange\ndetection:\n    selection:\n        ActionType: 'New-InboxRule'\n        RuleParameters|contains:\n            - 'wire'\n            - 'closing'\n            - 'escrow'\n    condition: selection",
+      "title": "Email — Suspicious Inbox Rule Creation (M365)"
+    }
+  ]
+}

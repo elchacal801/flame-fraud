@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0014",
+  "rules": [
+    {
+      "type": "sigma",
+      "content": "title: Anomalous Internal Account Access Volume\nstatus: experimental\ndescription: Detects when an employee accesses 3x their baseline account volume within 24 hours\nlogsource:\n    product: core_banking\n    service: ueba\ndetection:\n    selection:\n        action: \"account_view\"\n    timeframe: 24h\n    condition: selection | count(distinct account_id) by employee_id > 3 * baseline_volume_24h\nlevel: high\ntags:\n    - cfpf.phase2.initial_access\n    - insider.threat",
+      "title": "UEBA — Employee Access Anomaly Scoring"
+    }
+  ]
+}

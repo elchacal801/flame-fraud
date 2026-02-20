@@ -23,6 +23,7 @@ import os
 import re
 import sqlite3
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 try:
@@ -297,8 +298,24 @@ def load_submission(conn: sqlite3.Connection, meta: dict, body: str, summary: st
     _insert_multi(conn, "submission_groupib_stages", sub_id, "stage", meta.get("groupib_stages", []))
 
 
+# Whitelist of valid (table, column) pairs for multi-value operations.
+# Prevents SQL injection if table/col ever comes from untrusted input.
+_VALID_MULTI_TABLES = {
+    ("submission_sectors", "sector"),
+    ("submission_fraud_types", "fraud_type"),
+    ("submission_tags", "tag"),
+    ("submission_cfpf_phases", "phase"),
+    ("submission_mitre_attack", "technique_id"),
+    ("submission_ft3_tactics", "tactic_id"),
+    ("submission_mitre_f3", "technique_id"),
+    ("submission_groupib_stages", "stage"),
+}
+
+
 def _insert_multi(conn: sqlite3.Connection, table: str, sub_id: str, col: str, values):
     """Insert multi-value list entries for a submission."""
+    if (table, col) not in _VALID_MULTI_TABLES:
+        raise ValueError(f"Invalid table/column pair: {table}.{col}")
     if not values or not isinstance(values, list):
         return
     for val in values:
@@ -377,6 +394,8 @@ def export_json(conn: sqlite3.Connection, output_path: Path):
 
 def _fetch_list(conn: sqlite3.Connection, table: str, col: str, sub_id: str) -> list:
     """Fetch a list of values from a multi-value table."""
+    if (table, col) not in _VALID_MULTI_TABLES:
+        raise ValueError(f"Invalid table/column pair: {table}.{col}")
     rows = conn.execute(
         f"SELECT {col} FROM {table} WHERE submission_id = ? ORDER BY rowid",
         (sub_id,)
@@ -525,7 +544,7 @@ def export_stats_json(conn: sqlite3.Connection, output_path: Path):
         "phaseCoverage": phase_coverage,
         "topTags": top_tags,
         "coverageMatrix": coverage_matrix,
-        "generatedAt": str(Path(__file__).stat().st_mtime),
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -562,6 +581,92 @@ def export_evidence_index(evidence_map: dict, output_path: Path):
         encoding="utf-8"
     )
     return len(flat_entries)
+
+
+def export_index_md(conn: sqlite3.Connection, output_path: Path, stats: dict):
+    """Programmatically generate INDEX.md based on parsed database."""
+    lines = [
+        "# FLAME Threat Path Index",
+        "",
+        f"> {stats['total']} threat paths covering {stats['fraudTypes']} fraud types across {stats['sectors']} sectors",
+        "> Framework-agnostic: mapped to CFPF phases with cross-references to FT3, ATT&CK, and Group-IB Fraud Matrix",
+        "",
+        "## Coverage Summary",
+        "",
+        "| ID | Title | Fraud Types | Sectors | CFPF Phases |",
+        "|----|-------|-------------|---------|-------------|"
+    ]
+    cursor = conn.execute("SELECT id, title FROM submissions ORDER BY id")
+    for row in cursor.fetchall():
+        sub_id = row[0]
+        title = row[1]
+        fraud_types = ", ".join(_fetch_list(conn, "submission_fraud_types", "fraud_type", sub_id))
+        sectors = ", ".join(map(str.capitalize, _fetch_list(conn, "submission_sectors", "sector", sub_id)))
+        phases = _fetch_list(conn, "submission_cfpf_phases", "phase", sub_id)
+        
+        def format_phases(p_list):
+            if not p_list: return ""
+            nums = sorted([int(p.replace("P", "")) for p in p_list if p.startswith("P")])
+            if not nums: return ""
+            if len(nums) == 1: return f"P{nums[0]}"
+            # Simple grouping
+            if nums == list(range(nums[0], nums[-1]+1)):
+                return f"P{nums[0]}-P{nums[-1]}"
+            return ", ".join(f"P{n}" for n in nums)
+
+        phase_str = format_phases(phases)
+        lines.append(f"| {sub_id} | {title} | {fraud_types} | {sectors} | {phase_str} |")
+
+    lines.append("")
+    lines.append("## Coverage by Fraud Type")
+    lines.append("")
+    lines.append("| Fraud Type | Threat Paths |")
+    lines.append("|------------|-------------|")
+    
+    for ft in stats["fraudTypeList"]:
+        tp_rows = conn.execute("SELECT submission_id FROM submission_fraud_types WHERE fraud_type = ? ORDER BY submission_id", (ft,)).fetchall()
+        tps = ", ".join([r[0] for r in tp_rows])
+        lines.append(f"| {ft.title().replace('-', ' ')} | {tps} |")
+        
+    lines.append("")
+    lines.append("## Coverage by Sector")
+    lines.append("")
+    lines.append("| Sector | Threat Paths |")
+    lines.append("|--------|-------------|")
+    for sec in stats["sectorList"]:
+        tp_rows = conn.execute("SELECT submission_id FROM submission_sectors WHERE sector = ? ORDER BY submission_id", (sec,)).fetchall()
+        tps = ", ".join([r[0] for r in tp_rows])
+        lines.append(f"| {sec.title().replace('-', ' ')} | {tps} |")
+
+    # Framework stats
+    mitre_count = conn.execute("SELECT COUNT(DISTINCT submission_id) FROM submission_mitre_attack").fetchone()[0]
+    groupib_count = conn.execute("SELECT COUNT(DISTINCT submission_id) FROM submission_groupib_stages").fetchone()[0]
+
+    lines.append("")
+    lines.append("## Framework Coverage Status")
+    lines.append("")
+    lines.append("| Framework | Mapping Status | Notes |")
+    lines.append("|-----------|---------------|-------|")
+    lines.append(f"| FS-ISAC CFPF | All {stats['total']} TPs mapped | Primary organizational structure |")
+    lines.append(f"| MITRE ATT&CK | {mitre_count} of {stats['total']} TPs mapped | Where applicable (some fraud-only TPs lack ATT&CK equivalents) |")
+    lines.append("| Stripe FT3 | Pending | MIT-licensed JSON available for parsing |")
+    lines.append("| MITRE F3 | Awaiting release | Will map when F3 ships |")
+    lines.append(f"| Group-IB Fraud Matrix | {groupib_count} of {stats['total']} TPs mapped | 10-stage lifecycle; stage names referenced for interoperability |")
+    
+    lines.append("")
+    lines.append("## Cross-Threat Path Connections")
+    lines.append("")
+    lines.append("The fraud ecosystem is interconnected. Key relationships:")
+    lines.append("")
+    lines.append("```")
+    lines.append("TP-0011 (Romance/Mule Recruitment) ──provides mule accounts to──▶ TP-0001, TP-0002, TP-0006, TP-0009")
+    lines.append("TP-0003 (Synthetic Identity) ──provides fraudulent accounts to──▶ TP-0009, TP-0013")
+    lines.append("TP-0014 (Insider Threat) ──provides customer data to──▶ TP-0001, TP-0005, TP-0008, TP-0012")
+    lines.append("TP-0007 (Deepfake Voice) ──enhances social engineering in──▶ TP-0001, TP-0006, TP-0012")
+    lines.append("TP-0008 (SIM Swap) ──bypasses MFA controls in──▶ TP-0001, TP-0005, TP-0013")
+    lines.append("```")
+    
+    output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
@@ -668,6 +773,11 @@ def main():
     stats_path = root / "database" / "flame-stats.json"
     stats = export_stats_json(conn, stats_path)
     log.info("Exported stats to %s (total=%d)", stats_path, stats["total"])
+    
+    # Export auto-generated markdown index
+    md_index_path = root / "ThreatPaths" / "INDEX.md"
+    export_index_md(conn, md_index_path, stats)
+    log.info("Exported markdown index to %s", md_index_path)
 
     conn.close()
 

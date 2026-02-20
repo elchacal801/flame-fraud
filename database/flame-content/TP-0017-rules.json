@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0017",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT \n    c.customer_id,\n    c.age,\n    w.wire_amount,\n    w.beneficiary_name,\n    w.wire_date\nFROM customers c\nJOIN wire_outbound w ON c.account_id = w.account_id\nWHERE c.age >= 60\n  AND w.wire_amount > 25000\n  AND w.beneficiary_name SIMILAR TO '%(coinbase|kraken|binance|gemini)%'\n  AND NOT EXISTS (\n      -- Detect if this is their first time wiring to crypto\n      SELECT 1 FROM wire_outbound w_old \n      WHERE w_old.account_id = c.account_id \n        AND w_old.wire_date < CURRENT_DATE - INTERVAL '30 days'\n        AND w_old.beneficiary_name SIMILAR TO '%(coinbase|kraken|binance|gemini)%'\n  );",
+      "title": "SQL — High-Value Outbound to Crypto Exchange (Elder Financial Exploitation Indicator)"
+    }
+  ]
+}

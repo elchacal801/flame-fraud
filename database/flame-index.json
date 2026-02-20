@@ -93,7 +93,15 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Trust Abuse",
+      "Account Access",
+      "Perform Fraud",
+      "Monetization",
+      "Laundering"
+    ],
     "evidence_count": 0
   },
   {
@@ -131,7 +139,13 @@
     "mitre_attack": [],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Account Access",
+      "Perform Fraud",
+      "Monetization"
+    ],
     "evidence_count": 2
   },
   {
@@ -172,7 +186,14 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Trust Abuse",
+      "Account Access",
+      "Perform Fraud",
+      "Monetization"
+    ],
     "evidence_count": 0
   },
   {
@@ -212,7 +233,14 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Trust Abuse",
+      "Account Access",
+      "Perform Fraud",
+      "Monetization"
+    ],
     "evidence_count": 0
   },
   {
@@ -257,7 +285,15 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Trust Abuse",
+      "End-user Interaction",
+      "Perform Fraud",
+      "Monetization",
+      "Laundering"
+    ],
     "evidence_count": 0
   },
   {
@@ -396,7 +432,13 @@
     "mitre_attack": [],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Account Access",
+      "Perform Fraud",
+      "Monetization"
+    ],
     "evidence_count": 0
   },
   {
@@ -434,7 +476,13 @@
     "mitre_attack": [],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Trust Abuse",
+      "Perform Fraud",
+      "Monetization"
+    ],
     "evidence_count": 0
   },
   {
@@ -525,7 +573,15 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Trust Abuse",
+      "End-user Interaction",
+      "Perform Fraud",
+      "Monetization",
+      "Laundering"
+    ],
     "evidence_count": 1
   },
   {
@@ -670,7 +726,363 @@
     ],
     "ft3_tactics": [],
     "mitre_f3": [],
-    "groupib_stages": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Resource Development",
+      "Trust Abuse",
+      "End-user Interaction",
+      "Perform Fraud",
+      "Monetization"
+    ],
     "evidence_count": 1
+  },
+  {
+    "id": "TP-0016",
+    "title": "First-Party Fraud (Bust-Out)",
+    "category": "ThreatPath",
+    "date": "2026-02-20",
+    "author": "FLAME Project",
+    "source": "Internal Knowledge Base",
+    "tlp": "WHITE",
+    "summary": "First-party fraud occurs when an individual intentionally misrepresents their identity, intent, or financial situation to obtain credit or services with no intention of repayment. This threat path foc...",
+    "sectors": [
+      "banking",
+      "credit-union"
+    ],
+    "fraud_types": [
+      "first-party-fraud",
+      "bust-out"
+    ],
+    "tags": [
+      "first-party",
+      "credit-card",
+      "consumer-banking"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Perform Fraud",
+      "Monetization"
+    ],
+    "evidence_count": 0
+  },
+  {
+    "id": "TP-0017",
+    "title": "Pig Butchering (Investment Scam)",
+    "category": "ThreatPath",
+    "date": "2026-02-20",
+    "author": "FLAME Project",
+    "source": "Internal Knowledge Base",
+    "tlp": "WHITE",
+    "summary": "\"Pig Butchering\" (Sha Zhu Pan) is an orchestrated, long-term social engineering scheme where perpetrators build trust with targets over weeks or months (often via dating apps or misdirected text messa...",
+    "sectors": [
+      "banking",
+      "crypto",
+      "cross-sector"
+    ],
+    "fraud_types": [
+      "investment-scam",
+      "social-engineering",
+      "authorized-push-payment"
+    ],
+    "tags": [
+      "pig-butchering",
+      "crypto-scam",
+      "romance-scam",
+      "app-fraud"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [
+      "T1566.002",
+      "T1656"
+    ],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "End-user Interaction",
+      "Trust Abuse",
+      "Perform Fraud",
+      "Monetization"
+    ],
+    "evidence_count": 0
+  },
+  {
+    "id": "TP-0018",
+    "title": "Deepfake Document Fraud",
+    "category": "ThreatPath",
+    "date": "2026-02-20",
+    "author": "FLAME Project",
+    "source": "Internal Knowledge Base",
+    "tlp": "WHITE",
+    "summary": "Deepfake document fraud targets the Know Your Customer (KYC) and remote account onboarding processes. Criminals utilize advanced generative AI models (GANs, diffusion models) to manufacture highly rea...",
+    "sectors": [
+      "banking",
+      "credit-union",
+      "fintech"
+    ],
+    "fraud_types": [
+      "documentary-fraud",
+      "identity-theft",
+      "synthetic-identity",
+      "new-account-fraud"
+    ],
+    "tags": [
+      "deepfake",
+      "kyc-bypass",
+      "onboarding",
+      "synthetic-identity"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "mitre_attack": [
+      "T1583"
+    ],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [
+      "Resource Development",
+      "Trust Abuse",
+      "Account Access"
+    ],
+    "evidence_count": 0
+  },
+  {
+    "id": "TP-0019",
+    "title": "Business Identity Theft",
+    "category": "ThreatPath",
+    "date": "2026-02-20",
+    "author": "FLAME Project",
+    "source": "Internal Knowledge Base",
+    "tlp": "WHITE",
+    "summary": "Business Identity Theft (or Corporate Hijacking) involves threat actors impersonating a legitimate, functioning business — typically a small to medium-sized enterprise (SME) — to open financial accoun...",
+    "sectors": [
+      "banking",
+      "investment"
+    ],
+    "fraud_types": [
+      "identity-theft",
+      "business-email-compromise",
+      "loan-fraud",
+      "account-takeover"
+    ],
+    "tags": [
+      "corporate-hijacking",
+      "commercial-banking",
+      "ppp-fraud-typology",
+      "business-loans"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [
+      "T1566",
+      "T1589"
+    ],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Account Access",
+      "Trust Abuse",
+      "Perform Fraud"
+    ],
+    "evidence_count": 0
+  },
+  {
+    "id": "TP-0020",
+    "title": "Supply Chain Payment Fraud",
+    "category": "ThreatPath",
+    "date": "2026-02-20",
+    "author": "FLAME Project",
+    "source": "Internal Knowledge Base",
+    "tlp": "WHITE",
+    "summary": "Supply Chain Payment Fraud (a variant of Vendor Impersonation / BEC) involves threat actors compromising the email account of a legitimate vendor or supplier. The actors monitor email traffic to ident...",
+    "sectors": [
+      "banking",
+      "cross-sector"
+    ],
+    "fraud_types": [
+      "business-email-compromise",
+      "vendor-impersonation",
+      "wire-fraud"
+    ],
+    "tags": [
+      "supply-chain",
+      "b2b-payments",
+      "invoice-fraud",
+      "vendor-fraud"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [
+      "T1566.001",
+      "T1586",
+      "T1562.012"
+    ],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [
+      "Reconnaissance",
+      "Account Access",
+      "Trust Abuse",
+      "Perform Fraud",
+      "Monetization"
+    ],
+    "evidence_count": 0
+  },
+  {
+    "id": "TP-0021",
+    "title": "Healthcare Provider Billing Fraud",
+    "category": "ThreatPath",
+    "date": "2026-02-20",
+    "author": "FLAME Project",
+    "source": "Internal Knowledge Base",
+    "tlp": "WHITE",
+    "summary": "Healthcare Provider Billing Fraud involves legitimate or seemingly legitimate medical providers intentionally submitting false or inflated claims to health insurance networks or government programs (l...",
+    "sectors": [
+      "healthcare",
+      "insurance"
+    ],
+    "fraud_types": [
+      "healthcare-fraud",
+      "phantom-billing",
+      "upcoding"
+    ],
+    "tags": [
+      "medicare-fraud",
+      "medical-billing",
+      "upcoding",
+      "phantom-billing"
+    ],
+    "cfpf_phases": [
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [
+      "Trust Abuse",
+      "Perform Fraud",
+      "Monetization"
+    ],
+    "evidence_count": 0
+  },
+  {
+    "id": "TP-0022",
+    "title": "Government Program Fraud (Unemployment/Tax)",
+    "category": "ThreatPath",
+    "date": "2026-02-20",
+    "author": "FLAME Project",
+    "source": "Internal Knowledge Base",
+    "tlp": "WHITE",
+    "summary": "Government Program Fraud involves threat actors leveraging stolen Personally Identifiable Information (PII) to file fraudulent claims for government benefits (e.g., UI, SNAP, FEMA disaster relief) or ...",
+    "sectors": [
+      "government",
+      "banking"
+    ],
+    "fraud_types": [
+      "benefit-fraud",
+      "identity-theft",
+      "synthetic-identity",
+      "tax-fraud"
+    ],
+    "tags": [
+      "benefits-scam",
+      "irs-fraud",
+      "targeted-demographics"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [
+      "Resource Development",
+      "Perform Fraud",
+      "Monetization"
+    ],
+    "evidence_count": 0
+  },
+  {
+    "id": "TP-0023",
+    "title": "Mobile Banking Trojan / Overlay Attack",
+    "category": "ThreatPath",
+    "date": "2026-02-20",
+    "author": "FLAME Project",
+    "source": "Internal Knowledge Base",
+    "tlp": "WHITE",
+    "summary": "Mobile Banking Trojans (primarily targeting Android environments) are sophisticated malware variants that deceive users into granting extensive device \"Accessibility\" permissions. Once installed, the ...",
+    "sectors": [
+      "banking",
+      "fintech",
+      "crypto"
+    ],
+    "fraud_types": [
+      "account-takeover",
+      "malware",
+      "unauthorized-transaction"
+    ],
+    "tags": [
+      "mbanking",
+      "android-malware",
+      "overlay-attack",
+      "ats"
+    ],
+    "cfpf_phases": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "mitre_attack": [
+      "T1624",
+      "T1626",
+      "T1417",
+      "T1636"
+    ],
+    "ft3_tactics": [],
+    "mitre_f3": [],
+    "groupib_stages": [
+      "Resource Development",
+      "Initial Access",
+      "Execution",
+      "Credential Access",
+      "Perform Fraud"
+    ],
+    "evidence_count": 0
   }
 ]

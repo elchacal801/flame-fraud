@@ -53,6 +53,7 @@ Actors social-engineer mobile carriers to transfer a victim's phone number to an
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P1-005: Social media recon | Identify crypto holders through social media posts (trading screenshots, NFT displays, conference attendance, Discord/Telegram group membership) | Scraping of crypto-focused social media; monitoring of blockchain conference attendee lists |
@@ -60,6 +61,7 @@ Actors social-engineer mobile carriers to transfer a victim's phone number to an
 | Carrier employee recruitment | Bribe or recruit insiders at mobile carriers to execute SIM swaps without standard verification | Carrier insider activity outside normal patterns |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-006: SIM swap | Contact mobile carrier impersonating victim (or via bribed insider) to port phone number to new SIM. Victim's phone immediately loses service. | Victim reports sudden loss of cellular service; unauthorized SIM change on carrier records |
@@ -67,6 +69,7 @@ Actors social-engineer mobile carriers to transfer a victim's phone number to an
 | CFPF-P2-005: Credential access | Use previously obtained credentials (phishing, breach data, social engineering) combined with intercepted MFA to authenticate to exchange | Login from new device/IP with valid credentials + MFA |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P3-003: Contact info modification | Change email, phone, and recovery options on exchange account to actor-controlled addresses | Account recovery contact changes immediately after login from new device |
@@ -74,12 +77,14 @@ Actors social-engineer mobile carriers to transfer a victim's phone number to an
 | API key creation | Generate API keys for programmatic access to exchange account (enables faster, automated withdrawals) | New API key creation from anomalous session |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Cryptocurrency withdrawal | Drain all exchange balances — spot holdings, staking positions, DeFi deposits — to actor-controlled wallets | Maximum withdrawal activity; withdrawals to previously unused addresses; withdrawal of all asset types simultaneously |
 | NFT transfer | Transfer high-value NFTs to actor wallets | NFT transfers to new wallets during same session as crypto withdrawals |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P5-003: Crypto laundering | Funds routed through mixing services (Tornado Cash, Sinbad), cross-chain bridges, or chain-hopping (BTC → Monero → BTC) | Transactions to known mixer addresses; rapid cross-chain transfers; peel chain patterns |
@@ -100,16 +105,31 @@ Actors social-engineer mobile carriers to transfer a victim's phone number to an
 ## Detection Approaches
 
 **Exchange-Side — SIM Swap Indicator Correlation**
-```
-Flag accounts where within a 24-hour window:
-  1. Login from new device AND
-  2. MFA method change AND
-  3. Contact info change AND
-  4. Withdrawal to new address
-Confidence: CRITICAL if all four present
+
+```sigma
+title: New Device Login After SIM Swap
+status: experimental
+description: Detects a new device login following a recently detected SIM and MFA change.
+logsource:
+    category: application
+    product: exchange_platform
+detection:
+    selection_login:
+        EventName: 'UserLogin'
+        DeviceIsNew: true
+    selection_mfa:
+        EventName: 'MFAMethodChanged'
+    selection_contact:
+        EventName: 'ContactInfoChanged'
+    selection_withdraw:
+        EventName: 'CryptoWithdrawal'
+        AddressIsNew: true
+    timeframe: 24h
+    condition: selection_login and selection_mfa and selection_contact and selection_withdraw
 ```
 
 **Carrier-Side — Anomalous SIM Change Detection**
+
 ```
 Flag SIM changes where:
   - Change requested through non-standard channel (call center vs. retail)
@@ -119,12 +139,14 @@ Flag SIM changes where:
 ```
 
 ## References
+
 - FBI IC3 PSA: "SIM Swapping"
 - DOJ: "Eight Individuals Charged in SIM Swap Conspiracy" (various indictments)
 - Chainalysis: Crypto Crime Report (annual)
 - T-Mobile, AT&T carrier SIM swap prevention documentation
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

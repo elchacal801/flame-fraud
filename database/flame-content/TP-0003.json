@@ -34,7 +34,13 @@
   "mitre_attack": [],
   "ft3_tactics": [],
   "mitre_f3": [],
-  "groupib_stages": [],
+  "groupib_stages": [
+    "Reconnaissance",
+    "Resource Development",
+    "Account Access",
+    "Perform Fraud",
+    "Monetization"
+  ],
   "evidence": [
     {
       "evidence_id": "EV-TP0003-2026-001",

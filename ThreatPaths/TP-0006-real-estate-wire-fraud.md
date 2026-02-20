@@ -21,7 +21,14 @@ cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1566.001, T1114.003, T1534, T1657]
 ft3_tactics: []                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
-groupib_stages: []               # Group-IB Fraud Matrix (reference)
+groupib_stages:
+  - "Reconnaissance"
+  - "Resource Development"
+  - "Trust Abuse"
+  - "End-user Interaction"
+  - "Perform Fraud"
+  - "Monetization"
+  - "Laundering"
 tags:
   - real-estate
   - title-company
@@ -46,18 +53,21 @@ Actors compromise email accounts of real estate agents, title companies, attorne
 ## CFPF Phase Mapping
 
 ### Phase 1: Recon
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P1-005: Real estate transaction monitoring | Identify pending closings from MLS listings (status changes to "pending/under contract"), county recorder filings, or compromised email threads | Correlation between listing status changes and phishing campaigns |
 | CFPF-P1-003: Lookalike domain | Register domains resembling title companies or law firms | Domain registrations matching title company names in active transaction areas |
 
 ### Phase 2: Initial Access
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P2-004: Email phishing | Target real estate professionals — agents, title officers, closing attorneys — to compromise their email accounts | Phishing campaigns themed around MLS access, e-signature platforms, or title company portals |
 | CFPF-P2-007: BEC | Gain access to an email account within the transaction chain to monitor closing timelines, amounts, and participants | Unusual login locations on real estate professional email accounts; mail forwarding rules |
 
 ### Phase 3: Positioning
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P3-007: Email forwarding/filtering | Create inbox rules to monitor keywords like "closing", "wire instructions", "escrow", "title" and suppress legitimate wire instruction emails | New rules containing real estate keywords; rules forwarding to external addresses |
@@ -65,11 +75,13 @@ Actors compromise email accounts of real estate agents, title companies, attorne
 | Timing calibration | Monitor email thread to identify exact moment legitimate wire instructions will be sent, then preempt or replace them | N/A (occurs within compromised mailbox) |
 
 ### Phase 4: Execution
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | Fraudulent wire instruction injection | Send wire instructions from compromised or spoofed email, often minutes before or instead of legitimate instructions. Instructions direct closing funds to actor-controlled account. | Wire instructions from slightly different email address; instructions differing from previous communications; urgency language; last-minute "updated" banking details |
 
 ### Phase 5: Monetization
+
 | Technique | Description | Indicators |
 |-----------|-------------|------------|
 | CFPF-P5-001: Domestic wire to mule | Closing funds wired to domestic mule account, rapidly redistributed | Large incoming wire to recently opened account; immediate outbound transfers |
@@ -97,6 +109,7 @@ Actors compromise email accounts of real estate agents, title companies, attorne
 ## Detection Approaches
 
 **Email — Wire Instruction Anomaly (M365 / Google Workspace)**
+
 ```kql
 EmailEvents
 | where Subject has_any ("wire", "closing", "escrow", "wiring instructions")
@@ -105,12 +118,33 @@ EmailEvents
 | project Timestamp, SenderFromAddress, RecipientEmailAddress, Subject
 ```
 
+**Email — Suspicious Inbox Rule Creation (M365)**
+
+```sigma
+title: Suspicious Inbox Rule Creation
+status: experimental
+description: Detects the creation of inbox rules looking for real estate keywords like wire, closing, escrow to suppress legitimate communication.
+logsource:
+    product: m365
+    service: exchange
+detection:
+    selection:
+        ActionType: 'New-InboxRule'
+        RuleParameters|contains:
+            - 'wire'
+            - 'closing'
+            - 'escrow'
+    condition: selection
+```
+
 ## References
+
 - FBI IC3 PSA: "Real Estate Wire Fraud"
 - American Land Title Association (ALTA): Wire Fraud Prevention Best Practices
 - CertifID: Real Estate Wire Fraud Report (annual)
 
 ## Revision History
+
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |

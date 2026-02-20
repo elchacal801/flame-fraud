@@ -64,7 +64,7 @@ OUTPUT_RULES = Path("database/flame_detection_rules.json")
 # Detection block regex — matches fenced code blocks with language tags
 # Captures: language tag and content
 DETECTION_BLOCK_RE = re.compile(
-    r"```(spl|sql|yaml|yara|pseudocode|sigma)\s*\n(.*?)```",
+    r"```(spl|sql|yaml|yara|pseudocode|sigma|kql)\s*\n(.*?)```",
     re.DOTALL,
 )
 
@@ -248,6 +248,21 @@ def build_attack_pattern(tp: Dict[str, Any]) -> stix2.AttackPattern:
     )
 
 
+def build_mitre_attack_pattern(tech_id: str) -> stix2.AttackPattern:
+    """Build a stub STIX attack-pattern for a MITRE ATT&CK technique."""
+    return stix2.AttackPattern(
+        id=deterministic_id("attack-pattern", f"mitre-{tech_id}"),
+        created_by_ref=FLAME_IDENTITY_ID,
+        name=f"MITRE ATT&CK {tech_id}",
+        external_references=[{
+            "source_name": "mitre-attack",
+            "external_id": tech_id,
+            "url": f"https://attack.mitre.org/techniques/{tech_id.replace('.', '/')}/",
+        }],
+        allow_custom=True,
+    )
+
+
 def find_tp_cross_refs(body: str, own_id: str, known_ids: set) -> List[str]:
     """Find cross-references to other TPs in the body text."""
     refs = set()
@@ -295,8 +310,10 @@ def main():
     # Build STIX objects
     identity = build_identity()
     attack_patterns = {}  # tp_id -> AttackPattern
+    mitre_patterns = {}   # tech_id -> AttackPattern
     all_rules = []        # Aggregated detection rules
     relationships = []
+    stix_relationships = []
 
     for tp in index:
         tp_id = tp["id"]
@@ -324,9 +341,17 @@ def main():
             # We'll create these after all APs are built
             relationships.append((tp_id, ref_id))
 
+        # Add MITRE relationships
+        for tech_id in tp.get("mitre_attack", []):
+            if tech_id not in mitre_patterns:
+                mitre_patterns[tech_id] = build_mitre_attack_pattern(tech_id)
+            mitre_ap = mitre_patterns[tech_id]
+            rel = build_relationship(ap.id, mitre_ap.id, rel_type="uses")
+            stix_relationships.append(rel)
+            print(f"    [~] {tp_id} uses {tech_id}")
+
     # Build relationship objects (deduplicate bidirectional)
     seen_rels = set()
-    stix_relationships = []
     for src_id, tgt_id in relationships:
         # Normalize to avoid A->B and B->A duplicates
         pair = tuple(sorted([src_id, tgt_id]))
@@ -344,11 +369,13 @@ def main():
     # Assemble bundle
     all_objects = [identity]
     all_objects.extend(attack_patterns.values())
+    all_objects.extend(mitre_patterns.values())
     all_objects.extend(stix_relationships)
 
     print(f"\n[*] Bundle summary:")
     print(f"    - Identity: 1")
-    print(f"    - Attack patterns: {len(attack_patterns)}")
+    print(f"    - Threat Path attack patterns: {len(attack_patterns)}")
+    print(f"    - MITRE ATT&CK patterns (stubs): {len(mitre_patterns)}")
     print(f"    - Relationships: {len(stix_relationships)}")
     print(f"    - Detection rules: {len(all_rules)}")
 

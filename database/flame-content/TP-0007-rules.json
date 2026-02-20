@@ -1,0 +1,10 @@
+{
+  "tp_id": "TP-0007",
+  "rules": [
+    {
+      "type": "sql",
+      "content": "SELECT * FROM wire_authorizations \nWHERE auth_method = 'voice_only' \nAND amount > 50000 \nAND NOT EXISTS (\n    SELECT 1 FROM email_approvals WHERE wire_id = wire_authorizations.id\n);",
+      "title": "Process-Based Detection"
+    }
+  ]
+}

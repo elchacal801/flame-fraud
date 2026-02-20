@@ -12,7 +12,7 @@
     // Constants
     // -----------------------------------------------------------------------
 
-    var PHASE_INFO = {
+    const PHASE_INFO = {
         P1: { label: 'P1', name: 'Recon', color: '#f97316' },
         P2: { label: 'P2', name: 'Initial Access', color: '#ef4444' },
         P3: { label: 'P3', name: 'Positioning', color: '#a855f7' },
@@ -20,9 +20,9 @@
         P5: { label: 'P5', name: 'Monetization', color: '#22c55e' },
     };
 
-    var PHASE_ORDER = ['P1', 'P2', 'P3', 'P4', 'P5'];
+    const PHASE_ORDER = ['P1', 'P2', 'P3', 'P4', 'P5'];
 
-    var GROUPIB_STAGES = [
+    const GROUPIB_STAGES = [
         'Reconnaissance', 'Resource Development', 'Trust Abuse',
         'End-user Interaction', 'Credential Access', 'Account Access',
         'Defence Evasion', 'Perform Fraud', 'Monetization', 'Laundering'
@@ -32,22 +32,22 @@
     // State
     // -----------------------------------------------------------------------
 
-    var allSubmissions = [];
-    var filteredSubmissions = [];
-    var activeFilters = {
+    let allSubmissions = [];
+    let filteredSubmissions = [];
+    const activeFilters = {
         cfpf_phases: new Set(),
         sectors: new Set(),
         fraud_types: new Set(),
     };
-    var searchQuery = '';
-    var activeTaxonomy = 'cfpf';
-    var viewState = 'browse'; // 'browse' | 'detail'
+    let searchQuery = '';
+    let activeTaxonomy = 'cfpf';
+    let viewState = 'browse'; // 'browse' | 'detail'
 
     // -----------------------------------------------------------------------
     // DOM References
     // -----------------------------------------------------------------------
 
-    var dom = {};
+    const dom = {};
 
     function cacheDom() {
         dom.searchInput = document.getElementById('search-input');
@@ -82,11 +82,12 @@
     // Utilities
     // -----------------------------------------------------------------------
 
+    const _ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    const _ESC_RE = /[&<>"']/g;
+
     function escapeHtml(str) {
         if (!str) return '';
-        var div = document.createElement('div');
-        div.appendChild(document.createTextNode(str));
-        return div.innerHTML;
+        return str.replace(_ESC_RE, function (ch) { return _ESC_MAP[ch]; });
     }
 
     function formatLabel(str) {
@@ -120,7 +121,7 @@
 
     function initializeUI() {
         // Update stats
-        var stats = FlameData.getStats();
+        const stats = FlameData.getStats();
         dom.statTotal.textContent = stats.total;
         dom.statFraudTypes.textContent = stats.fraudTypes;
         dom.statSectors.textContent = stats.sectors;
@@ -187,7 +188,7 @@
     }
 
     function debounce(fn, delay) {
-        var timer;
+        let timer;
         return function () {
             clearTimeout(timer);
             timer = setTimeout(fn, delay);
@@ -199,9 +200,9 @@
     // -----------------------------------------------------------------------
 
     function handleRoute() {
-        var hash = window.location.hash || '#browse';
+        const hash = window.location.hash || '#browse';
         if (hash.startsWith('#detail/')) {
-            var tpId = hash.replace('#detail/', '');
+            const tpId = hash.replace('#detail/', '');
             showDetailView(tpId);
         } else {
             showBrowseView();
@@ -246,9 +247,9 @@
     // -----------------------------------------------------------------------
 
     function buildPhaseChips() {
-        var html = '';
+        let html = '';
         PHASE_ORDER.forEach(function (phase) {
-            var info = PHASE_INFO[phase];
+            const info = PHASE_INFO[phase];
             html += '<button class="chip phase-chip" data-filter="cfpf_phases" data-value="' + phase + '" style="--chip-color: ' + info.color + '">';
             html += '<span class="chip-dot" style="background: ' + info.color + '"></span>';
             html += info.label + ' ' + info.name;
@@ -264,8 +265,8 @@
     }
 
     function buildFilterChips(field, container) {
-        var values = FlameData.getUniqueValues(field);
-        var html = '';
+        const values = FlameData.getUniqueValues(field);
+        let html = '';
         values.forEach(function (val) {
             html += '<button class="chip" data-filter="' + field + '" data-value="' + escapeHtml(val) + '">';
             html += formatLabel(val);
@@ -308,7 +309,7 @@
     }
 
     function updateFilterBadge() {
-        var count = activeFilters.cfpf_phases.size + activeFilters.sectors.size + activeFilters.fraud_types.size;
+        const count = activeFilters.cfpf_phases.size + activeFilters.sectors.size + activeFilters.fraud_types.size;
         if (count > 0) {
             dom.filterActions.style.display = 'flex';
             dom.filterCount.textContent = count;
@@ -328,7 +329,7 @@
         filteredSubmissions = allSubmissions.filter(function (item) {
             // Search
             if (searchQuery) {
-                var haystack = (
+                const haystack = (
                     (item.title || '') + ' ' +
                     (item.summary || '') + ' ' +
                     (item.id || '') + ' ' +
@@ -341,8 +342,8 @@
 
             // CFPF phases
             if (activeFilters.cfpf_phases.size > 0) {
-                var phases = item.cfpf_phases || [];
-                var match = false;
+                const phases = item.cfpf_phases || [];
+                let match = false;
                 activeFilters.cfpf_phases.forEach(function (p) {
                     if (phases.indexOf(p) !== -1) match = true;
                 });
@@ -351,8 +352,8 @@
 
             // Sectors
             if (activeFilters.sectors.size > 0) {
-                var sectors = item.sectors || [];
-                var sMatch = false;
+                const sectors = item.sectors || [];
+                let sMatch = false;
                 activeFilters.sectors.forEach(function (s) {
                     if (sectors.indexOf(s) !== -1) sMatch = true;
                 });
@@ -361,8 +362,8 @@
 
             // Fraud types
             if (activeFilters.fraud_types.size > 0) {
-                var ft = item.fraud_types || [];
-                var ftMatch = false;
+                const ft = item.fraud_types || [];
+                let ftMatch = false;
                 activeFilters.fraud_types.forEach(function (f) {
                     if (ft.indexOf(f) !== -1) ftMatch = true;
                 });
@@ -383,7 +384,7 @@
             return;
         }
 
-        var html = '';
+        let html = '';
         filteredSubmissions.forEach(function (item, idx) {
             html += renderCard(item, idx);
         });
@@ -405,12 +406,12 @@
     }
 
     function renderCard(item, idx) {
-        var phases = item.cfpf_phases || [];
-        var sectors = item.sectors || [];
-        var fraudTypes = item.fraud_types || [];
-        var summary = truncate(item.summary || '', 160);
+        const phases = item.cfpf_phases || [];
+        const sectors = item.sectors || [];
+        const fraudTypes = item.fraud_types || [];
+        const summary = truncate(item.summary || '', 160);
 
-        var html = '<div class="tp-card" data-id="' + escapeHtml(item.id) + '" tabindex="0" role="button" style="--delay: ' + (idx * 0.04) + 's">';
+        let html = '<div class="tp-card" data-id="' + escapeHtml(item.id) + '" tabindex="0" role="button" style="--delay: ' + (idx * 0.04) + 's">';
 
         // Card header
         html += '<div class="card-header">';
@@ -457,15 +458,15 @@
     // -----------------------------------------------------------------------
 
     function renderDetailView(item) {
-        var phases = item.cfpf_phases || [];
-        var mitre = item.mitre_attack || [];
-        var groupib = item.groupib_stages || [];
-        var sectors = item.sectors || [];
-        var fraudTypes = item.fraud_types || [];
-        var tags = item.tags || [];
-        var ft3 = item.ft3_tactics || [];
+        const phases = item.cfpf_phases || [];
+        const mitre = item.mitre_attack || [];
+        const groupib = item.groupib_stages || [];
+        const sectors = item.sectors || [];
+        const fraudTypes = item.fraud_types || [];
+        const tags = item.tags || [];
+        const ft3 = item.ft3_tactics || [];
 
-        var html = '';
+        let html = '';
 
         // Header
         html += '<div class="detail-header">';
@@ -563,10 +564,10 @@
     // -----------------------------------------------------------------------
 
     function renderCfpfTimeline(phases) {
-        var html = '<div class="phase-timeline">';
+        let html = '<div class="phase-timeline">';
         PHASE_ORDER.forEach(function (phase, i) {
-            var info = PHASE_INFO[phase];
-            var active = phases.indexOf(phase) !== -1;
+            const info = PHASE_INFO[phase];
+            const active = phases.indexOf(phase) !== -1;
             html += '<div class="timeline-phase' + (active ? ' active' : '') + '">';
             html += '<div class="timeline-dot" style="background: ' + (active ? info.color : 'var(--color-surface-3)') + '"></div>';
             html += '<div class="timeline-label">' + info.label + '</div>';
@@ -584,7 +585,7 @@
         if (techniques.length === 0) {
             return '<div class="taxonomy-empty">No MITRE ATT&CK mappings for this threat path.</div>';
         }
-        var html = '<div class="mitre-grid">';
+        let html = '<div class="mitre-grid">';
         techniques.forEach(function (t) {
             html += '<a class="mitre-card" href="https://attack.mitre.org/techniques/' + encodeURIComponent(t.replace('.', '/')) + '/" target="_blank" rel="noopener">';
             html += '<span class="mitre-id">' + escapeHtml(t) + '</span>';
@@ -599,9 +600,9 @@
         if (stages.length === 0) {
             return '<div class="taxonomy-empty">No Group-IB Fraud Matrix mappings for this threat path.</div>';
         }
-        var html = '<div class="groupib-stages">';
+        let html = '<div class="groupib-stages">';
         GROUPIB_STAGES.forEach(function (stage, i) {
-            var active = stages.indexOf(stage) !== -1;
+            const active = stages.indexOf(stage) !== -1;
             html += '<div class="groupib-stage' + (active ? ' active' : '') + '">';
             html += '<span class="groupib-num">' + (i + 1) + '</span>';
             html += '<span class="groupib-name">' + escapeHtml(stage) + '</span>';
@@ -612,7 +613,7 @@
     }
 
     function bindTaxonomyToggle(item) {
-        var toggleEl = document.getElementById('taxonomy-toggle');
+        const toggleEl = document.getElementById('taxonomy-toggle');
         if (!toggleEl) return;
         toggleEl.querySelectorAll('.tax-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
@@ -639,19 +640,19 @@
     }
 
     function addCopyButtons() {
-        var codeBlocks = dom.detailContent.querySelectorAll('pre');
+        const codeBlocks = dom.detailContent.querySelectorAll('pre');
         codeBlocks.forEach(function (pre) {
-            var wrapper = document.createElement('div');
+            const wrapper = document.createElement('div');
             wrapper.className = 'code-block-wrapper';
             pre.parentNode.insertBefore(wrapper, pre);
             wrapper.appendChild(pre);
 
-            var btn = document.createElement('button');
+            const btn = document.createElement('button');
             btn.className = 'copy-btn';
             btn.textContent = 'Copy';
             btn.title = 'Copy to clipboard';
             btn.addEventListener('click', function () {
-                var code = pre.querySelector('code') || pre;
+                const code = pre.querySelector('code') || pre;
                 navigator.clipboard.writeText(code.textContent).then(function () {
                     btn.textContent = 'Copied!';
                     btn.classList.add('copied');
@@ -666,18 +667,18 @@
     }
 
     function highlightLookLeftRight() {
-        var body = document.getElementById('detail-body');
+        const body = document.getElementById('detail-body');
         if (!body) return;
 
         // Find the "Look Left / Look Right" heading
-        var headings = body.querySelectorAll('h2');
+        const headings = body.querySelectorAll('h2');
         headings.forEach(function (h) {
             if (h.textContent.indexOf('Look Left') !== -1 || h.textContent.indexOf('Look Right') !== -1) {
                 // Wrap the section in a callout
-                var section = document.createElement('div');
+                const section = document.createElement('div');
                 section.className = 'look-callout';
 
-                var icon = document.createElement('div');
+                const icon = document.createElement('div');
                 icon.className = 'look-callout-icon';
                 icon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 
@@ -687,9 +688,9 @@
                 section.appendChild(h);
 
                 // Move sibling elements until next h2
-                var next = section.nextSibling;
+                let next = section.nextSibling;
                 while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
-                    var toMove = next;
+                    const toMove = next;
                     next = next.nextSibling;
                     section.appendChild(toMove);
                 }
@@ -702,8 +703,8 @@
     // -----------------------------------------------------------------------
 
     function renderHeatMap() {
-        var stats = FlameData.getStats();
-        var matrix = stats.coverageMatrix || [];
+        const stats = FlameData.getStats();
+        const matrix = stats.coverageMatrix || [];
 
         if (matrix.length === 0) {
             dom.heatMapBody.innerHTML = '<p>No coverage data available.</p>';
@@ -711,15 +712,15 @@
         }
 
         // Find max count for color scaling
-        var maxCount = 0;
+        let maxCount = 0;
         matrix.forEach(function (row) {
             PHASE_ORDER.forEach(function (p) {
-                var val = row.phases[p] || 0;
+                const val = row.phases[p] || 0;
                 if (val > maxCount) maxCount = val;
             });
         });
 
-        var html = '<div class="heat-map-grid">';
+        let html = '<div class="heat-map-grid">';
 
         // Header row
         html += '<div class="hm-cell hm-corner"></div>';
@@ -732,9 +733,9 @@
         matrix.forEach(function (row) {
             html += '<div class="hm-cell hm-label" title="' + escapeHtml(row.fraud_type) + '">' + escapeHtml(formatLabel(row.fraud_type)) + '</div>';
             PHASE_ORDER.forEach(function (p) {
-                var count = row.phases[p] || 0;
-                var intensity = maxCount > 0 ? count / maxCount : 0;
-                var alpha = count > 0 ? 0.15 + (intensity * 0.85) : 0;
+                const count = row.phases[p] || 0;
+                const intensity = maxCount > 0 ? count / maxCount : 0;
+                const alpha = count > 0 ? 0.15 + (intensity * 0.85) : 0;
                 html += '<div class="hm-cell hm-data" style="background: rgba(249, 115, 22, ' + alpha.toFixed(2) + ')" title="' + formatLabel(row.fraud_type) + ' × ' + p + ': ' + count + ' TPs">';
                 if (count > 0) html += count;
                 html += '</div>';
