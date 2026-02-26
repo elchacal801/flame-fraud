@@ -9,6 +9,8 @@ import logging
 import xml.etree.ElementTree as ET
 from typing import List
 
+from defusedxml.ElementTree import fromstring as _safe_fromstring
+
 import requests
 
 from regulatory.base import RegulatorySource
@@ -35,7 +37,7 @@ class OFACSource(RegulatorySource):
         Handles both namespaced and non-namespaced XML.
         """
         alerts: List[RegulatoryAlert] = []
-        root = ET.fromstring(raw_data)
+        root = _safe_fromstring(raw_data)
 
         # Detect namespace — the root tag may be {ns}sdnList or just sdnList
         ns = ""

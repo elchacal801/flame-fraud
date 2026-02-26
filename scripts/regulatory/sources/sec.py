@@ -5,6 +5,7 @@ Fetches SEC litigation releases and administrative proceedings via RSS
 and normalises each entry into a ``RegulatoryAlert``.
 """
 
+import hashlib
 import logging
 from typing import List
 
@@ -35,7 +36,7 @@ class SECSource(RegulatorySource):
             title = getattr(entry, "title", "")
             published = getattr(entry, "published", "")
             link = getattr(entry, "link", "")
-            summary = entry.get("summary", "")
+            summary = getattr(entry, "summary", "")
 
             # Determine category from title
             if "administrative" in title.lower():
@@ -46,8 +47,8 @@ class SECSource(RegulatorySource):
             tp_ids = self.map_category_to_tps(category)
             severity = "high" if tp_ids else "medium"
 
-            alert_hash = hash(entry_id) & 0xFFFFFFFF
-            alert_id = f"sec-{alert_hash:08x}"
+            digest = hashlib.sha256(entry_id.encode()).hexdigest()[:8]
+            alert_id = f"sec-{digest}"
 
             alerts.append(
                 RegulatoryAlert(

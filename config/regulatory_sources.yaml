@@ -32,8 +32,7 @@ sources:
 
   cfpb:
     enabled: true
-    feed_url: "https://www.consumerfinance.gov/about-us/blog/feed/"
-    base_url: "https://www.consumerfinance.gov"
+    api_url: "https://www.consumerfinance.gov/data-research/consumer-complaints/search/api/v1/"
     category_mapping:
       elder-fraud:
         - TP-0005
