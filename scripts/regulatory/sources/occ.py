@@ -5,6 +5,7 @@ Fetches OCC bulletin/enforcement entries via RSS and normalises each
 into a ``RegulatoryAlert``.
 """
 
+import hashlib
 import logging
 from typing import List
 
@@ -35,7 +36,7 @@ class OCCSource(RegulatorySource):
             title = getattr(entry, "title", "")
             published = getattr(entry, "published", "")
             link = getattr(entry, "link", "")
-            summary = entry.get("summary", "")
+            summary = getattr(entry, "summary", "")
 
             # Determine category from tags or title keywords
             tags = getattr(entry, "tags", [])
@@ -49,8 +50,8 @@ class OCCSource(RegulatorySource):
             tp_ids = self.map_category_to_tps(category)
             severity = "medium" if tp_ids else "low"
 
-            alert_hash = hash(entry_id) & 0xFFFFFFFF
-            alert_id = f"occ-{alert_hash:08x}"
+            digest = hashlib.sha256(entry_id.encode()).hexdigest()[:8]
+            alert_id = f"occ-{digest}"
 
             alerts.append(
                 RegulatoryAlert(

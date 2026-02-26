@@ -23,7 +23,7 @@ class CFPBSource(RegulatorySource):
 
     def fetch(self):
         """GET the CFPB complaints API and return the parsed JSON dict."""
-        url = self.config["base_url"]
+        url = self.config.get("api_url", self.config.get("base_url", ""))
         resp = requests.get(
             url,
             params={"size": 100, "sort": "created_date_desc"},

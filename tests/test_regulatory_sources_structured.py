@@ -145,9 +145,7 @@ def _make_occ_feed():
     entry1.title = "OCC Bulletin 2026-01: BSA/AML Compliance"
     entry1.published = "2026-01-15"
     entry1.link = "https://occ.gov/bulletin-2026-01"
-    entry1.get.side_effect = lambda k, default="": {
-        "summary": "Guidance on BSA/AML compliance expectations.",
-    }.get(k, default)
+    entry1.summary = "Guidance on BSA/AML compliance expectations."
     entry1.tags = [MagicMock(term="bsa-aml")]
 
     entry2 = MagicMock()
@@ -155,9 +153,7 @@ def _make_occ_feed():
     entry2.title = "Enforcement Action Against National Bank"
     entry2.published = "2026-02-01"
     entry2.link = "https://occ.gov/enforcement-2026-01"
-    entry2.get.side_effect = lambda k, default="": {
-        "summary": "OCC takes enforcement action.",
-    }.get(k, default)
+    entry2.summary = "OCC takes enforcement action."
     entry2.tags = []
 
     feed.entries = [entry1, entry2]
@@ -248,18 +244,14 @@ def _make_sec_feed():
     entry1.title = "SEC Charges XYZ Corp with Securities Fraud"
     entry1.published = "2026-01-20"
     entry1.link = "https://sec.gov/litigation/lr/2026-001"
-    entry1.get.side_effect = lambda k, default="": {
-        "summary": "SEC files fraud charges.",
-    }.get(k, default)
+    entry1.summary = "SEC files fraud charges."
 
     entry2 = MagicMock()
     entry2.id = "https://sec.gov/litigation/ap/2026-002"
     entry2.title = "Administrative Proceeding Against ABC Fund"
     entry2.published = "2026-02-05"
     entry2.link = "https://sec.gov/litigation/ap/2026-002"
-    entry2.get.side_effect = lambda k, default="": {
-        "summary": "Administrative proceeding initiated.",
-    }.get(k, default)
+    entry2.summary = "Administrative proceeding initiated."
 
     feed.entries = [entry1, entry2]
     return feed
