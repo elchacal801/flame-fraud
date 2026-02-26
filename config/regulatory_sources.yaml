@@ -1,0 +1,122 @@
+# regulatory_sources.yaml — Configuration for FLAME regulatory feed sources.
+#
+# Each source block contains:
+#   enabled          - whether the source is active
+#   url / feed_url / base_url / sdn_url  - endpoint(s) to fetch
+#   category_mapping - maps regulatory categories to FLAME TP IDs
+#
+# TP IDs reference threat paths defined in ThreatPaths/.
+
+sources:
+
+  fincen:
+    enabled: true
+    url: "https://www.fincen.gov/news/advisories"
+    category_mapping:
+      synthetic-identity:
+        - TP-0012
+        - TP-0034
+      money-laundering:
+        - TP-0001
+        - TP-0003
+      identity-theft:
+        - TP-0012
+      elder-fraud:
+        - TP-0005
+      ransomware:
+        - TP-0020
+      human-trafficking:
+        - TP-0040
+      corruption:
+        - TP-0041
+
+  cfpb:
+    enabled: true
+    feed_url: "https://www.consumerfinance.gov/about-us/blog/feed/"
+    base_url: "https://www.consumerfinance.gov"
+    category_mapping:
+      elder-fraud:
+        - TP-0005
+      identity-theft:
+        - TP-0012
+      mortgage-fraud:
+        - TP-0002
+      debt-collection:
+        - TP-0050
+      credit-reporting:
+        - TP-0051
+      fair-lending:
+        - TP-0052
+
+  fbi_ic3:
+    enabled: true
+    url: "https://www.ic3.gov/PSA"
+    category_mapping:
+      business-email-compromise:
+        - TP-0010
+        - TP-0011
+      ransomware:
+        - TP-0020
+      romance-scam:
+        - TP-0030
+      investment-fraud:
+        - TP-0031
+      tech-support-fraud:
+        - TP-0032
+      identity-theft:
+        - TP-0012
+      cryptocurrency-fraud:
+        - TP-0033
+
+  occ:
+    enabled: true
+    url: "https://www.occ.treas.gov/news-issuances/bulletins/index-bulletin-issuances.html"
+    category_mapping:
+      bsa-aml:
+        - TP-0001
+        - TP-0003
+      cybersecurity:
+        - TP-0020
+        - TP-0010
+      third-party-risk:
+        - TP-0060
+      operational-risk:
+        - TP-0061
+      fair-lending:
+        - TP-0052
+
+  sec:
+    enabled: true
+    base_url: "https://www.sec.gov"
+    url: "https://www.sec.gov/litigation/litreleases.htm"
+    category_mapping:
+      investment-fraud:
+        - TP-0031
+      insider-trading:
+        - TP-0070
+      market-manipulation:
+        - TP-0071
+      ponzi-scheme:
+        - TP-0072
+      accounting-fraud:
+        - TP-0073
+      cryptocurrency-fraud:
+        - TP-0033
+
+  ofac:
+    enabled: true
+    sdn_url: "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML"
+    base_url: "https://ofac.treasury.gov"
+    category_mapping:
+      sanctions-evasion:
+        - TP-0001
+        - TP-0080
+      terrorism-financing:
+        - TP-0081
+      narcotics-trafficking:
+        - TP-0082
+      weapons-proliferation:
+        - TP-0083
+      cyber-sanctions:
+        - TP-0020
+        - TP-0084
