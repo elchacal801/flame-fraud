@@ -1,6 +1,7 @@
 pyyaml
 requests
 beautifulsoup4
+feedparser
 stix2>=3.0.0
 pytest
 
