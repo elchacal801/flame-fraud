@@ -129,6 +129,17 @@ Threat actors target commercial banking customers using a multi-phase scheme tha
 
 ---
 
+## Evasion Techniques
+
+| Technique | Description | Detection Signal |
+|-----------|-------------|------------------|
+| Strategic HTTP Redirect | Typosquat domain 301/302 redirects to legitimate bank site to appear benign in automated scans; once a real user visits, the redirect may serve a credential harvesting page instead | FP-0007: `redirects_to_brand=True` in domain_intel |
+| Domain Sale Page Camouflage | Domain displays "for sale" or "parked" page to automated scanners, evading malicious classification while remaining operational for targeted victims | FP-0007: `http_title` matches parked/sale pattern in domain_intel |
+
+**Source**: CrowdStrike Counter Adversary Operations — "Dual-Purpose Domains" and "Domain Sale Page Camouflage" research on typosquatting evasion techniques.
+
+---
+
 ## Look Left / Look Right Analysis
 
 **Discovery Phase**: Typically discovered at **Phase 4 (Execution)** — fraud operations teams see the unauthorized wire transfer or the customer calls to report unrecognized activity. In some cases discovered at **Phase 3** when a customer notices account modifications they didn't authorize.
