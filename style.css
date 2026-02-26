@@ -1346,3 +1346,26 @@ h1, h2, h3, h4 {
         font-size: 0.6rem;
     }
 }
+
+/* ---------------------------------------------------------------
+   Regulatory Pulse
+   --------------------------------------------------------------- */
+#regulatory-pulse { margin-top: 1.5rem; }
+.reg-source-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-right: 4px; }
+.reg-source-badge.fincen { background: #fee2e2; color: #991b1b; }
+.reg-source-badge.cfpb { background: #dbeafe; color: #1e40af; }
+.reg-source-badge.fbi_ic3 { background: #fef3c7; color: #92400e; }
+.reg-source-badge.occ { background: #d1fae5; color: #065f46; }
+.reg-source-badge.sec { background: #ede9fe; color: #5b21b6; }
+.reg-source-badge.ofac { background: #fce7f3; color: #9d174d; }
+.reg-severity-pill { display: inline-block; padding: 1px 6px; border-radius: 9999px; font-size: 0.7rem; }
+.reg-severity-pill.high { background: #ef4444; color: white; }
+.reg-severity-pill.medium { background: #f59e0b; color: white; }
+.reg-severity-pill.low { background: #6b7280; color: white; }
+.reg-table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; }
+.reg-table th, .reg-table td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 0.85rem; }
+.reg-table th { font-weight: 600; color: #6b7280; }
+.reg-summary-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.reg-stat { padding: 0.5rem 1rem; background: #1e293b; border-radius: 8px; }
+.reg-stat .label { font-size: 0.75rem; color: #94a3b8; }
+.reg-stat .value { font-size: 1.25rem; font-weight: 700; }

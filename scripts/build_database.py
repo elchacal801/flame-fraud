@@ -17,6 +17,7 @@ directories for markdown files, parses their YAML frontmatter
 """
 
 import argparse
+import csv
 import json
 import logging
 import os
@@ -243,6 +244,27 @@ CREATE INDEX IF NOT EXISTS idx_sectors ON submission_sectors(sector);
 CREATE INDEX IF NOT EXISTS idx_fraud_types ON submission_fraud_types(fraud_type);
 CREATE INDEX IF NOT EXISTS idx_cfpf ON submission_cfpf_phases(phase);
 CREATE INDEX IF NOT EXISTS idx_tags ON submission_tags(tag);
+
+CREATE TABLE IF NOT EXISTS regulatory_alerts (
+    alert_id TEXT PRIMARY KEY,
+    source TEXT NOT NULL,
+    title TEXT NOT NULL,
+    date TEXT,
+    category TEXT,
+    severity TEXT,
+    url TEXT,
+    summary TEXT
+);
+
+CREATE TABLE IF NOT EXISTS regulatory_alert_tp_mapping (
+    alert_id TEXT NOT NULL,
+    tp_id TEXT NOT NULL,
+    FOREIGN KEY (alert_id) REFERENCES regulatory_alerts(alert_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_reg_source ON regulatory_alerts(source);
+CREATE INDEX IF NOT EXISTS idx_reg_date ON regulatory_alerts(date);
+CREATE INDEX IF NOT EXISTS idx_reg_tp ON regulatory_alert_tp_mapping(tp_id);
 """
 
 
@@ -353,6 +375,94 @@ def load_techniques(conn: sqlite3.Connection, techniques_path: Path):
             )
             count += 1
     return count
+
+
+# ---------------------------------------------------------------------------
+# Regulatory alerts
+# ---------------------------------------------------------------------------
+
+def build_regulatory_alerts(conn: sqlite3.Connection, csv_path: Path) -> int:
+    """Ingest regulatory alerts from a CSV file into the database.
+
+    Returns the number of alerts inserted.  If the CSV does not exist,
+    logs a warning and returns 0.
+    """
+    if not csv_path.exists():
+        log.warning("Regulatory alerts CSV not found at %s", csv_path)
+        return 0
+
+    # Clear previous mappings so re-runs are idempotent
+    conn.execute("DELETE FROM regulatory_alert_tp_mapping")
+
+    count = 0
+    with open(csv_path, newline="", encoding="utf-8") as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            alert_id = row.get("alert_id", "").strip()
+            if not alert_id:
+                continue
+
+            conn.execute(
+                """INSERT OR REPLACE INTO regulatory_alerts
+                   (alert_id, source, title, date, category, severity, url, summary)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    alert_id,
+                    row.get("source", "").strip(),
+                    row.get("title", "").strip(),
+                    row.get("date", "").strip(),
+                    row.get("category", "").strip(),
+                    row.get("severity", "").strip(),
+                    row.get("url", "").strip(),
+                    row.get("summary", "").strip(),
+                ),
+            )
+
+            # Split mapped_tp_ids on | and insert each mapping
+            tp_ids_raw = row.get("mapped_tp_ids", "").strip()
+            if tp_ids_raw:
+                for tp_id in tp_ids_raw.split("|"):
+                    tp_id = tp_id.strip()
+                    if tp_id:
+                        conn.execute(
+                            "INSERT INTO regulatory_alert_tp_mapping (alert_id, tp_id) VALUES (?, ?)",
+                            (alert_id, tp_id),
+                        )
+
+            count += 1
+
+    conn.commit()
+    return count
+
+
+def export_regulatory_json(conn: sqlite3.Connection, output_path: Path) -> int:
+    """Export regulatory alerts as a JSON file.
+
+    Returns the number of alerts exported.
+    """
+    cursor = conn.execute(
+        "SELECT alert_id, source, title, date, category, severity, url, summary "
+        "FROM regulatory_alerts ORDER BY date DESC"
+    )
+    columns = [desc[0] for desc in cursor.description]
+    alerts = []
+
+    for row in cursor.fetchall():
+        entry = dict(zip(columns, row))
+        # Fetch TP mappings for this alert
+        tp_rows = conn.execute(
+            "SELECT tp_id FROM regulatory_alert_tp_mapping WHERE alert_id = ? ORDER BY tp_id",
+            (entry["alert_id"],),
+        ).fetchall()
+        entry["mapped_tp_ids"] = [r[0] for r in tp_rows]
+        alerts.append(entry)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(alerts, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return len(alerts)
 
 
 # ---------------------------------------------------------------------------
@@ -535,6 +645,17 @@ def export_stats_json(conn: sqlite3.Connection, output_path: Path):
             "total_tps": len(tp_ids)
         })
 
+    # Regulatory alert stats
+    reg_total = conn.execute("SELECT COUNT(*) FROM regulatory_alerts").fetchone()[0]
+    reg_by_severity_rows = conn.execute(
+        "SELECT severity, COUNT(*) FROM regulatory_alerts GROUP BY severity ORDER BY severity"
+    ).fetchall()
+    reg_by_severity = {r[0]: r[1] for r in reg_by_severity_rows if r[0]}
+    reg_by_source_rows = conn.execute(
+        "SELECT source, COUNT(*) FROM regulatory_alerts GROUP BY source ORDER BY source"
+    ).fetchall()
+    reg_by_source = {r[0]: r[1] for r in reg_by_source_rows if r[0]}
+
     stats = {
         "total": total,
         "fraudTypes": len(fraud_type_list),
@@ -544,6 +665,12 @@ def export_stats_json(conn: sqlite3.Connection, output_path: Path):
         "phaseCoverage": phase_coverage,
         "topTags": top_tags,
         "coverageMatrix": coverage_matrix,
+        "regulatoryAlerts": {
+            "total": reg_total,
+            "bySeverity": reg_by_severity,
+            "bySource": reg_by_source,
+            "lastUpdated": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        },
         "generatedAt": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -751,6 +878,11 @@ def main():
     log.info("Extracted %d evidence entries across %d TPs",
              total_evidence, len(evidence_map))
 
+    # Load regulatory alerts
+    reg_csv = root / "data" / "regulatory_alerts.csv"
+    reg_count = build_regulatory_alerts(conn, reg_csv)
+    log.info("Loaded %d regulatory alerts", reg_count)
+
     # Export JSON (legacy — backward compatibility)
     json_path = root / "database" / "flame-data.json"
     count = export_json(conn, json_path)
@@ -769,6 +901,11 @@ def main():
     ev_index_path = root / "database" / "flame-evidence-index.json"
     ev_count = export_evidence_index(evidence_map, ev_index_path)
     log.info("Exported %d evidence entries to %s", ev_count, ev_index_path)
+
+    # Export regulatory alerts JSON
+    reg_json_path = root / "database" / "regulatory-alerts.json"
+    reg_json_count = export_regulatory_json(conn, reg_json_path)
+    log.info("Exported %d regulatory alerts to %s", reg_json_count, reg_json_path)
 
     stats_path = root / "database" / "flame-stats.json"
     stats = export_stats_json(conn, stats_path)
