@@ -113,6 +113,10 @@
             allSubmissions = data;
             initializeUI();
             handleRoute();
+            // Load regulatory alerts in parallel (non-blocking)
+            FlameData.loadRegulatoryAlerts().then(function () {
+                renderRegulatoryPulse();
+            });
         }).catch(function (err) {
             dom.cardGrid.innerHTML = '<div class="empty-state">Failed to load data. Please try again.</div>';
             console.error(err);
@@ -744,6 +748,69 @@
 
         html += '</div>';
         dom.heatMapBody.innerHTML = html;
+    }
+
+    // -----------------------------------------------------------------------
+    // Regulatory Pulse
+    // -----------------------------------------------------------------------
+
+    function renderRegulatoryPulse() {
+        var alerts = FlameData.getRegulatoryAlerts();
+        var panel = document.getElementById('regulatory-pulse');
+        var body = document.getElementById('regulatory-pulse-body');
+
+        if (!panel || !body) return;
+
+        if (!alerts || alerts.length === 0) {
+            panel.style.display = 'none';
+            return;
+        }
+
+        // Build summary stats
+        var severityCounts = { high: 0, medium: 0, low: 0 };
+        var sourcesSet = {};
+        alerts.forEach(function (a) {
+            var sev = (a.severity || '').toLowerCase();
+            if (severityCounts.hasOwnProperty(sev)) {
+                severityCounts[sev]++;
+            }
+            if (a.source) {
+                sourcesSet[a.source] = true;
+            }
+        });
+        var sourcesActive = Object.keys(sourcesSet).length;
+
+        // Summary row
+        var html = '<div class="reg-summary-row">';
+        html += '<div class="reg-stat"><div class="label">Total</div><div class="value">' + alerts.length + '</div></div>';
+        html += '<div class="reg-stat"><div class="label">High Severity</div><div class="value">' + severityCounts.high + '</div></div>';
+        html += '<div class="reg-stat"><div class="label">Sources Active</div><div class="value">' + sourcesActive + '</div></div>';
+        html += '</div>';
+
+        // Table of 20 most recent alerts (sorted by date descending)
+        var sorted = alerts.slice().sort(function (a, b) {
+            return (b.date || '').localeCompare(a.date || '');
+        });
+        var recent = sorted.slice(0, 20);
+
+        html += '<table class="reg-table">';
+        html += '<thead><tr><th>Date</th><th>Source</th><th>Title</th><th>Severity</th><th>TPs</th></tr></thead>';
+        html += '<tbody>';
+        recent.forEach(function (a) {
+            var sourceClass = (a.source || '').toLowerCase().replace(/[^a-z0-9_]/g, '_');
+            var sevClass = (a.severity || '').toLowerCase();
+            html += '<tr>';
+            html += '<td>' + escapeHtml(a.date || '') + '</td>';
+            html += '<td><span class="reg-source-badge ' + escapeHtml(sourceClass) + '">' + escapeHtml(a.source || '') + '</span></td>';
+            html += '<td>' + escapeHtml(a.title || '') + '</td>';
+            html += '<td><span class="reg-severity-pill ' + escapeHtml(sevClass) + '">' + escapeHtml(a.severity || '') + '</span></td>';
+            html += '<td>' + escapeHtml(String(a.tp_count != null ? a.tp_count : '')) + '</td>';
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+
+        body.innerHTML = html;
+        panel.style.display = 'block';
     }
 
     // -----------------------------------------------------------------------
