@@ -11,6 +11,10 @@ on:
       - 'DetectionLogic/**'
   pull_request:
     branches: [main]
+  workflow_run:
+    workflows: ["Fetch Regulatory Data"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: write
@@ -59,7 +63,9 @@ jobs:
     name: Build Database & STIX
     runs-on: ubuntu-latest
     needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     steps:
       - uses: actions/checkout@v4
 
@@ -81,7 +87,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A database/ flame-stix-bundle.json flame-stats.json docs/ 2>/dev/null || true
+          git add -A database/ data/ flame-stix-bundle.json flame-stats.json docs/ 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
