@@ -24,6 +24,7 @@ from build_database import (
     _fetch_list,
     _VALID_MULTI_TABLES,
     init_database,
+    build_regulatory_alerts,
 )
 
 
@@ -284,3 +285,53 @@ class TestSQLWhitelist:
         _insert_multi(test_db, "submission_sectors", "TP-TEST3", "sector", "not-a-list")
         result = _fetch_list(test_db, "submission_sectors", "sector", "TP-TEST3")
         assert result == []
+
+
+# ---------------------------------------------------------------------------
+# Regulatory alerts tests
+# ---------------------------------------------------------------------------
+
+class TestRegulatoryAlerts:
+    def test_regulatory_schema_creates_tables(self, test_db):
+        """Verify both regulatory tables exist after init_database."""
+        tables = test_db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+        ).fetchall()
+        table_names = [r[0] for r in tables]
+        assert "regulatory_alerts" in table_names
+        assert "regulatory_alert_tp_mapping" in table_names
+
+    def test_build_regulatory_alerts_from_csv(self, tmp_path, test_db):
+        """Write a test CSV, call build_regulatory_alerts, verify rows in both tables."""
+        csv_path = tmp_path / "regulatory_alerts.csv"
+        csv_path.write_text(
+            "alert_id,source,title,date,category,severity,url,summary,mapped_tp_ids\n"
+            "REG-001,fincen,Test Alert 1,2026-01-15,money-laundering,high,https://example.com/1,Summary one,TP-0001|TP-0003\n"
+            "REG-002,cfpb,Test Alert 2,2026-01-20,elder-fraud,medium,https://example.com/2,Summary two,TP-0005\n",
+            encoding="utf-8",
+        )
+        count = build_regulatory_alerts(test_db, csv_path)
+        assert count == 2
+
+        # Verify alerts table
+        rows = test_db.execute(
+            "SELECT alert_id, source, title, severity FROM regulatory_alerts ORDER BY alert_id"
+        ).fetchall()
+        assert len(rows) == 2
+        assert rows[0] == ("REG-001", "fincen", "Test Alert 1", "high")
+        assert rows[1] == ("REG-002", "cfpb", "Test Alert 2", "medium")
+
+        # Verify TP mapping table
+        mappings = test_db.execute(
+            "SELECT alert_id, tp_id FROM regulatory_alert_tp_mapping ORDER BY alert_id, tp_id"
+        ).fetchall()
+        assert len(mappings) == 3
+        assert mappings[0] == ("REG-001", "TP-0001")
+        assert mappings[1] == ("REG-001", "TP-0003")
+        assert mappings[2] == ("REG-002", "TP-0005")
+
+    def test_build_regulatory_alerts_missing_csv(self, tmp_path, test_db):
+        """Pass nonexistent path, verify returns 0."""
+        missing_path = tmp_path / "nonexistent.csv"
+        count = build_regulatory_alerts(test_db, missing_path)
+        assert count == 0

@@ -12,6 +12,7 @@ const FlameData = (function () {
     let _contentCache = {};
     let _loading = false;
     let _callbacks = [];
+    let _regulatoryAlerts = [];
 
     const INDEX_URL = 'database/flame-index.json';
     const STATS_URL = 'database/flame-stats.json';
@@ -105,11 +106,36 @@ const FlameData = (function () {
         return _stats;
     }
 
+    /**
+     * Load regulatory alerts from regulatory-alerts.json.
+     * Non-fatal: if the file is missing the panel simply stays hidden.
+     */
+    async function loadRegulatoryAlerts() {
+        try {
+            var response = await fetch('database/regulatory-alerts.json');
+            if (!response.ok) throw new Error('Regulatory alerts load failed: ' + response.status);
+            _regulatoryAlerts = await response.json();
+        } catch (err) {
+            console.warn('Regulatory alerts not available:', err.message);
+            _regulatoryAlerts = [];
+        }
+        return _regulatoryAlerts;
+    }
+
+    /**
+     * Get the loaded regulatory alerts array.
+     */
+    function getRegulatoryAlerts() {
+        return _regulatoryAlerts;
+    }
+
     return {
         load: load,
         getData: getData,
         loadContent: loadContent,
         getUniqueValues: getUniqueValues,
         getStats: getStats,
+        loadRegulatoryAlerts: loadRegulatoryAlerts,
+        getRegulatoryAlerts: getRegulatoryAlerts,
     };
 })();
