@@ -8,7 +8,7 @@ regulatory source, plus YAML config loading utilities.
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 import yaml
 
@@ -34,7 +34,7 @@ class RegulatoryAlert:
     source: str
     alert_id: str
     title: str
-    date: date
+    date: Union[date, str]
     category: str
     mapped_tp_ids: List[str] = field(default_factory=list)
     url: str = ""
@@ -51,7 +51,9 @@ class RegulatoryAlert:
             self.source,
             self.alert_id,
             self.title,
-            self.date.isoformat() if isinstance(self.date, date) else str(self.date),
+            date(self.date.year, self.date.month, self.date.day).isoformat()
+            if isinstance(self.date, date)
+            else str(self.date),
             self.category,
             "|".join(self.mapped_tp_ids),
             self.url,

@@ -2,12 +2,14 @@
 test_regulatory_models.py — Tests for regulatory alert models and config loading.
 
 Covers: RegulatoryAlert dataclass creation, CSV serialization,
-YAML config loading, and error handling for missing config files.
+YAML config loading, error handling for missing config files,
+and RegulatorySource base class behaviour.
 """
 
 import tempfile
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
+from typing import List
 
 import pytest
 import yaml
@@ -17,6 +19,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
 from regulatory.models import RegulatoryAlert, CSV_COLUMNS, load_source_config
+from regulatory.base import RegulatorySource
 
 
 # ---------------------------------------------------------------------------
@@ -196,3 +199,107 @@ class TestLoadSourceConfig:
         """The return value should be a dictionary."""
         config = load_source_config(valid_config_file)
         assert isinstance(config, dict)
+
+
+# ---------------------------------------------------------------------------
+# datetime subclass guard in to_csv_row()
+# ---------------------------------------------------------------------------
+
+class TestDatetimeNormalization:
+    def test_datetime_is_normalized_to_date_only(self):
+        """A datetime value in the date field should be serialized as date-only ISO."""
+        alert = RegulatoryAlert(
+            source="test",
+            alert_id="T-001",
+            title="Datetime test",
+            date=datetime(2026, 1, 1, 12, 30, 0),
+            category="test-cat",
+        )
+        row = alert.to_csv_row()
+        assert row[3] == "2026-01-01"
+
+    def test_string_date_passthrough(self):
+        """A plain string in the date field should be passed through via str()."""
+        alert = RegulatoryAlert(
+            source="test",
+            alert_id="T-002",
+            title="String date test",
+            date="January 2026",
+            category="test-cat",
+        )
+        row = alert.to_csv_row()
+        assert row[3] == "January 2026"
+
+
+# ---------------------------------------------------------------------------
+# RegulatorySource base class tests
+# ---------------------------------------------------------------------------
+
+class _StubSource(RegulatorySource):
+    """Minimal concrete subclass used for testing the ABC."""
+
+    name = "stub"
+
+    def __init__(self, config, *, fetch_result="<raw>", parse_result=None):
+        super().__init__(config)
+        self._fetch_result = fetch_result
+        self._parse_result = parse_result if parse_result is not None else []
+
+    def fetch(self) -> str:
+        return self._fetch_result
+
+    def parse(self, raw: str) -> List[RegulatoryAlert]:
+        return self._parse_result
+
+
+class _FailingFetchSource(RegulatorySource):
+    """Subclass whose fetch() always raises."""
+
+    name = "failing"
+
+    def fetch(self) -> str:
+        raise RuntimeError("network error")
+
+    def parse(self, raw: str) -> List[RegulatoryAlert]:
+        return []
+
+
+class TestRegulatorySourceBase:
+    def test_init_extracts_enabled_and_category_mapping(self):
+        """__init__ should pull enabled and category_mapping from config."""
+        config = {
+            "enabled": True,
+            "url": "https://example.com",
+            "category_mapping": {
+                "fraud": ["TP-0001", "TP-0002"],
+                "aml": ["TP-0010"],
+            },
+        }
+        src = _StubSource(config)
+        assert src.enabled is True
+        assert src.category_mapping == {
+            "fraud": ["TP-0001", "TP-0002"],
+            "aml": ["TP-0010"],
+        }
+
+    def test_map_category_to_tps_known_and_unknown(self):
+        """map_category_to_tps returns correct TP IDs and empty list for unknown."""
+        config = {
+            "enabled": True,
+            "category_mapping": {"fraud": ["TP-0001"]},
+        }
+        src = _StubSource(config)
+        assert src.map_category_to_tps("fraud") == ["TP-0001"]
+        assert src.map_category_to_tps("unknown-cat") == []
+
+    def test_run_returns_empty_on_fetch_exception(self):
+        """run() should catch exceptions and return an empty list."""
+        config = {"enabled": True, "category_mapping": {}}
+        src = _FailingFetchSource(config)
+        result = src.run()
+        assert result == []
+
+    def test_abc_enforcement(self):
+        """Cannot instantiate RegulatorySource without implementing fetch/parse."""
+        with pytest.raises(TypeError):
+            RegulatorySource({"enabled": True})
