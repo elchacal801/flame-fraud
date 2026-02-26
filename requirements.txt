@@ -3,6 +3,7 @@ requests
 beautifulsoup4
 feedparser
 defusedxml
+pdfplumber
 stix2>=3.0.0
 pytest
 
