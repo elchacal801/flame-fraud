@@ -112,6 +112,17 @@ tags:
 
 ---
 
+## Evasion Techniques
+
+| Technique | Description | Detection Signal |
+|-----------|-------------|------------------|
+| Domain Sale Page Camouflage | Fraudulent investment platform domain shows "for sale" or "coming soon" page to automated scanners, evading blocklists while remaining operational for victims directed via messaging apps | FP-0007: `http_title` matches parked/sale pattern in domain_intel |
+| Geo-Targeted Content | Platform serves legitimate-looking content or blocks access from regions where law enforcement or researchers are likely based | Manual verification required; inconsistent scan results |
+
+**Source**: CrowdStrike Counter Adversary Operations — typosquatting evasion research.
+
+---
+
 ## Look Left / Look Right Analysis
 
 **Discovery Phase**: Typically discovered at **Phase 5** when the victim reports the fraud because they cannot withdraw their purported "profits."

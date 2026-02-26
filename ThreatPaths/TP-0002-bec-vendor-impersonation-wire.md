@@ -85,6 +85,17 @@ Threat actors compromise or spoof vendor email accounts, then impersonate the ve
 | CFPF-P5-001: Domestic wire to mule | Funds wired to domestic mule accounts, often business accounts opened with fraudulent documentation | Recently opened business accounts receiving large inbound wires |
 | CFPF-P5-002: International wire | Funds wired to foreign accounts, commonly in West Africa, Southeast Asia, or Eastern Europe | Wire destinations to high-risk jurisdictions with no prior relationship |
 
+## Evasion Techniques
+
+| Technique | Description | Detection Signal |
+|-----------|-------------|------------------|
+| Strategic HTTP Redirect | Lookalike vendor domain redirects to the real vendor's website; appears legitimate in basic checks, but email from the domain reaches the attacker | FP-0007: `redirects_to_brand=True` in domain_intel |
+| Geo-Targeted Content | Domain serves different content based on visitor geography — benign pages for scanners/researchers in certain regions, malicious content for targets | Manual verification required; inconsistent scan results across geolocations |
+
+**Source**: CrowdStrike Counter Adversary Operations — typosquatting evasion research.
+
+---
+
 ## Look Left / Look Right
 
 **Discovery Phase**: Typically **P4/P5** — discovered when the legitimate vendor contacts the target about unpaid invoices, sometimes 30-90 days after payment diversion.
