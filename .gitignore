@@ -20,3 +20,6 @@ Thumbs.db
 
 # Gemini agent workspace
 .gemini/
+
+# Worktrees
+.worktrees/
