@@ -161,9 +161,24 @@
     <!-- ================================================================ -->
     <!-- Regulatory Pulse Panel                                           -->
     <!-- ================================================================ -->
-    <section id="regulatory-pulse" class="panel" style="display:none;">
-        <h2>Regulatory Pulse</h2>
-        <div id="regulatory-pulse-body"></div>
+    <section id="regulatory-pulse" class="reg-panel" style="display:none;">
+        <div class="reg-panel-header">
+            <div class="reg-panel-title-row">
+                <svg class="reg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+                <h2 class="reg-panel-heading">Regulatory Pulse</h2>
+                <span class="reg-badge" id="reg-alert-count">0</span>
+            </div>
+            <button class="reg-collapse-btn" id="reg-collapse-btn" title="Toggle panel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </button>
+        </div>
+        <div class="reg-panel-body" id="regulatory-pulse-body">
+            <!-- Populated by JS -->
+        </div>
     </section>
 
     <!-- ================================================================ -->
