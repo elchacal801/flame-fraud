@@ -758,6 +758,8 @@
         var alerts = FlameData.getRegulatoryAlerts();
         var panel = document.getElementById('regulatory-pulse');
         var body = document.getElementById('regulatory-pulse-body');
+        var badge = document.getElementById('reg-alert-count');
+        var collapseBtn = document.getElementById('reg-collapse-btn');
 
         if (!panel || !body) return;
 
@@ -766,9 +768,25 @@
             return;
         }
 
+        // Update badge count
+        if (badge) {
+            badge.textContent = alerts.length.toLocaleString();
+        }
+
+        // Collapse toggle
+        if (collapseBtn) {
+            var header = panel.querySelector('.reg-panel-header');
+            if (header) {
+                header.addEventListener('click', function () {
+                    panel.classList.toggle('collapsed');
+                });
+            }
+        }
+
         // Build summary stats
         var severityCounts = { high: 0, medium: 0, low: 0 };
         var sourcesSet = {};
+        var tpMapped = 0;
         alerts.forEach(function (a) {
             var sev = (a.severity || '').toLowerCase();
             if (severityCounts.hasOwnProperty(sev)) {
@@ -777,14 +795,18 @@
             if (a.source) {
                 sourcesSet[a.source] = true;
             }
+            if (a.tp_count && a.tp_count > 0) {
+                tpMapped++;
+            }
         });
         var sourcesActive = Object.keys(sourcesSet).length;
 
         // Summary row
         var html = '<div class="reg-summary-row">';
-        html += '<div class="reg-stat"><div class="label">Total</div><div class="value">' + alerts.length + '</div></div>';
-        html += '<div class="reg-stat"><div class="label">High Severity</div><div class="value">' + severityCounts.high + '</div></div>';
-        html += '<div class="reg-stat"><div class="label">Sources Active</div><div class="value">' + sourcesActive + '</div></div>';
+        html += '<div class="reg-stat"><div class="label">Total Alerts</div><div class="value">' + alerts.length.toLocaleString() + '</div></div>';
+        html += '<div class="reg-stat"><div class="label">High Severity</div><div class="value" style="color: #f87171;">' + severityCounts.high.toLocaleString() + '</div></div>';
+        html += '<div class="reg-stat"><div class="label">Sources Active</div><div class="value" style="color: var(--color-accent);">' + sourcesActive + ' / 6</div></div>';
+        html += '<div class="reg-stat"><div class="label">TP-Mapped</div><div class="value" style="color: #4ade80;">' + tpMapped.toLocaleString() + '</div></div>';
         html += '</div>';
 
         // Table of 20 most recent alerts (sorted by date descending)
@@ -800,14 +822,18 @@
             var sourceClass = (a.source || '').toLowerCase().replace(/[^a-z0-9_]/g, '_');
             var sevClass = (a.severity || '').toLowerCase();
             html += '<tr>';
-            html += '<td>' + escapeHtml(a.date || '') + '</td>';
-            html += '<td><span class="reg-source-badge ' + escapeHtml(sourceClass) + '">' + escapeHtml(a.source || '') + '</span></td>';
-            html += '<td>' + escapeHtml(a.title || '') + '</td>';
+            html += '<td style="white-space:nowrap;">' + escapeHtml(a.date || '—') + '</td>';
+            html += '<td><span class="reg-source-badge ' + escapeHtml(sourceClass) + '">' + escapeHtml((a.source || '').toUpperCase()) + '</span></td>';
+            html += '<td>' + escapeHtml(truncate(a.title || '', 80)) + '</td>';
             html += '<td><span class="reg-severity-pill ' + escapeHtml(sevClass) + '">' + escapeHtml(a.severity || '') + '</span></td>';
-            html += '<td>' + escapeHtml(String(a.tp_count != null ? a.tp_count : '')) + '</td>';
+            html += '<td style="text-align:center;">' + escapeHtml(String(a.tp_count != null ? a.tp_count : '—')) + '</td>';
             html += '</tr>';
         });
         html += '</tbody></table>';
+
+        if (alerts.length > 20) {
+            html += '<div style="text-align:center; margin-top: var(--space-md); font-size: 0.78rem; color: var(--color-text-muted);">Showing 20 of ' + alerts.length.toLocaleString() + ' alerts</div>';
+        }
 
         body.innerHTML = html;
         panel.style.display = 'block';
