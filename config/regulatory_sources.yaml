@@ -11,7 +11,7 @@ sources:
 
   fincen:
     enabled: true
-    url: "https://www.fincen.gov/news/advisories"
+    url: "https://www.fincen.gov/sites/default/files/shared/SAR_Stats_508C.pdf"
     category_mapping:
       synthetic-identity:
         - TP-0012
@@ -49,7 +49,7 @@ sources:
 
   fbi_ic3:
     enabled: true
-    url: "https://www.ic3.gov/PSA"
+    url: "https://www.ic3.gov/AnnualReport/Reports/2024_IC3Report.pdf"
     category_mapping:
       business-email-compromise:
         - TP-0010
@@ -70,6 +70,7 @@ sources:
   occ:
     enabled: true
     url: "https://www.occ.treas.gov/news-issuances/bulletins/index-bulletin-issuances.html"
+    feed_url: "https://www.occ.treas.gov/rss/occ-bulletins.xml"
     category_mapping:
       bsa-aml:
         - TP-0001
@@ -88,6 +89,7 @@ sources:
     enabled: true
     base_url: "https://www.sec.gov"
     url: "https://www.sec.gov/litigation/litreleases.htm"
+    feed_url: "https://efts.sec.gov/LATEST/search-index?q=%22litigation+release%22&forms=LIT&dateRange=custom&startdt=2024-01-01&enddt=2026-12-31"
     category_mapping:
       investment-fraud:
         - TP-0031

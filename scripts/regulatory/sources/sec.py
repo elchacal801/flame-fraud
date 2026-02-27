@@ -24,7 +24,7 @@ class SECSource(RegulatorySource):
 
     def fetch(self):
         """Parse the SEC RSS feed and return the feedparser result."""
-        url = self.config["feed_url"]
+        url = self.config.get("feed_url", self.config.get("url", ""))
         return feedparser.parse(url)
 
     def parse(self, raw) -> List[RegulatoryAlert]:

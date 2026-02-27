@@ -44,6 +44,14 @@ class FBIC3Source(RegulatorySource):
         resp = requests.get(url, timeout=60)
         resp.raise_for_status()
 
+        content_type = resp.headers.get("Content-Type", "")
+        if "pdf" not in content_type.lower() and not resp.content[:5].startswith(b"%PDF"):
+            logger.warning(
+                "IC3 URL did not return a PDF (Content-Type: %s). Skipping.",
+                content_type,
+            )
+            return ""
+
         parts: List[str] = []
         with pdfplumber.open(io.BytesIO(resp.content)) as pdf:
             for page in pdf.pages:
