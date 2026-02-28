@@ -57,6 +57,15 @@
     "Trust Abuse",
     "Account Access"
   ],
+  "ucff_domains": {
+    "commit": "Level 3",
+    "assess": "Level 3",
+    "plan": "Level 3",
+    "act": "Level 4",
+    "monitor": "Level 3",
+    "report": "Level 2",
+    "improve": "Level 3"
+  },
   "evidence": [],
   "evidence_count": 0
 }

@@ -61,6 +61,15 @@
     "Perform Fraud",
     "Monetization"
   ],
+  "ucff_domains": {
+    "commit": "Level 3",
+    "assess": "Level 3",
+    "plan": "Level 3",
+    "act": "Level 4",
+    "monitor": "Level 3",
+    "report": "Level 2",
+    "improve": "Level 3"
+  },
   "evidence": [
     {
       "evidence_id": "EV-TP0003-2026-001",

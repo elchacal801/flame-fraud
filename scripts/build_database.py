@@ -262,6 +262,12 @@ CREATE TABLE IF NOT EXISTS regulatory_alert_tp_mapping (
     FOREIGN KEY (alert_id) REFERENCES regulatory_alerts(alert_id)
 );
 
+CREATE TABLE IF NOT EXISTS submission_ucff_domains (
+    submission_id TEXT NOT NULL,
+    domains_json TEXT NOT NULL,
+    FOREIGN KEY (submission_id) REFERENCES submissions(id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_reg_source ON regulatory_alerts(source);
 CREATE INDEX IF NOT EXISTS idx_reg_date ON regulatory_alerts(date);
 CREATE INDEX IF NOT EXISTS idx_reg_tp ON regulatory_alert_tp_mapping(tp_id);
@@ -318,6 +324,14 @@ def load_submission(conn: sqlite3.Connection, meta: dict, body: str, summary: st
     _insert_multi(conn, "submission_ft3_tactics", sub_id, "tactic_id", meta.get("ft3_tactics", []))
     _insert_multi(conn, "submission_mitre_f3", sub_id, "technique_id", meta.get("mitre_f3", []))
     _insert_multi(conn, "submission_groupib_stages", sub_id, "stage", meta.get("groupib_stages", []))
+
+    # UCFF domains — stored as JSON object (not multi-value array)
+    ucff = meta.get("ucff_domains")
+    if ucff and isinstance(ucff, dict):
+        conn.execute(
+            "INSERT OR REPLACE INTO submission_ucff_domains (submission_id, domains_json) VALUES (?, ?)",
+            (sub_id, json.dumps(ucff))
+        )
 
 
 # Whitelist of valid (table, column) pairs for multi-value operations.
@@ -489,6 +503,13 @@ def export_json(conn: sqlite3.Connection, output_path: Path):
         entry["mitre_f3"] = _fetch_list(conn, "submission_mitre_f3", "technique_id", sub_id)
         entry["groupib_stages"] = _fetch_list(conn, "submission_groupib_stages", "stage", sub_id)
 
+        # UCFF domains (object, not array)
+        ucff_row = conn.execute(
+            "SELECT domains_json FROM submission_ucff_domains WHERE submission_id = ?",
+            (sub_id,)
+        ).fetchone()
+        entry["ucff_domains"] = json.loads(ucff_row[0]) if ucff_row else {}
+
         # Remove full body from JSON export (too large for frontend)
         entry.pop("body", None)
 
@@ -524,6 +545,14 @@ def _build_full_entry(conn: sqlite3.Connection, entry: dict) -> dict:
     entry["ft3_tactics"] = _fetch_list(conn, "submission_ft3_tactics", "tactic_id", sub_id)
     entry["mitre_f3"] = _fetch_list(conn, "submission_mitre_f3", "technique_id", sub_id)
     entry["groupib_stages"] = _fetch_list(conn, "submission_groupib_stages", "stage", sub_id)
+
+    # UCFF domains (object, not array)
+    ucff_row = conn.execute(
+        "SELECT domains_json FROM submission_ucff_domains WHERE submission_id = ?",
+        (sub_id,)
+    ).fetchone()
+    entry["ucff_domains"] = json.loads(ucff_row[0]) if ucff_row else {}
+
     return entry
 
 
@@ -774,11 +803,21 @@ def export_index_md(conn: sqlite3.Connection, output_path: Path, stats: dict):
     lines.append("")
     lines.append("| Framework | Mapping Status | Notes |")
     lines.append("|-----------|---------------|-------|")
+    ft3_count = conn.execute("SELECT COUNT(DISTINCT sf.submission_id) FROM submission_ft3_tactics sf JOIN submissions s ON sf.submission_id = s.id WHERE lower(s.category) = 'threatpath'").fetchone()[0]
+    ucff_count = conn.execute("SELECT COUNT(DISTINCT su.submission_id) FROM submission_ucff_domains su JOIN submissions s ON su.submission_id = s.id WHERE lower(s.category) = 'threatpath'").fetchone()[0]
+
     lines.append(f"| FS-ISAC CFPF | All {stats['total']} TPs mapped | Primary organizational structure |")
     lines.append(f"| MITRE ATT&CK | {mitre_count} of {stats['total']} TPs mapped | Where applicable (some fraud-only TPs lack ATT&CK equivalents) |")
-    lines.append("| Stripe FT3 | Pending | MIT-licensed JSON available for parsing |")
+    if ft3_count > 0:
+        lines.append(f"| Stripe FT3 | Mapped ({ft3_count}/{stats['total']}) | MIT-licensed JSON vendored in data/ft3/ |")
+    else:
+        lines.append("| Stripe FT3 | Pending | MIT-licensed JSON available for parsing |")
     lines.append("| MITRE F3 | Awaiting release | Will map when F3 ships |")
     lines.append(f"| Group-IB Fraud Matrix | {groupib_count} of {stats['total']} TPs mapped | 10-stage lifecycle; stage names referenced for interoperability |")
+    if ucff_count > 0:
+        lines.append(f"| Group-IB UCFF | {ucff_count} of {stats['total']} TPs aligned | 7-domain lifecycle maturity assessment |")
+    else:
+        lines.append("| Group-IB UCFF | Pending | 7-domain lifecycle maturity assessment |")
     
     lines.append("")
     lines.append("## Cross-Threat Path Connections")

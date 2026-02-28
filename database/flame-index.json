@@ -71,6 +71,15 @@
       "Monetization",
       "Laundering"
     ],
+    "ucff_domains": {
+      "commit": "Level 2",
+      "assess": "Level 3",
+      "plan": "Level 2",
+      "act": "Level 3",
+      "monitor": "Level 3",
+      "report": "Level 2",
+      "improve": "Level 2"
+    },
     "evidence_count": 0
   },
   {
@@ -142,6 +151,7 @@
       "Monetization",
       "Laundering"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -206,6 +216,15 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {
+      "commit": "Level 3",
+      "assess": "Level 3",
+      "plan": "Level 3",
+      "act": "Level 4",
+      "monitor": "Level 3",
+      "report": "Level 2",
+      "improve": "Level 3"
+    },
     "evidence_count": 2
   },
   {
@@ -275,6 +294,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -343,6 +363,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -416,6 +437,15 @@
       "Monetization",
       "Laundering"
     ],
+    "ucff_domains": {
+      "commit": "Level 2",
+      "assess": "Level 2",
+      "plan": "Level 2",
+      "act": "Level 3",
+      "monitor": "Level 2",
+      "report": "Level 2",
+      "improve": "Level 2"
+    },
     "evidence_count": 0
   },
   {
@@ -487,6 +517,15 @@
       "Monetization",
       "Laundering"
     ],
+    "ucff_domains": {
+      "commit": "Level 3",
+      "assess": "Level 3",
+      "plan": "Level 3",
+      "act": "Level 3",
+      "monitor": "Level 2",
+      "report": "Level 2",
+      "improve": "Level 3"
+    },
     "evidence_count": 0
   },
   {
@@ -559,6 +598,7 @@
       "Monetization",
       "Laundering"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -621,6 +661,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -685,6 +726,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -753,6 +795,7 @@
       "Monetization",
       "Laundering"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -824,6 +867,7 @@
       "Monetization",
       "Laundering"
     ],
+    "ucff_domains": {},
     "evidence_count": 1
   },
   {
@@ -894,6 +938,15 @@
       "Defence Evasion",
       "Monetization"
     ],
+    "ucff_domains": {
+      "commit": "Level 2",
+      "assess": "Level 2",
+      "plan": "Level 2",
+      "act": "Level 3",
+      "monitor": "Level 3",
+      "report": "Level 2",
+      "improve": "Level 2"
+    },
     "evidence_count": 0
   },
   {
@@ -967,6 +1020,7 @@
       "Monetization",
       "Laundering"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -1038,6 +1092,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 1
   },
   {
@@ -1095,6 +1150,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -1162,6 +1218,15 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {
+      "commit": "Level 3",
+      "assess": "Level 3",
+      "plan": "Level 3",
+      "act": "Level 4",
+      "monitor": "Level 3",
+      "report": "Level 3",
+      "improve": "Level 3"
+    },
     "evidence_count": 0
   },
   {
@@ -1222,6 +1287,15 @@
       "Trust Abuse",
       "Account Access"
     ],
+    "ucff_domains": {
+      "commit": "Level 3",
+      "assess": "Level 3",
+      "plan": "Level 3",
+      "act": "Level 4",
+      "monitor": "Level 3",
+      "report": "Level 2",
+      "improve": "Level 3"
+    },
     "evidence_count": 0
   },
   {
@@ -1288,6 +1362,7 @@
       "Trust Abuse",
       "Perform Fraud"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -1355,6 +1430,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -1411,6 +1487,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -1470,6 +1547,7 @@
       "Perform Fraud",
       "Monetization"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   },
   {
@@ -1539,6 +1617,7 @@
       "Credential Access",
       "Perform Fraud"
     ],
+    "ucff_domains": {},
     "evidence_count": 0
   }
 ]
