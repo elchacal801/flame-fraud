@@ -33,6 +33,14 @@ cfpf_phases:                     # FS-ISAC CFPF (primary structure)
 ft3_tactics: []                  # Stripe FT3 tactic/technique IDs (MIT, when mapped)
 mitre_f3: []                     # MITRE F3 IDs (placeholder, add when shipped)
 groupib_stages: []               # Group-IB Fraud Matrix stages (reference only)
+ucff_domains:                    # Group-IB UCFF domain alignment
+  commit: ""
+  assess: ""
+  plan: ""
+  act: ""
+  monitor: ""
+  report: ""
+  improve: ""
 mitre_attack:                    # MITRE ATT&CK technique IDs (supplementary)
   - T1566
 
@@ -195,6 +203,31 @@ tags:                            # Additional descriptive tags
 | P3 | | | |
 | P4 | | | |
 | P5 | | | |
+
+---
+
+## UCFF Alignment
+
+> *Optional section — Group-IB Unified Counter Fraud Framework (UCFF) maturity mapping. Documents the minimum organizational maturity required to effectively detect and prevent this threat path.*
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level X (Label) | [Specific governance requirement] |
+| ASSESS | Level X (Label) | [Specific risk assessment requirement] |
+| PLAN | Level X (Label) | [Specific planning deliverable] |
+| ACT | Level X (Label) | [Specific detection/response capability] |
+| MONITOR | Level X (Label) | [Specific KRI or monitoring requirement] |
+| REPORT | Level X (Label) | [Specific reporting requirement] |
+| IMPROVE | Level X (Label) | [Specific feedback loop] |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ---
 

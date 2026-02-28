@@ -193,6 +193,17 @@ def validate_file(filepath: Path) -> ValidationResult:
         if val is not None and not isinstance(val, list):
             result.error(f"Field '{field}' must be a list")
 
+    # UCFF domains (optional, must be a mapping if present)
+    ucff = meta.get("ucff_domains")
+    if ucff is not None:
+        if not isinstance(ucff, dict):
+            result.error("Field 'ucff_domains' must be a mapping (object), not a list or scalar")
+        else:
+            valid_ucff_keys = {"commit", "assess", "plan", "act", "monitor", "report", "improve"}
+            for key in ucff:
+                if key not in valid_ucff_keys:
+                    result.warn(f"Unrecognized UCFF domain '{key}'. Expected: {', '.join(sorted(valid_ucff_keys))}")
+
     # MITRE ATT&CK format validation
     mitre = meta.get("mitre_attack", [])
     if isinstance(mitre, list):
