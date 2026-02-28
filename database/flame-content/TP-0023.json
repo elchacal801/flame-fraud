@@ -37,7 +37,27 @@
     "T1417",
     "T1636"
   ],
-  "ft3_tactics": [],
+  "ft3_tactics": [
+    "FTA001",
+    "FTA002",
+    "FTA003",
+    "FTA004",
+    "FTA005",
+    "FTA006",
+    "FTA007",
+    "FTA009",
+    "FTA010",
+    "FT011.001",
+    "FT013",
+    "FT003",
+    "FT016.001",
+    "FT006",
+    "FT007.001",
+    "FT008.002",
+    "FT015",
+    "FT018",
+    "FT031"
+  ],
   "mitre_f3": [],
   "groupib_stages": [
     "Resource Development",

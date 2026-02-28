@@ -624,5 +624,17 @@
       "total_tps": 5
     }
   ],
-  "generatedAt": "2026-02-26T09:26:50.328178+00:00"
+  "regulatoryAlerts": {
+    "total": 18804,
+    "bySeverity": {
+      "high": 18704,
+      "medium": 100
+    },
+    "bySource": {
+      "cfpb": 100,
+      "ofac": 18704
+    },
+    "lastUpdated": "2026-02-28"
+  },
+  "generatedAt": "2026-02-28T18:43:41.019858+00:00"
 }
