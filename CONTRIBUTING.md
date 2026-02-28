@@ -54,6 +54,14 @@ mitre_attack: []
 ft3_tactics: []
 mitre_f3: []
 groupib_stages: []
+ucff_domains:              # Optional — Group-IB UCFF maturity mapping
+  commit: ""
+  assess: ""
+  plan: ""
+  act: ""
+  monitor: ""
+  report: ""
+  improve: ""
 tags:
   - descriptive-tag
 ---
@@ -68,6 +76,7 @@ tags:
 - **ft3_tactics**: Stripe FT3 tactic IDs. Leave as empty list if not mapped.
 - **mitre_f3**: MITRE F3 IDs. Leave as empty list (placeholder for when F3 ships).
 - **groupib_stages**: Group-IB Fraud Matrix stage names. Include where applicable.
+- **ucff_domains**: Group-IB Unified Counter Fraud Framework (UCFF) domain maturity mapping. An object with seven keys (`commit`, `assess`, `plan`, `act`, `monitor`, `report`, `improve`). Values are free-text descriptions of minimum maturity or key deliverables. Leave values as empty strings when not applicable. This field is optional.
 - **tlp**: PUBLIC submissions only. Use `WHITE`.
 
 ## Required Sections
@@ -85,6 +94,7 @@ Optional but encouraged:
 - Cross-Framework Mapping
 - Look Left / Look Right analysis
 - Underground Ecosystem Context
+- UCFF Alignment
 - Case Studies & References
 - Analyst Notes
 
@@ -100,6 +110,19 @@ The **Underground Ecosystem Context** section documents the underground service 
 - **Intelligence Sources**: Link to open-source or TLP:WHITE reports for deeper ecosystem context.
 
 Only include this section when underground market intelligence is genuinely available for the threat path. Do not speculate or fabricate ecosystem details.
+
+### UCFF Alignment (Optional)
+
+The **UCFF Alignment** section maps the threat path to the Group-IB Unified Counter Fraud Framework (UCFF), a maturity model that defines seven organizational domains for counter-fraud programs: **Commit**, **Assess**, **Plan**, **Act**, **Monitor**, **Report**, and **Improve**. Each domain has five maturity levels from Level 1 (Initial) through Level 5 (Leading).
+
+This section documents the **minimum organizational maturity** required to effectively detect and prevent the threat path. It is positioned after Controls & Mitigations and before Detection Approaches in the template.
+
+When filling out this section:
+
+- For each UCFF domain, specify the minimum maturity level (1-5) and the key deliverable that an organization needs at that level to address this threat path.
+- Not every domain needs to be filled in — only include domains where the maturity requirement is meaningful for the specific threat path.
+- The corresponding `ucff_domains` frontmatter field should contain short descriptions for each domain. Leave values as empty strings for domains that are not applicable.
+- Only include this section when you can provide meaningful maturity guidance. Do not fill in generic or speculative maturity requirements.
 
 ## Quality Guidelines
 
