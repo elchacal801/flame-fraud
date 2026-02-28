@@ -18,7 +18,7 @@ fraud_types:
   - crypto-laundering
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1111, T1078, T1657]
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT011.002", "FT043", "FT003", "FT006.002", "FT038.002", "FT044", "FT005.001", "FT008.001", "FT013", "FT016"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:               # Group-IB Fraud Matrix (reference)
   - "Reconnaissance"

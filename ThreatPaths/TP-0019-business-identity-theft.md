@@ -26,7 +26,7 @@ cfpf_phases:
 mitre_attack:
   - T1566  # Phishing
   - T1589  # Gather Victim Identity Information
-ft3_tactics: []
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT052", "FT011.002", "FT008.002", "FT003", "FT007.009", "FT026.001", "FT005.001", "FT016", "FT020", "FT028"]
 mitre_f3: []
 groupib_stages:
   - "Reconnaissance"

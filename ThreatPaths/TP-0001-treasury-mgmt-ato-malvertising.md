@@ -27,7 +27,7 @@ mitre_attack:
   - T1566.002  # Phishing: Spearphishing Link
   - T1656      # Impersonation
   - T1657      # Financial Theft
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT011.001", "FT016", "FT028", "FT003", "FT007.009", "FT008.002", "FT052.003", "FT006.001", "FT017", "FT031"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:               # Group-IB Fraud Matrix (reference)
   - "Reconnaissance"
