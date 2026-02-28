@@ -166,6 +166,26 @@ tags:                            # Additional descriptive tags
 
 ---
 
+## Underground Ecosystem Context
+
+> *Optional section — include when underground market intelligence is available for this threat path. Focus on structural patterns (roles, service categories, availability levels) rather than specific actor handles or product names that will go stale.*
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| [Role name] | [Service category] | [High/Medium/Low] | [Price range] |
+
+### Tool Ecosystem
+[Named tool *categories* relevant to this threat path — e.g., "anti-detect browsers," "infostealer MaaS kits," "document forgery services" — not specific actor handles or product names that will go stale]
+
+### Underground Marketplace Presence
+[Types of underground venues where this scheme is discussed, sold, or recruited for, with estimated activity level. Reference forum *categories* (Russian-language carding forums, Telegram fraud channels, dark web marketplaces) rather than specific named forums that may be seized]
+
+### Intelligence Sources
+[Recommended open-source or TLP:WHITE reports for deeper ecosystem context on this threat path]
+
+---
+
 ## Controls & Mitigations
 
 | Phase | Control | Type | Owner |
