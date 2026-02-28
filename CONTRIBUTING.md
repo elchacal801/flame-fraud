@@ -84,8 +84,22 @@ Optional but encouraged:
 
 - Cross-Framework Mapping
 - Look Left / Look Right analysis
+- Underground Ecosystem Context
 - Case Studies & References
 - Analyst Notes
+
+### Underground Ecosystem Context (Optional)
+
+The **Underground Ecosystem Context** section documents the underground service supply chain, tool ecosystem, and marketplace presence for a given fraud type. It is positioned after Look Left / Look Right Analysis and before Controls & Mitigations in the template.
+
+**Design rationale**: Full actor profiles are a maintenance trap — handles change, forums get seized, actors get arrested. This section deliberately focuses on **structural patterns** that persist even as specific actors rotate. When filling out this section:
+
+- **Service Supply Chain**: Document the *roles* and *service categories* that enable the scheme (e.g., "credential supplier," "money mule recruiter"), not specific actor handles.
+- **Tool Ecosystem**: Reference tool *categories* (e.g., "anti-detect browsers," "infostealer MaaS kits") rather than specific product names that will go stale.
+- **Underground Marketplace Presence**: Reference forum *categories* (e.g., "Russian-language carding forums," "Telegram fraud channels") rather than specific named forums that may be seized.
+- **Intelligence Sources**: Link to open-source or TLP:WHITE reports for deeper ecosystem context.
+
+Only include this section when underground market intelligence is genuinely available for the threat path. Do not speculate or fabricate ecosystem details.
 
 ## Quality Guidelines
 
