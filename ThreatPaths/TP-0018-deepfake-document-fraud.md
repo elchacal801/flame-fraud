@@ -111,6 +111,32 @@ Deepfake document fraud targets the Know Your Customer (KYC) and remote account 
 
 ---
 
+## Underground Ecosystem Context
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| Document Forger | AI-generated identity documents (passports, licenses, utility bills) | High | $5-$50 per document |
+| Face Swap Provider | Real-time face-swapping tools for KYC liveness bypass | High | Free (open-source) to $200/month (commercial) |
+| Camera Injection Specialist | Virtual camera tools that inject synthetic video into verification flows | Medium | $20-$100 per tool license |
+| Device Spoofing | Modified apps, emulators, and VM setups for device fingerprint evasion | High | $50-$200 per setup kit |
+| Network Anonymization | Residential proxy services for geolocation matching | High | $5-$30/day per residential IP |
+| End-to-End KYC Bypass | Full-service KYC bypass combining all above steps | Low | $200-$1,000 per verified account |
+
+### Tool Ecosystem
+AI document generation tools (template-based and GAN-based), face-swapping applications (17+ tools identified in WEF evaluation, ranging from free open-source to commercial SaaS), camera injection/virtual camera tools (8+ tools identified), device emulators and modified mobile apps, residential proxy networks, automated KYC submission frameworks.
+
+### Underground Marketplace Presence
+Deepfake KYC bypass services are actively advertised on Telegram channels specializing in financial fraud, dark web marketplaces, and carding forums. The market has stratified into component sellers (document-only, face-swap-only) and full-service providers offering end-to-end account opening. Pricing inversely correlates with target institution's IDV sophistication. Crypto exchange accounts command premium prices due to monetization potential.
+
+### Intelligence Sources
+- WEF "Deepfake Identity Verification" (January 2026) — comprehensive tool ecosystem evaluation
+- Recorded Future deepfake marketplace monitoring
+- Document verification vendor threat reports (Onfido, Socure, ID R&D)
+- INTERPOL reports on AI-enabled identity fraud
+
+---
+
 ## Controls & Mitigations
 
 | Phase | Control | Type | Owner |
@@ -119,6 +145,10 @@ Deepfake document fraud targets the Know Your Customer (KYC) and remote account 
 | P2 | Injection Attack Prevention (preventing virtual cameras from feeding the onboarding flow) | Preventive | Digital Channels |
 | P2 | Specialized deepfake detection algorithms (spectral analysis of images) | Detective | Fraud Strategy |
 | P3 | Sleeper Account Monitoring (flagging sudden activity after 90 days of dormancy) | Detective | Transaction Monitoring |
+| P1 | Assessment of IDV vendor deepfake detection capabilities (face swap + injection attack coverage) | Preventive | KYC/Onboarding |
+| P2 | Device integrity checks (detect virtual cameras, emulators, modified apps) | Preventive | Digital Channels |
+| P2 | Network analysis (flag residential proxy patterns, VPN usage during onboarding) | Detective | Fraud Strategy |
+| P3 | Cross-vendor verification for high-risk applications (second IDV provider check) | Detective | Fraud Strategy |
 
 ---
 
@@ -166,10 +196,17 @@ index=onboarding action="document_verification"
 
 ---
 
+## Analyst Notes
+
+The WEF "Deepfake Identity Verification" paper (January 2026) identifies five accelerating trends: (1) commoditization of advanced AI deepfake tools, (2) increased targeting of financial institutions and crypto exchanges, (3) near-perfect face swap fidelity defeating current detection, (4) scalable automated injection attacks enabling mass KYC bypass, and (5) fragmented global regulation creating jurisdictional arbitrage opportunities. The paper evaluated 17 face-swapping tools and 8 camera injection tools, confirming that the attack toolchain is mature, accessible, and rapidly improving.
+
+---
+
 ## References
 
 - FLAME Project Internal Knowledge Base.
 - Document Verification Industry Reports (e.g., Onfido, Socure, ID R&D regarding GenAI threats).
+- World Economic Forum: "Deepfake Identity Verification" (January 2026) — three-stage KYC attack methodology and tool ecosystem evaluation
 
 ---
 
