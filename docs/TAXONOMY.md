@@ -89,7 +89,11 @@ Ten-stage lifecycle providing an alternative perspective to CFPF:
 
 ### Stripe FT3
 
-MIT-licensed fraud taxonomy. Tactic IDs mapped when available.
+MIT-licensed fraud taxonomy. Mapped to all 23 TPs via `ft3_mapper.py`. Tactic and technique IDs per TP.
+
+### Group-IB UCFF (Unified Cyber Fraud Framework)
+
+Seven-domain defense governance model. Mapped to 7 of 23 priority TPs as `ucff_domains` in frontmatter. Each mapped TP includes per-domain maturity levels and key deliverables required for effective detection. Domains: Commit, Assess, Prevent, Detect, Respond, Investigate, Manage.
 
 ### MITRE F3
 
@@ -117,6 +121,7 @@ mitre_attack: []
 ft3_tactics: []
 mitre_f3: []
 groupib_stages: []
+ucff_domains: {}
 tags:
   - descriptive-tag
 ---
