@@ -138,6 +138,30 @@ A novel technique documented by Group-IB: Victim A is manipulated into sending m
 
 **Look Right**: How many other victims are connected to the same scam operation? Is the mule's account receiving funds from other fraud types (connecting this threat path to TP-0001, TP-0002, TP-0006)? Is the victim willing to cooperate with law enforcement?
 
+## Underground Ecosystem Context
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| Persona Sourcing | Stolen/fabricated profile photos and identities | High | $5-$50 per identity package |
+| Target Acquisition | Dating site scrapers, mailing lists, target databases | High | $0.01-$0.10 per lead |
+| Script Writers | Social engineering conversation scripts and playbooks | Medium | $50-$500 per script kit |
+| Money Mule Recruiters | Job board postings, "work from home" schemes targeting unwitting mules | High | 10-20% of laundered funds |
+| Drop Account Providers | Bank accounts opened with synthetic/stolen identities for receiving funds | High | $200-$1,000 per account |
+| Cryptocurrency Exchangers | OTC crypto conversion services for laundering | High | 5-15% commission |
+
+### Tool Ecosystem
+Social engineering script generators, fake profile creation tools (AI face generators, bio generators), dating platform automation bots, encrypted communication platforms (Telegram, Signal), cryptocurrency mixing services, money transfer platform accounts.
+
+### Underground Marketplace Presence
+Romance scam operations are heavily discussed in West African cybercrime communities (Yahoo Boys ecosystem), Telegram fraud channels, and organized crime recruitment forums. Witting mules are recruited via dark web marketplaces; unwitting mules are recruited via legitimate job boards and social media. The operational model has industrialized, with some operations functioning as call-center-style organizations.
+
+### Intelligence Sources
+- Recorded Future "Business of Fraud" (CTA-2021-0225) — mule pipeline analysis
+- FBI IC3 Annual Reports — romance scam loss figures
+- INTERPOL Operation reports on West African cybercrime networks
+- FinCEN Advisories on human trafficking and forced labor in scam compounds
+
 ## Controls & Mitigations
 
 | Phase | Control | Type |

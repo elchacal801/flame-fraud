@@ -90,6 +90,30 @@ Actors social-engineer mobile carriers to transfer a victim's phone number to an
 | CFPF-P5-003: Crypto laundering | Funds routed through mixing services (Tornado Cash, Sinbad), cross-chain bridges, or chain-hopping (BTC → Monero → BTC) | Transactions to known mixer addresses; rapid cross-chain transfers; peel chain patterns |
 | Peer-to-peer off-ramping | Convert crypto to fiat through P2P OTC desks, LocalBitcoins-style platforms, or international exchanges with weak KYC | Fiat withdrawals at exchanges in low-oversight jurisdictions |
 
+## Underground Ecosystem Context
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| PII Sourcer | Fullz shops providing name, SSN, DOB, address, phone | High | $5-$200 per fullz |
+| Carrier Insider | Corrupt mobile carrier employees performing unauthorized SIM swaps | Medium | $500-$5,000 per swap |
+| Social Engineer | Caller impersonating account holder to carrier support | High | $100-$500 per successful swap |
+| SIM Swap Service Operator | End-to-end SIM swap execution as a service | Medium | $300-$1,500 per target |
+| OTP Interception | Services that capture one-time passwords post-swap | High | Bundled with swap service |
+| Crypto Cashout | Rapid exchange conversion and tumbling services | High | 5-15% of stolen assets |
+
+### Tool Ecosystem
+OSINT tools for target reconnaissance (PII aggregators, social media scrapers), carrier account lookup tools, call spoofing services, VoIP platforms for social engineering calls, cryptocurrency wallet drainers, automated exchange withdrawal tools, SIM cloning hardware (less common than social engineering approach).
+
+### Underground Marketplace Presence
+SIM swap services are actively advertised on Telegram channels, dark web forums, and closed Discord/Telegram groups specializing in crypto theft. Carrier insider recruitment occurs on dedicated channels with regional specificity (specific carriers targeted based on known insider availability). Pricing follows a tiered model — basic social engineering swaps at the lower end, confirmed insider-assisted swaps commanding premium prices. The SIM swap to crypto ATO pipeline is a well-documented and commoditized attack chain.
+
+### Intelligence Sources
+- Recorded Future "Business of Fraud" (CTA-2021-0225) — SIM swap pricing and supply chain
+- FBI PIN 2022-0305-001 — SIM swapping and MFA bypass
+- CISA Advisory on SIM swap mitigation
+- Princeton University "An Empirical Study of Wireless Carrier Authentication"
+
 ## Controls & Mitigations
 
 | Phase | Control | Type |
