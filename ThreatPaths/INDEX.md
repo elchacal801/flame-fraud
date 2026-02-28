@@ -105,6 +105,7 @@
 | Stripe FT3 | Mapped (23/23) | Auto-mapped via ft3_mapper.py; tactics + techniques per TP |
 | MITRE F3 | Awaiting release | Will map when F3 ships |
 | Group-IB Fraud Matrix | 23 of 23 TPs mapped | 10-stage lifecycle; stage names referenced for interoperability |
+| Group-IB UCFF | 7 of 23 priority TPs mapped | Defense-side maturity alignment; 7-domain governance model |
 
 ## Cross-Threat Path Connections
 

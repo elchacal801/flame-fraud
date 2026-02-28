@@ -102,9 +102,10 @@ Every threat path supports **simultaneous mapping** to multiple fraud frameworks
 
 | Framework | Field | Format | Status |
 |-----------|-------|--------|--------|
-| Stripe FT3 | `ft3_tactics` | FT3 tactic/technique IDs | Available (MIT, parse from JSON) |
+| Stripe FT3 | `ft3_tactics` | FT3 tactic/technique IDs | Mapped (23/23 TPs via ft3_mapper.py) |
 | MITRE F3 | `mitre_f3` | F3 technique IDs | Placeholder (add when F3 ships) |
 | Group-IB Fraud Matrix | `groupib_stages` | Stage names/numbers | Reference only (commercial) |
+| Group-IB UCFF | `ucff_domains` | Domain maturity levels | Mapped (7/23 priority TPs) |
 | MITRE ATT&CK | `mitre_attack` | ATT&CK technique IDs | Available |
 
 ### Fraud Type Tags (Secondary Taxonomy)
@@ -314,6 +315,7 @@ cfpf_phases: [P1, P2, P3, P4, P5]      # Primary: FS-ISAC CFPF
 ft3_tactics: []                          # Stripe Fraud Taxonomy (MIT, when mapped)
 mitre_f3: []                             # MITRE F3 (placeholder, add when shipped)
 groupib_stages: []                       # Group-IB Fraud Matrix (reference only)
+ucff_domains: {}                         # Group-IB UCFF (defense governance maturity)
 mitre_attack: [T1566]                    # MITRE ATT&CK (supplementary)
 
 tags: [additional-tags]
@@ -327,9 +329,10 @@ tags: [additional-tags]
 | Project | Type | Open? | Status | What It Does | FLAME Relationship |
 |---------|------|-------|--------|--------------|-------------------|
 | **FS-ISAC CFPF** | Lifecycle framework | TLP:WHITE paper | Published Apr 2025 | 5-phase fraud lifecycle | FLAME's primary organizational structure |
-| **Stripe FT3** | Fraud taxonomy (JSON) | MIT, open source | Abandoned (1 commit) | ATT&CK-style tactics/techniques | FLAME ingests as mapping layer |
+| **Stripe FT3** | Fraud taxonomy (JSON) | MIT, open source | Abandoned (1 commit) | ATT&CK-style tactics/techniques | Fully mapped (23/23 TPs) |
 | **MITRE F3** | Fraud taxonomy | Will be public | Announced May 2025, not shipped | ATT&CK extension for fraud | FLAME will map to when available |
 | **Group-IB Fraud Matrix 2.0** | Taxonomy + analytics | Commercial, closed | Active, 80+ orgs | 10-stage lifecycle, threat intel | FLAME is the open alternative |
+| **Group-IB UCFF** | Defense governance | Public whitepaper | Active | 7-domain maturity model | Mapped (7/23 priority TPs) |
 | **Axur Fraud Neuron** | Fraud taxonomy (LatAM) | Open source | Minimal traction | Regional focus | Potential mapping layer |
 | **HEARTH** | Threat hunting exchange | MIT | Active | PEAK framework hunts | FLAME's architectural model |
 | **MISP** | Threat intel platform | Open source | Active | IOC sharing infrastructure | FLAME shares knowledge, not IOCs |

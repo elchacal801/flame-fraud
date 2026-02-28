@@ -19,7 +19,8 @@ FLAME is an open-source, community-driven platform for sharing structured fraud 
 | FS-ISAC Cyber Fraud Prevention Framework (CFPF) | Primary structure -- all submissions mapped |
 | MITRE ATT&CK | Supplementary mapping where applicable |
 | Group-IB Fraud Matrix 2.0 | Cross-reference mapping (stage names) |
-| Stripe FT3 | Pending (MIT-licensed JSON available) |
+| Stripe FT3 | Mapped (23/23 TPs) -- auto-mapped via ft3_mapper.py |
+| Group-IB UCFF | 7 of 23 priority TPs mapped -- defense-side maturity alignment |
 | MITRE F3 | Placeholder (will map when shipped) |
 
 **What FLAME is not:** FLAME is not a taxonomy project. It is a knowledge exchange that sits on top of existing taxonomies, providing the operational intelligence -- threat paths, detection queries, investigation playbooks, and cross-team correlation guidance -- that no taxonomy alone delivers.
@@ -119,7 +120,7 @@ Evidence entries follow the format `EV-[TP-ID]-[YYYY]-[NNN]` and are currently s
 
 - **HEARTH / THOR Collective** -- Architectural model and inspiration
 - **FS-ISAC CFPF Working Group** -- Primary fraud lifecycle framework
-- **Group-IB** -- Fraud Matrix 2.0 stage names referenced for cross-taxonomy interoperability
+- **Group-IB** -- Fraud Matrix 2.0 stage names and UCFF governance domains referenced for cross-taxonomy interoperability
 - **Stripe** -- FT3 (MIT-licensed) taxonomy structure
 - **MITRE** -- ATT&CK framework; F3 fraud extension (pending)
 
