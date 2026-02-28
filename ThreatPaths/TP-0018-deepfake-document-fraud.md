@@ -30,6 +30,14 @@ groupib_stages:
   - "Resource Development"
   - "Trust Abuse"
   - "Account Access"
+ucff_domains:
+  commit: "Level 3"
+  assess: "Level 3"
+  plan: "Level 3"
+  act: "Level 4"
+  monitor: "Level 3"
+  report: "Level 2"
+  improve: "Level 3"
 tags:
   - deepfake
   - kyc-bypass
@@ -111,6 +119,29 @@ Deepfake document fraud targets the Know Your Customer (KYC) and remote account 
 | P2 | Injection Attack Prevention (preventing virtual cameras from feeding the onboarding flow) | Preventive | Digital Channels |
 | P2 | Specialized deepfake detection algorithms (spectral analysis of images) | Detective | Fraud Strategy |
 | P3 | Sleeper Account Monitoring (flagging sudden activity after 90 days of dormancy) | Detective | Transaction Monitoring |
+
+---
+
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 3 (Established) | Executive investment in document verification technology upgrades and AI-based detection capabilities; commitment to ongoing vendor evaluation for identity verification (IDV) providers |
+| ASSESS | Level 3 (Established) | Assessment of document verification process resilience against AI-generated forgeries, including red-team testing of current IDV controls with state-of-the-art deepfake samples |
+| PLAN | Level 3 (Established) | Strategic plan for liveness detection deployment, multi-factor verification layering (document + biometric + behavioral), vendor assessment cadence for IDV provider deepfake detection capabilities |
+| ACT | Level 4 (Advanced) | Document authenticity verification (tamper detection, metadata analysis, spectral analysis), active liveness detection with injection attack prevention, cross-applicant facial embedding deduplication |
+| MONITOR | Level 3 (Established) | Document rejection rate monitoring by rejection reason, false acceptance rate tracking for deepfake submissions, deepfake detection model performance metrics (precision/recall), application velocity from shared device fingerprints |
+| REPORT | Level 2 (Developing) | Reporting deepfake detection findings and novel attack samples to IDV vendors, participation in industry working groups on AI-generated document fraud |
+| IMPROVE | Level 3 (Established) | Continuous deepfake detection model retraining with emerging samples, periodic red-team deepfake testing against production IDV controls, feedback from downstream fraud (mule/bust-out) back into onboarding thresholds |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ---
 

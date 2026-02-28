@@ -34,6 +34,14 @@ groupib_stages:
   - "Trust Abuse"
   - "Perform Fraud"
   - "Monetization"
+ucff_domains:
+  commit: "Level 3"
+  assess: "Level 3"
+  plan: "Level 3"
+  act: "Level 4"
+  monitor: "Level 3"
+  report: "Level 3"
+  improve: "Level 3"
 tags:
   - pig-butchering
   - crypto-scam
@@ -146,6 +154,29 @@ tags:
 | P4 | Dynamic friction/warnings on wires to crypto exchanges for vulnerable demographics | Preventive | Fraud Ops |
 | P4 | Flagging rapid loan origination followed immediately by wire out | Detective | Credit Risk / Fraud |
 | P5 | Blockchain monitoring to identify withdrawal addresses linked to known scam syndicates | Detective | Crypto Exchange AML |
+
+---
+
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 3 (Established) | Executive commitment to authorized push payment (APP) fraud prevention, including willingness to introduce customer friction (delays, warnings) that may impact customer experience |
+| ASSESS | Level 3 (Established) | Assessment of customer vulnerability segments (elderly, isolated), crypto on-ramp exposure across wire and ACH channels, APP fraud trend analysis by demographic |
+| PLAN | Level 3 (Established) | Multi-layered intervention strategy combining real-time warnings, mandatory cooling-off delays for first-time crypto transfers, customer education campaigns, and intelligence sharing with crypto exchanges |
+| ACT | Level 4 (Advanced) | Real-time payment intervention for high-risk wire/ACH patterns, behavioral anomaly detection (e.g., elderly customer with no crypto history initiating large transfers), crypto address screening against known scam wallets, dynamic customer warning systems |
+| MONITOR | Level 3 (Established) | APP fraud KRIs tracked by customer segment, customer complaint analysis for scam indicators, crypto flow monitoring for on-ramp velocity and destination wallet risk scoring |
+| REPORT | Level 3 (Established) | Cross-border reporting to international law enforcement, intelligence sharing with cryptocurrency exchanges on scam wallet addresses, participation in industry consortiums (e.g., Global Anti-Scam Alliance) |
+| IMPROVE | Level 3 (Established) | Structured feedback loop from victim interviews and complaint narratives into warning trigger calibration and intervention threshold tuning |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ---
 
