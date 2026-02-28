@@ -537,9 +537,10 @@
             ft3.forEach(function (t) { html += '<span class="detail-tag ft3-tag">' + escapeHtml(t) + '</span>'; });
             html += '</div></div>';
         }
-        // UCFF domains — render only domains with non-empty values
-        var ucffEntries = [];
-        Object.keys(ucff).forEach(function (domain) {
+        // UCFF domains — render only domains with non-empty values, in lifecycle order
+        const UCFF_ORDER = ['commit', 'assess', 'plan', 'act', 'monitor', 'report', 'improve'];
+        const ucffEntries = [];
+        UCFF_ORDER.forEach(function (domain) {
             if (ucff[domain] && String(ucff[domain]).trim() !== '') {
                 ucffEntries.push({ domain: domain, value: String(ucff[domain]).trim() });
             }
