@@ -26,7 +26,7 @@ cfpf_phases:
 mitre_attack:
   - T1566.002 # Phishing: Spearphishing Link (often via messaging apps)
   - T1656     # Impersonation
-ft3_tactics: []
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT028", "FT016", "FT007.009", "FT008.003", "FT021", "FT051.003", "FT052.003", "FT001", "FT011", "FT031"]
 mitre_f3: []
 groupib_stages:
   - "Reconnaissance"

@@ -24,7 +24,7 @@ cfpf_phases:
   - P3
 mitre_attack:
   - T1583  # Acquire Infrastructure
-ft3_tactics: []
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FT052.002", "FT026.001", "FT020", "FT049", "FT005.001", "FT016.001", "FT010", "FT011.002", "FT018", "FT006"]
 mitre_f3: []
 groupib_stages:
   - "Resource Development"

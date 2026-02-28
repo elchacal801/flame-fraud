@@ -19,7 +19,7 @@ fraud_types:
   - identity-theft
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1566.001, T1583.001]
-ft3_tactics: []
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT052.003", "FT026.001", "FT018", "FT020", "FT021", "FT016", "FT055", "FT005.001", "FT007.009", "FT011.002"]
 mitre_f3: []
 groupib_stages:
   - "Reconnaissance"

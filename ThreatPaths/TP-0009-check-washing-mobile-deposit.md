@@ -16,7 +16,7 @@ fraud_types:
   - check-fraud
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: []
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT026.002", "FT052.001", "FT024", "FT041", "FT006", "FT010", "FT012", "FT015", "FT018", "FT023"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:
   - "Reconnaissance"

@@ -23,7 +23,7 @@ cfpf_phases:
   - P4
   - P5
 mitre_attack: []
-ft3_tactics: []
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT052.004", "FT026.004", "FT016.001", "FT020", "FT005.001", "FT011.002", "FT018", "FT025", "FT051.003", "FT006"]
 mitre_f3: []
 groupib_stages:
   - "Resource Development"

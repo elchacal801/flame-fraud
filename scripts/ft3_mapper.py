@@ -743,8 +743,10 @@ def main():
             if tp_id not in results:
                 continue
             tactic_ids = results[tp_id]["suggested_ft3_tactics"]
-            if apply_ft3_tactics(filepath, tactic_ids):
-                log.info("  Applied to %s: %s", tp_id, tactic_ids)
+            technique_ids = results[tp_id]["suggested_ft3_techniques"]
+            combined_ids = tactic_ids + technique_ids
+            if apply_ft3_tactics(filepath, combined_ids):
+                log.info("  Applied to %s: %d tactics + %d techniques", tp_id, len(tactic_ids), len(technique_ids))
                 applied += 1
             else:
                 log.warning("  FAILED to apply to %s", tp_id)

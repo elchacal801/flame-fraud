@@ -21,7 +21,7 @@ cfpf_phases:
   - P4
   - P5
 mitre_attack: []
-ft3_tactics: []
+ft3_tactics: ["FTA003", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT026.001", "FT051.002", "FT053.001", "FT052", "FT016", "FT024", "FT025", "FT028", "FT029", "FT031"]
 mitre_f3: []
 groupib_stages:
   - "Trust Abuse"

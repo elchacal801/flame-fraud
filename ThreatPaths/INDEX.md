@@ -102,7 +102,7 @@
 |-----------|---------------|-------|
 | FS-ISAC CFPF | All 23 TPs mapped | Primary organizational structure |
 | MITRE ATT&CK | 17 of 23 TPs mapped | Where applicable (some fraud-only TPs lack ATT&CK equivalents) |
-| Stripe FT3 | Pending | MIT-licensed JSON available for parsing |
+| Stripe FT3 | Mapped (23/23) | Auto-mapped via ft3_mapper.py; tactics + techniques per TP |
 | MITRE F3 | Awaiting release | Will map when F3 ships |
 | Group-IB Fraud Matrix | 23 of 23 TPs mapped | 10-stage lifecycle; stage names referenced for interoperability |
 
