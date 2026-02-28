@@ -118,8 +118,13 @@ WHERE d.check_amount > 1000
 ORDER BY d.device_fingerprint, d.deposit_date;
 ```
 
+## Analyst Notes
+
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) reported $483M in credit card and check fraud losses. While IC3 figures likely undercount check fraud (many victims report to their bank rather than IC3), the data confirms check and payment instrument fraud remains a significant loss category. The continued surge in USPS mail theft and check washing activity is corroborated by the 200%+ increase in check fraud SARs reported by FinCEN from 2021-2023.
+
 ## References
 
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - FinCEN: Check Fraud SAR Trends (2023-2024)
 - USPS OIG: Mail Theft and Check Fraud Reports
 - ABA Banking Journal: "The Check Fraud Epidemic"

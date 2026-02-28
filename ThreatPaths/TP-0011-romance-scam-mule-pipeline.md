@@ -224,11 +224,13 @@ This threat path is the connective tissue of fraud. Mule networks recruited thro
 
 **Mule operation industrialization**: The Group-IB Evolving Mule Tactics report demonstrates that mule operations have moved far beyond simple "receive and forward" schemes. Modern mule networks are supply-chain operations with: dedicated recruitment teams, SIM/eSIM procurement logistics, GPS spoofing toolkits, physical device shipping infrastructure, and "commercial camouflage" backstories mimicking legitimate business partnerships. This represents a fundamentally different scale of operation than the individual mule recruitment that FLAME's original threat path assumed.
 
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) reported $672M in confidence/romance fraud losses, a notable decline from 2023's $1.1B+. However, this likely reflects reclassification of romance-initiated investment scams to the investment fraud category ($6.5B) rather than a true decline in romance scam activity. Elderly victims (60+) accounted for $4.9B in total IC3-reported losses in 2024, with romance scams remaining a primary vector for elder financial exploitation.
+
 **Cross-FLAME connections**: TP-0001 (treasury ATO) → funds wire to mule from this pipeline. TP-0002 (BEC) → mule account receives diverted invoice payment. TP-0006 (real estate wire) → mule account receives closing funds. TP-0009 (check fraud) → mule account opened by recruited mule.
 
 ## References
 
-- FBI IC3 2024 Internet Crime Report: Romance Scams
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - FinCEN Advisory FIN-2020-A008: "Advisory on Imposter Scams and Money Mule Schemes"
 - INTERPOL: Operation First Light (scam compound raids)
 - UNODC: "Online Scam Operations in Southeast Asia"
