@@ -120,6 +120,27 @@ Key differences in granularity:
 
 ---
 
+### Group-IB UCFF (Unified Cyber Fraud Framework)
+
+| Attribute | Detail |
+|-----------|--------|
+| **Owner** | Group-IB |
+| **Type** | Defense governance maturity model (7 domains) |
+| **Access** | Public whitepaper |
+| **Scope** | Organizational anti-fraud program maturity |
+
+**Seven Domains:** Commit, Assess, Prevent, Detect, Respond, Investigate, Manage.
+
+UCFF is Group-IB's defense-side complement to their attack-side Fraud Matrix. Where the Fraud Matrix maps how attackers operate, UCFF maps how defenders should organize. It provides a maturity model (Levels 1-5) for organizational readiness across seven governance domains.
+
+**Strengths:** Structured maturity model, domain-based governance view, complements attack-side taxonomy.
+
+**Limitations:** Defense-side only — does not describe attack techniques. Must be paired with an attack-side framework (Fraud Matrix, CFPF, etc.) for complete coverage.
+
+**FLAME relationship:** UCFF provides defense-side maturity alignment for threat paths. FLAME maps `ucff_domains` in frontmatter with per-domain maturity levels and key deliverables. Currently mapped to 7 of 23 priority TPs.
+
+---
+
 ### Stripe FT3 (Fraud Tactics, Techniques & Transfers)
 
 | Attribute | Detail |
@@ -136,7 +157,7 @@ Key differences in granularity:
 
 **Limitations:** Abandoned after a single commit. No community, no tooling, no updates. A taxonomy without any operational content built on top of it.
 
-**FLAME relationship:** FLAME can parse FT3's MIT-licensed JSON and auto-suggest FT3 tactic mappings during threat path creation. FT3 becomes a mapping layer in FLAME's multi-taxonomy model.
+**FLAME relationship:** FLAME parses FT3's MIT-licensed JSON and auto-maps FT3 tactics and techniques to all 23 threat paths via `ft3_mapper.py`. FT3 is a fully integrated mapping layer in FLAME's multi-taxonomy model.
 
 ---
 
@@ -197,6 +218,7 @@ Key differences in granularity:
 |--|-----------|---------------------|--------------------------|---------------|-------------------|
 | **FLAME** | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Group-IB Fraud Matrix** | ❌ | ❌ | ✅ (mobile-heavy) | ❌ (own taxonomy) | ❌ |
+| **Group-IB UCFF** | ✅ (whitepaper) | ❌ | ❌ (governance only) | ❌ (defense-side) | ❌ |
 | **FS-ISAC CFPF** | ✅ (paper) | ❌ (no platform) | ❌ | ❌ | ❌ |
 | **Stripe FT3** | ✅ | ❌ (abandoned) | ❌ | ❌ | ❌ |
 | **MITRE F3** | TBD | TBD | TBD | TBD | ❌ |

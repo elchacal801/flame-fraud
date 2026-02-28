@@ -18,7 +18,7 @@ fraud_types:
   - application-fraud
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: []
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT052.002", "FT026.004", "FT049", "FT010", "FT011.005", "FT020", "FT025", "FT033.004", "FT005", "FT012"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:
   - "Reconnaissance"
@@ -26,6 +26,14 @@ groupib_stages:
   - "Account Access"
   - "Perform Fraud"
   - "Monetization"
+ucff_domains:
+  commit: "Level 3"
+  assess: "Level 3"
+  plan: "Level 3"
+  act: "Level 4"
+  monitor: "Level 3"
+  report: "Level 2"
+  improve: "Level 3"
 tags:
   - credit-building
   - bust-out
@@ -93,6 +101,30 @@ Actors create fictitious identities by combining real SSNs (often belonging to c
 
 **Look Right**: Are the same SSNs being reused in new synthetic identities? Is the same ring applying at other lenders? Are the mailing addresses receiving cards for multiple thin-file identities?
 
+## Underground Ecosystem Context
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| PII Sourcer | SSN fragment sellers, deceased/child SSN brokers, CPN generators | High | $3-$30 per SSN |
+| Fullz Provider | Complete identity packages (SSN, DOB, name, address) | High | $5-$200 per fullz |
+| Document Forger | Fake IDs, utility bills, pay stubs for identity verification | Medium | $50-$500 per document set |
+| Credit Profile Builder | Services that apply for credit builder products to age synthetic identities | Medium | $200-$1,000 per profile |
+| Authorized User Tradeline | Selling AU slots on aged credit accounts to boost synthetic scores | High | $500-$3,000 per tradeline |
+| Bust-Out Coordinator | Orchestrates the final credit line maximization and cash extraction | Low | 20-40% of extracted value |
+
+### Tool Ecosystem
+Automated identity generation tools, CPN (Credit Privacy Number) generators, document template kits, credit monitoring services (used offensively to track synthetic identity score growth), virtual address/mail forwarding services, prepaid phone services for verification callbacks, automated credit application submission tools.
+
+### Underground Marketplace Presence
+Synthetic identity components are available through automated fullz shops (high-volume, low-cost model with web storefronts resembling legitimate e-commerce). SSN fragments and fullz are commoditized with search functionality by state, age range, and credit file status. Authorized user tradeline services operate in a gray market visible on both underground forums and semi-legitimate websites. Credit profile building guides and services are traded on Telegram channels and carding forums. The bust-out coordination layer is more exclusive, requiring trusted relationships within organized crime networks.
+
+### Intelligence Sources
+- Recorded Future "Business of Fraud" (CTA-2021-0225) — fullz shop analysis, automated shop model
+- Federal Reserve "Synthetic Identity Fraud in the U.S. Payment System" white papers
+- FinCEN Advisory FIN-2019-A005 — Synthetic identity fraud
+- McKinsey & Company synthetic identity fraud research
+
 ## Controls & Mitigations
 
 | Phase | Control | Type |
@@ -103,6 +135,27 @@ Actors create fictitious identities by combining real SSNs (often belonging to c
 | P3 | Behavioral analytics on credit-building velocity and pattern uniformity | Detective |
 | P4 | Real-time utilization velocity monitoring — flag accounts going from low to max utilization rapidly | Detective |
 | P4 | Cross-lender bust-out detection via consortium data sharing | Detective |
+
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 3 (Established) | Dedicated synthetic identity program with cross-functional ownership spanning fraud, credit risk, and identity operations |
+| ASSESS | Level 3 (Established) | Identity verification risk assessment including thin-file analysis, SSN issuance pattern review, and authorized user abuse exposure |
+| PLAN | Level 3 (Established) | Strategic plan for cross-institution data sharing, consortium participation (e.g., Early Warning, credit bureau collaborative databases) |
+| ACT | Level 4 (Advanced) | Advanced analytics including link analysis, behavioral scoring for credit-building patterns, SSN validation via eCBSV, and graph-based identity clustering |
+| MONITOR | Level 3 (Established) | Credit behavior monitoring for utilization velocity, dormancy pattern detection, thin-file cohort tracking across the portfolio |
+| REPORT | Level 2 (Developing) | SAR filing for bust-out events, consortium reporting to shared databases, credit bureau fraud alert submissions |
+| IMPROVE | Level 3 (Established) | Feedback loop from credit charge-off losses and bust-out forensics back into onboarding models and identity verification thresholds |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ## Detection Approaches
 
@@ -158,8 +211,13 @@ ORDER BY util_change_30d DESC;
 - **Confidence**: Medium
 - **Summary**: Co-location of file sharing, cryptocurrency, and financial services impersonation domains on a single GTHost IP suggests bust-out monetization infrastructure. The btc.glass cryptocurrency interface maps to P5 crypto conversion, while bridgecredit.org impersonates legitimate lending services relevant to P4 loan application fraud. The file sharing service (fex.plus) may facilitate document exchange for fraudulent applications.
 
+## Analyst Notes
+
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) recorded over 108,000 identity theft complaints, underscoring the scale of PII compromise that feeds synthetic identity creation. While IC3 does not break out synthetic identity fraud as a standalone category, the identity theft complaint volume represents the upstream fuel for synthetic identity bust-out schemes. Total IC3-reported losses reached $16.6B in 2024, with identity theft enabling multiple downstream fraud categories.
+
 ## References
 
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - Federal Reserve: "Synthetic Identity Fraud in the U.S. Payment System" (2021)
 - OCC Bulletin on Synthetic Identity Fraud Risk
 - Socure: Synthetic Identity Fraud Report

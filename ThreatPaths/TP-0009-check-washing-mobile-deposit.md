@@ -16,7 +16,7 @@ fraud_types:
   - check-fraud
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: []
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT026.002", "FT052.001", "FT024", "FT041", "FT006", "FT010", "FT012", "FT015", "FT018", "FT023"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:
   - "Reconnaissance"
@@ -118,8 +118,13 @@ WHERE d.check_amount > 1000
 ORDER BY d.device_fingerprint, d.deposit_date;
 ```
 
+## Analyst Notes
+
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) reported $483M in credit card and check fraud losses. While IC3 figures likely undercount check fraud (many victims report to their bank rather than IC3), the data confirms check and payment instrument fraud remains a significant loss category. The continued surge in USPS mail theft and check washing activity is corroborated by the 200%+ increase in check fraud SARs reported by FinCEN from 2021-2023.
+
 ## References
 
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - FinCEN: Check Fraud SAR Trends (2023-2024)
 - USPS OIG: Mail Theft and Check Fraud Reports
 - ABA Banking Journal: "The Check Fraud Epidemic"

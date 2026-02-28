@@ -30,6 +30,7 @@
     --color-mitre: #a78bfa;
     --color-groupib: #34d399;
     --color-ft3: #fbbf24;
+    --color-ucff: #06b6d4;
     --color-general: #64748b;
     --color-success: #22c55e;
 
@@ -938,6 +939,13 @@ h1, h2, h3, h4 {
 .detail-tag.ft3-tag {
     background: rgba(251, 191, 36, 0.12);
     color: var(--color-ft3);
+}
+.detail-tag.ucff-tag {
+    background: rgba(6, 182, 212, 0.12);
+    color: var(--color-ucff);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.04em;
 }
 .detail-tag.general-tag {
     background: rgba(100, 116, 139, 0.15);

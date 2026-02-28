@@ -19,7 +19,7 @@ fraud_types:
   - impersonation
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1566.001, T1114.003, T1534, T1657]
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT052.003", "FT055", "FT012", "FT026.001", "FT031", "FT008.002", "FT016", "FT018", "FT020", "FT021"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:
   - "Reconnaissance"
@@ -29,6 +29,14 @@ groupib_stages:
   - "Perform Fraud"
   - "Monetization"
   - "Laundering"
+ucff_domains:
+  commit: "Level 2"
+  assess: "Level 2"
+  plan: "Level 2"
+  act: "Level 3"
+  monitor: "Level 2"
+  report: "Level 2"
+  improve: "Level 2"
 tags:
   - real-estate
   - title-company
@@ -106,6 +114,27 @@ Actors compromise email accounts of real estate agents, title companies, attorne
 | P4 | Banks: enhanced scrutiny on large incoming wires to newly opened accounts | Detective |
 | P5 | Immediate wire recall protocol — financial institutions should have <2hr response SLA | Responsive |
 
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 2 (Developing) | Institutional policy on wire transfer verification for real estate closings; commitment to customer friction (mandatory callbacks) to prevent loss |
+| ASSESS | Level 2 (Developing) | Assessment of real estate wire volume exposure, email compromise risk across title company and attorney communication channels |
+| PLAN | Level 2 (Developing) | Wire verification callback procedures for real estate transactions, title company authentication protocols, customer-facing closing wire safety guidance |
+| ACT | Level 3 (Established) | New payee validation controls on incoming wire instructions, email domain verification against known title company domains, beneficiary name matching against closing documents |
+| MONITOR | Level 2 (Developing) | Tracking of wire fraud attempt volume and trends, false positive rates on wire holds, wire recall success rates within recovery windows |
+| REPORT | Level 2 (Developing) | IC3 and FinCEN reporting for real estate BEC, customer notification procedures, coordination with receiving banks on wire recall |
+| IMPROVE | Level 2 (Developing) | Tracking of loss recovery rates by response time, updating callback procedures and customer warnings based on emerging BEC TTPs targeting real estate |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
+
 ## Detection Approaches
 
 **Email — Wire Instruction Anomaly (M365 / Google Workspace)**
@@ -137,9 +166,14 @@ detection:
     condition: selection
 ```
 
+## Analyst Notes
+
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) reported $2.8B in total BEC losses, of which real estate wire fraud is a significant subcategory. Real estate closings remain a high-value BEC target due to the time-sensitive nature and large dollar amounts involved. Elderly victims (60+) accounted for $4.9B in total IC3-reported losses across all categories in 2024, and are disproportionately targeted in real estate wire schemes.
+
 ## References
 
 - FBI IC3 PSA: "Real Estate Wire Fraud"
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - American Land Title Association (ALTA): Wire Fraud Prevention Best Practices
 - CertifID: Real Estate Wire Fraud Report (annual)
 

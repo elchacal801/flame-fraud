@@ -19,7 +19,7 @@ fraud_types:
   - payment-diversion
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1566.001, T1534, T1114.003, T1657]
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT052.003", "FT026.001", "FT028", "FT031", "FT012", "FT027", "FT039", "FT042.001", "FT043", "FT053.001"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:
   - "Reconnaissance"
@@ -134,9 +134,13 @@ OfficeActivity
 | project TimeGenerated, UserId, Parameters, ClientIP
 ```
 
+## Analyst Notes
+
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) reported $2.8B in BEC losses, making it the second-highest loss category after investment fraud. Total reported internet crime losses reached $16.6B in 2024, up 33% from 2023's $12.5B. BEC remains among the most financially damaging cybercrime categories despite a slight decline from 2023's $2.9B figure, reflecting improved corporate awareness alongside persistent attacker adaptation.
+
 ## References
 
-- FBI IC3 2024 Internet Crime Report — BEC losses
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - FinCEN Advisory FIN-2019-A005: "Advisory on Business Email Compromise"
 - Abnormal Security: Annual BEC Trends Report
 

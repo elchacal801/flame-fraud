@@ -18,7 +18,7 @@ fraud_types:
   - account-takeover
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1110.004, T1078, T1657]
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FTA012", "FT011.002", "FT003", "FT006.002", "FT048", "FT005.001", "FT008", "FT013", "FT016", "FT027", "FT018"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:               # Group-IB Fraud Matrix (reference)
   - "Reconnaissance"           # Gather Compromised Account, Buy Compromised Accounts
@@ -26,6 +26,14 @@ groupib_stages:               # Group-IB Fraud Matrix (reference)
   - "Account Access"           # Access from Fraudster Device
   - "Defence Evasion"          # Device Fingerprint Spoofing, Virtual Machines, Geolocation Spoofing, VPN/Proxy/Hosting Services
   - "Monetization"             # Sale of Compromised Credentials to 3rd Party
+ucff_domains:
+  commit: "Level 2"
+  assess: "Level 2"
+  plan: "Level 2"
+  act: "Level 3"
+  monitor: "Level 3"
+  report: "Level 2"
+  improve: "Level 2"
 tags:
   - loyalty-fraud
   - rewards-points
@@ -115,6 +123,27 @@ Actors use large-scale credential stuffing (automated testing of stolen username
 | P3 | Alert account holders on email/contact changes and point redemptions | Detective |
 | P4 | Velocity limits on point transfers and gift card redemptions | Preventive |
 | P4 | Flag bulk redemptions from accounts with no prior redemption history | Detective |
+
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 2 (Developing) | Leadership mandate for credential security standards across all customer-facing portals including loyalty/rewards, and investment in bot protection technology |
+| ASSESS | Level 2 (Developing) | Assessment of credential exposure via breach database monitoring, quantification of loyalty program stored value at risk, identification of portals lacking MFA |
+| PLAN | Level 2 (Developing) | Bot mitigation strategy covering rate limiting, CAPTCHA, and device fingerprinting; credential breach monitoring program; MFA enforcement rollout plan for loyalty portals |
+| ACT | Level 3 (Established) | Rate limiting and bot detection on login endpoints, device fingerprinting with BAS/CEF artifact detection, credential breach monitoring with proactive password resets, MFA enforcement on loyalty and rewards portals |
+| MONITOR | Level 3 (Established) | Login failure rate monitoring and velocity anomaly detection, loyalty point redemption pattern analysis, gift card generation velocity tracking, residential proxy and stuffing tool fingerprint alerting |
+| REPORT | Level 2 (Developing) | Breach notification compliance for compromised loyalty accounts, customer credential reset communications, reporting stuffing campaign indicators to industry sharing groups |
+| IMPROVE | Level 2 (Developing) | Tracking credential stuffing attempt trends and success rates over time, updating credential and authentication policies based on evolving tooling (e.g., BAS ecosystem changes) |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ## Detection Approaches
 

@@ -23,7 +23,7 @@ cfpf_phases:
   - P4
   - P5
 mitre_attack: []
-ft3_tactics: []
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT052.004", "FT026.004", "FT016.001", "FT020", "FT005.001", "FT011.002", "FT018", "FT025", "FT051.003", "FT006"]
 mitre_f3: []
 groupib_stages:
   - "Resource Development"
@@ -150,8 +150,15 @@ HAVING COUNT(*) > 2 -- More than 2 distinct benefit deposits
 
 ---
 
+## Analyst Notes
+
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) reported $405M in government impersonation losses. This figure captures cases where actors impersonate government agencies to extract payments from victims, which overlaps with this threat path's use of stolen identities to file fraudulent government benefit claims. IC3 also recorded over 108,000 identity theft complaints in 2024, representing the PII theft pipeline that fuels bulk fraudulent benefit filings.
+
+---
+
 ## References
 
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - FLAME Project Internal Knowledge Base.
 - U.S. Secret Service Advisories on Pandemic Fraud Networks.
 

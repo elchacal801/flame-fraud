@@ -33,6 +33,14 @@ cfpf_phases:                     # FS-ISAC CFPF (primary structure)
 ft3_tactics: []                  # Stripe FT3 tactic/technique IDs (MIT, when mapped)
 mitre_f3: []                     # MITRE F3 IDs (placeholder, add when shipped)
 groupib_stages: []               # Group-IB Fraud Matrix stages (reference only)
+ucff_domains:                    # Group-IB UCFF domain alignment
+  commit: ""
+  assess: ""
+  plan: ""
+  act: ""
+  monitor: ""
+  report: ""
+  improve: ""
 mitre_attack:                    # MITRE ATT&CK technique IDs (supplementary)
   - T1566
 
@@ -166,6 +174,26 @@ tags:                            # Additional descriptive tags
 
 ---
 
+## Underground Ecosystem Context
+
+> *Optional section — include when underground market intelligence is available for this threat path. Focus on structural patterns (roles, service categories, availability levels) rather than specific actor handles or product names that will go stale.*
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| [Role name] | [Service category] | [High/Medium/Low] | [Price range] |
+
+### Tool Ecosystem
+[Named tool *categories* relevant to this threat path — e.g., "anti-detect browsers," "infostealer MaaS kits," "document forgery services" — not specific actor handles or product names that will go stale]
+
+### Underground Marketplace Presence
+[Types of underground venues where this scheme is discussed, sold, or recruited for, with estimated activity level. Reference forum *categories* (Russian-language carding forums, Telegram fraud channels, dark web marketplaces) rather than specific named forums that may be seized]
+
+### Intelligence Sources
+[Recommended open-source or TLP:WHITE reports for deeper ecosystem context on this threat path]
+
+---
+
 ## Controls & Mitigations
 
 | Phase | Control | Type | Owner |
@@ -175,6 +203,31 @@ tags:                            # Additional descriptive tags
 | P3 | | | |
 | P4 | | | |
 | P5 | | | |
+
+---
+
+## UCFF Alignment
+
+> *Optional section — Group-IB Unified Counter Fraud Framework (UCFF) maturity mapping. Documents the minimum organizational maturity required to effectively detect and prevent this threat path.*
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level X (Label) | [Specific governance requirement] |
+| ASSESS | Level X (Label) | [Specific risk assessment requirement] |
+| PLAN | Level X (Label) | [Specific planning deliverable] |
+| ACT | Level X (Label) | [Specific detection/response capability] |
+| MONITOR | Level X (Label) | [Specific KRI or monitoring requirement] |
+| REPORT | Level X (Label) | [Specific reporting requirement] |
+| IMPROVE | Level X (Label) | [Specific feedback loop] |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ---
 

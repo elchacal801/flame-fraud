@@ -16,7 +16,7 @@ fraud_types:
   - money-mule
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1656]
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT021", "FT043", "FT007.009", "FT008.003", "FT010.003", "FT052.001", "FT018", "FT051.004", "FT016", "FT020"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:               # Group-IB Fraud Matrix (reference)
   - "Reconnaissance"
@@ -138,6 +138,30 @@ A novel technique documented by Group-IB: Victim A is manipulated into sending m
 
 **Look Right**: How many other victims are connected to the same scam operation? Is the mule's account receiving funds from other fraud types (connecting this threat path to TP-0001, TP-0002, TP-0006)? Is the victim willing to cooperate with law enforcement?
 
+## Underground Ecosystem Context
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| Persona Sourcing | Stolen/fabricated profile photos and identities | High | $5-$50 per identity package |
+| Target Acquisition | Dating site scrapers, mailing lists, target databases | High | $0.01-$0.10 per lead |
+| Script Writers | Social engineering conversation scripts and playbooks | Medium | $50-$500 per script kit |
+| Money Mule Recruiters | Job board postings, "work from home" schemes targeting unwitting mules | High | 10-20% of laundered funds |
+| Drop Account Providers | Bank accounts opened with synthetic/stolen identities for receiving funds | High | $200-$1,000 per account |
+| Cryptocurrency Exchangers | OTC crypto conversion services for laundering | High | 5-15% commission |
+
+### Tool Ecosystem
+Social engineering script generators, fake profile creation tools (AI face generators, bio generators), dating platform automation bots, encrypted communication platforms (Telegram, Signal), cryptocurrency mixing services, money transfer platform accounts.
+
+### Underground Marketplace Presence
+Romance scam operations are heavily discussed in West African cybercrime communities (Yahoo Boys ecosystem), Telegram fraud channels, and organized crime recruitment forums. Witting mules are recruited via dark web marketplaces; unwitting mules are recruited via legitimate job boards and social media. The operational model has industrialized, with some operations functioning as call-center-style organizations.
+
+### Intelligence Sources
+- Recorded Future "Business of Fraud" (CTA-2021-0225) — mule pipeline analysis
+- FBI IC3 Annual Reports — romance scam loss figures
+- INTERPOL Operation reports on West African cybercrime networks
+- FinCEN Advisories on human trafficking and forced labor in scam compounds
+
 ## Controls & Mitigations
 
 | Phase | Control | Type |
@@ -200,11 +224,13 @@ This threat path is the connective tissue of fraud. Mule networks recruited thro
 
 **Mule operation industrialization**: The Group-IB Evolving Mule Tactics report demonstrates that mule operations have moved far beyond simple "receive and forward" schemes. Modern mule networks are supply-chain operations with: dedicated recruitment teams, SIM/eSIM procurement logistics, GPS spoofing toolkits, physical device shipping infrastructure, and "commercial camouflage" backstories mimicking legitimate business partnerships. This represents a fundamentally different scale of operation than the individual mule recruitment that FLAME's original threat path assumed.
 
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) reported $672M in confidence/romance fraud losses, a notable decline from 2023's $1.1B+. However, this likely reflects reclassification of romance-initiated investment scams to the investment fraud category ($6.5B) rather than a true decline in romance scam activity. Elderly victims (60+) accounted for $4.9B in total IC3-reported losses in 2024, with romance scams remaining a primary vector for elder financial exploitation.
+
 **Cross-FLAME connections**: TP-0001 (treasury ATO) → funds wire to mule from this pipeline. TP-0002 (BEC) → mule account receives diverted invoice payment. TP-0006 (real estate wire) → mule account receives closing funds. TP-0009 (check fraud) → mule account opened by recruited mule.
 
 ## References
 
-- FBI IC3 2024 Internet Crime Report: Romance Scams
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - FinCEN Advisory FIN-2020-A008: "Advisory on Imposter Scams and Money Mule Schemes"
 - INTERPOL: Operation First Light (scam compound raids)
 - UNODC: "Online Scam Operations in Southeast Asia"

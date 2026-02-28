@@ -18,7 +18,7 @@ fraud_types:
   - account-takeover
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1656, T1657]
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT011.002", "FT016", "FT018", "FT021", "FT028", "FT008.002", "FT052.003", "FT001", "FT003", "FT007.009"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:
   - "Reconnaissance"
@@ -138,8 +138,13 @@ AND c.call_end >= t.timestamp;
 - **Confidence**: Medium
 - **Summary**: Mobile app sideloading infrastructure hosted on Alibaba Cloud enables distribution of malicious applications outside App Store and Google Play review processes. DeployGate and Diawi are legitimate beta testing platforms, but these impersonation domains facilitate delivery of fraudulent apps used in tech support scams (P2 initial access via fake "security" or "banking" apps) and remote access establishment (P3 positioning). This infrastructure is adjacent to the core TP-0012 attack chain — actors can direct victims to sideload fake bank/support apps instead of using commercial remote access tools.
 
+## Analyst Notes
+
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) reported $1.46B in tech support scam losses, confirming it as one of the highest-loss fraud categories. Elderly victims (60+) are disproportionately impacted, contributing to $4.9B in total IC3-reported losses across all categories in 2024. Tech support and bank impersonation scams exploit the authority trust dynamic, making them particularly effective against older demographics who are more likely to respond to unsolicited phone calls.
+
 ## References
 
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - FBI IC3: Tech Support Fraud PSAs
 - UK Payment Systems Regulator: APP Fraud Data (annual)
 - FTC: Consumer Sentinel Data — Impersonation Scams

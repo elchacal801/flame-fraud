@@ -19,7 +19,7 @@ fraud_types:
   - deepfake
 cfpf_phases: [P1, P2, P3, P4, P5]
 mitre_attack: [T1656, T1657]
-ft3_tactics: []                  # Stripe FT3 (when mapped)
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT052.003", "FT026.001", "FT020", "FT007.009", "FT016", "FT028", "FT031", "FT055", "FT008.002", "FT018"]                  # Stripe FT3 (when mapped)
 mitre_f3: []                     # MITRE F3 (placeholder)
 groupib_stages:               # Group-IB Fraud Matrix (reference)
   - "Reconnaissance"           # Search Closed Sources, Search Open Sources, Gather Victim Business Relationships
@@ -30,6 +30,14 @@ groupib_stages:               # Group-IB Fraud Matrix (reference)
   - "Perform Fraud"
   - "Monetization"
   - "Laundering"
+ucff_domains:
+  commit: "Level 3"
+  assess: "Level 3"
+  plan: "Level 3"
+  act: "Level 3"
+  monitor: "Level 2"
+  report: "Level 2"
+  improve: "Level 3"
 tags:
   - deepfake-voice
   - CEO-fraud
@@ -118,6 +126,32 @@ Actors use AI-generated voice deepfakes to impersonate executives, clients, or a
 
 **Look Right**: Was the same deepfake voice used against other institutions? Are the destination accounts linked to other fraud schemes?
 
+## Underground Ecosystem Context
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| Voice Sample Collector | OSINT gathering of target executive audio from public sources | High | $0 (self-service OSINT) |
+| Voice Cloning Provider | AI voice cloning services and tools (real-time capable) | High | $20-$200/month (commercial APIs) |
+| Caller ID Spoofing | VoIP services with configurable caller ID presentation | High | $10-$50/month |
+| Call Script Developer | Social engineering scripts tailored for wire authorization | Medium | $100-$500 per scenario |
+| Drop Account Network | International bank accounts for receiving fraudulent wires | Medium | $500-$2,000 per account |
+| Laundering Service | Multi-hop wire layering and crypto conversion | Medium | 10-20% of transferred funds |
+
+### Tool Ecosystem
+Real-time voice cloning APIs and applications (commercially available for under $50/month as of 2025-2026), caller ID spoofing VoIP platforms, video deepfake tools for multi-participant calls (Arup-style attack), OSINT tools for audio sample collection (conference call scrapers, social media downloaders), virtual meeting platform manipulation tools.
+
+### Underground Marketplace Presence
+Voice deepfake capabilities are discussed in BEC-focused fraud communities, Telegram channels, and advanced social engineering forums. Unlike document deepfakes which have dedicated marketplaces, voice deepfake operations tend to be conducted by more sophisticated actors with higher technical capability. The Arup case (2024 multi-person video deepfake) represents the high end of the capability spectrum. Lower-end voice cloning tools are widely accessible through legitimate commercial channels, reducing the barrier to entry.
+
+### Intelligence Sources
+- WEF "Deepfake Identity Verification" (January 2026) — cross-reference with voice synthesis ecosystem
+- Wall Street Journal deepfake voice fraud reporting (2019-2024)
+- Regula "Deepfake Trends 2024" survey
+- FS-ISAC guidance on generative AI threats in financial services
+
+---
+
 ## Controls & Mitigations
 
 | Phase | Control | Type |
@@ -128,6 +162,31 @@ Actors use AI-generated voice deepfakes to impersonate executives, clients, or a
 | P3 | Train treasury staff: any request to bypass controls or invoke secrecy is a red flag, regardless of caller identity | Preventive |
 | P4 | Mandatory callback to executive on **independently verified number** (not caller-provided) before processing | Preventive |
 | P4 | Voice biometric analysis on authorization calls (emerging technology) | Detective |
+| P2 | Voice biometric baseline for authorized signers — detect deviation from known voiceprint | Detective |
+| P4 | Real-time AI-based voice analysis on authorization calls (emerging capability) | Detective |
+
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 3 (Established) | Executive mandate that wire authorizations cannot be based solely on voice verification; commitment to multi-channel authentication |
+| ASSESS | Level 3 (Established) | Assessment of voice-based authorization exposure across all business lines; evaluation of executive audio footprint (earnings calls, conferences) |
+| PLAN | Level 3 (Established) | Multi-channel wire authorization procedures; out-of-band verification protocols; staff training program on deepfake awareness |
+| ACT | Level 3 (Established) | Multi-channel wire verification (voice + email + secure portal), mandatory callback on independently verified numbers, code word/passphrase systems |
+| MONITOR | Level 2 (Developing) | Monitoring for voice-only wire authorizations, tracking of executive impersonation attempts, pattern analysis of pre-attack reconnaissance calls |
+| REPORT | Level 2 (Developing) | Incident reporting for deepfake attempts (successful and failed), information sharing with industry groups on emerging voice cloning indicators |
+| IMPROVE | Level 3 (Established) | Regular review of authorization procedures against evolving deepfake capabilities, periodic testing of staff susceptibility to voice impersonation |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
+
+---
 
 ## Detection Approaches
 
@@ -158,6 +217,7 @@ This threat path is evolving rapidly. In 2019, deepfake voice was novel and expe
 - Regula: "The Deepfake Trends 2024" survey
 - FS-ISAC: Generative AI in Financial Services guidance
 - Group-IB Fraud Intelligence: "C-level impersonation Using Deepvoice" scheme report (technique-level Fraud Matrix mapping)
+- World Economic Forum: "Deepfake Identity Verification" (January 2026) — cross-reference with voice synthesis ecosystem and deepfake countermeasures
 
 ## Revision History
 

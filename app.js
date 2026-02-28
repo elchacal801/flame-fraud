@@ -469,6 +469,7 @@
         const fraudTypes = item.fraud_types || [];
         const tags = item.tags || [];
         const ft3 = item.ft3_tactics || [];
+        const ucff = item.ucff_domains || {};
 
         let html = '';
 
@@ -534,6 +535,21 @@
         if (ft3.length > 0) {
             html += '<div class="tag-group"><h4>Stripe FT3</h4><div class="tag-list">';
             ft3.forEach(function (t) { html += '<span class="detail-tag ft3-tag">' + escapeHtml(t) + '</span>'; });
+            html += '</div></div>';
+        }
+        // UCFF domains — render only domains with non-empty values, in lifecycle order
+        const UCFF_ORDER = ['commit', 'assess', 'plan', 'act', 'monitor', 'report', 'improve'];
+        const ucffEntries = [];
+        UCFF_ORDER.forEach(function (domain) {
+            if (ucff[domain] && String(ucff[domain]).trim() !== '') {
+                ucffEntries.push({ domain: domain, value: String(ucff[domain]).trim() });
+            }
+        });
+        if (ucffEntries.length > 0) {
+            html += '<div class="tag-group"><h4>UCFF Domains</h4><div class="tag-list">';
+            ucffEntries.forEach(function (entry) {
+                html += '<span class="detail-tag ucff-tag" title="' + escapeHtml(entry.value) + '">' + escapeHtml(entry.domain.toUpperCase()) + '</span>';
+            });
             html += '</div></div>';
         }
         if (tags.length > 0) {

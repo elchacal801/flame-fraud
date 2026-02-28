@@ -26,7 +26,7 @@ mitre_attack:
   - T1566.001 # Phishing: Spearphishing Attachment
   - T1586     # Compromise Accounts
   - T1562.012 # Impair Defenses: Disable or Modify System Firewall (Inbox Rules)
-ft3_tactics: []
+ft3_tactics: ["FTA001", "FTA002", "FTA003", "FTA004", "FTA005", "FTA006", "FTA007", "FTA009", "FTA010", "FT007.009", "FT028", "FT008.002", "FT014", "FT043", "FT003", "FT031", "FT042.001", "FT052.003", "FT011.003"]
 mitre_f3: []
 groupib_stages:
   - "Reconnaissance"
