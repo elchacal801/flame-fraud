@@ -211,8 +211,13 @@ ORDER BY util_change_30d DESC;
 - **Confidence**: Medium
 - **Summary**: Co-location of file sharing, cryptocurrency, and financial services impersonation domains on a single GTHost IP suggests bust-out monetization infrastructure. The btc.glass cryptocurrency interface maps to P5 crypto conversion, while bridgecredit.org impersonates legitimate lending services relevant to P4 loan application fraud. The file sharing service (fex.plus) may facilitate document exchange for fraudulent applications.
 
+## Analyst Notes
+
+**IC3 2024 Data:** The FBI IC3 2024 Internet Crime Report (covering 2024 incidents, released April 2025) recorded over 108,000 identity theft complaints, underscoring the scale of PII compromise that feeds synthetic identity creation. While IC3 does not break out synthetic identity fraud as a standalone category, the identity theft complaint volume represents the upstream fuel for synthetic identity bust-out schemes. Total IC3-reported losses reached $16.6B in 2024, with identity theft enabling multiple downstream fraud categories.
+
 ## References
 
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — annual loss and complaint statistics
 - Federal Reserve: "Synthetic Identity Fraud in the U.S. Payment System" (2021)
 - OCC Bulletin on Synthetic Identity Fraud Risk
 - Socure: Synthetic Identity Fraud Report
