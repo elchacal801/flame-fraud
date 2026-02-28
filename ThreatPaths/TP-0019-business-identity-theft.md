@@ -165,10 +165,20 @@ WHERE d.domain_age_days < 180
 
 ---
 
+## Analyst Notes
+
+Business identity theft is an underreported threat vector because victimized businesses often discover the fraud only when contacted by creditors or when they attempt to file taxes and find returns already submitted in their name. The SBA Office of Inspector General has flagged business identity theft as a growing concern, particularly following the pandemic-era lending programs (PPP, EIDL) where expedited processing reduced verification rigor. Threat actors exploit the public availability of business registration data — EIN, incorporation filings, and registered agent information are accessible through state Secretary of State databases — to impersonate legitimate businesses for credit applications, vendor onboarding, and government program fraud (TP-0022). The dormant business variant is particularly effective: actors target businesses that are registered but inactive, taking over their identities by filing fraudulent change-of-agent documents with the state. Financial institutions should cross-reference new business account applications against Secretary of State records for recent agent changes and verify beneficial ownership against FinCEN's Beneficial Ownership Information (BOI) database.
+
+---
+
 ## References
 
 - FLAME Project Internal Knowledge Base.
-- FinCEN Alerts on Business Email Compromise and Shell Companies.
+- FinCEN: Alerts on Business Email Compromise and Shell Companies.
+- SBA Office of Inspector General: Pandemic Fraud Reports (PPP/EIDL business identity theft patterns).
+- IRS: "Identity Theft Information for Businesses" — EIN theft prevention guidance.
+- National White Collar Crime Center (NW3C): "Business Identity Theft: The Next Frontier" — state-level filing exploitation typologies.
+- FinCEN: Beneficial Ownership Information (BOI) reporting requirements (2024).
 
 ---
 
@@ -177,3 +187,4 @@ WHERE d.domain_age_days < 180
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-20 | FLAME Project | Initial creation |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, Analyst Notes, enriched References |

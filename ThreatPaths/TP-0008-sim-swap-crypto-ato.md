@@ -162,6 +162,10 @@ Flag SIM changes where:
   - Multiple SIM changes across different customers by same representative
 ```
 
+## Analyst Notes
+
+SIM swap attacks represent a critical intersection of telecommunications and financial fraud. The FCC adopted new rules in November 2023 requiring carriers to implement more robust customer authentication before processing SIM changes and port-out requests, but enforcement and adoption remain uneven. The threat has evolved beyond targeting individual consumers — organized groups now conduct bulk SIM swaps against high-value targets including cryptocurrency holders, corporate executives, and influencers. Court filings from DOJ prosecutions (e.g., the 2024 "Scattered Spider" cases) reveal that SIM swap capability is routinely sold as a service on Telegram for $300-$1,000 per swap, with carrier insiders sometimes complicit. The shift toward eSIM technology introduces new attack vectors (eSIM profile hijacking via compromised carrier accounts) while partially mitigating traditional physical SIM swap methods. Financial institutions should treat any account activity following a recent SIM change event — detectable via carrier APIs or SS7 monitoring services — as elevated risk requiring step-up authentication beyond SMS OTP.
+
 ## References
 
 - FBI IC3 PSA: "SIM Swapping"
@@ -174,3 +178,4 @@ Flag SIM changes where:
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, Underground Ecosystem Context |

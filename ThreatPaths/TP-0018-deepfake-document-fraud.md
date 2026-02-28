@@ -215,3 +215,4 @@ The WEF "Deepfake Identity Verification" paper (January 2026) identifies five ac
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-20 | FLAME Project | Initial creation |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, UCFF Alignment section, Underground Ecosystem Context, WEF deepfake intelligence |

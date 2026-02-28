@@ -139,11 +139,20 @@ ORDER BY total_minutes_billed DESC;
 
 ---
 
+## Analyst Notes
+
+Healthcare fraud is estimated to cost $100B-$300B annually in the United States, though precise figures are difficult to establish due to the fragmented payer landscape and delayed detection cycles. The DOJ Health Care Fraud Strike Force has conducted annual national takedowns resulting in hundreds of arrests, with the 2024 enforcement action targeting over $2.75B in alleged fraudulent billings. Common patterns include upcoding (billing for more expensive procedures than performed), phantom billing (billing for services never rendered), and unbundling (separating bundled procedures to inflate reimbursement). The telehealth expansion during and after the pandemic created new fraud vectors — particularly telemedicine schemes where providers bill for brief or nonexistent virtual visits. For insurance carriers, the challenge is distinguishing fraud from waste and abuse: statistical outlier detection models must account for legitimate practice variation across specialties and geographies. Emerging AI-driven claims analytics platforms that combine billing pattern analysis with provider network graph analysis and patient journey modeling show promise in identifying coordinated fraud rings that span multiple providers and facilities.
+
+---
+
 ## References
 
 - FLAME Project Internal Knowledge Base.
-- U.S. Department of Justice (DOJ) National Health Care Fraud Takedown reports.
-- Medicare Fraud Strike Force Typologies.
+- U.S. Department of Justice (DOJ): National Health Care Fraud Takedown reports (annual).
+- HHS Office of Inspector General: Medicare Fraud Strike Force case summaries.
+- CMS: Medicare Fraud & Abuse — detection methodologies and provider audit typologies.
+- NHCAA (National Health Care Anti-Fraud Association): "The Challenge of Health Care Fraud" — industry loss estimates.
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — healthcare-related fraud complaint data.
 
 ---
 
@@ -152,3 +161,4 @@ ORDER BY total_minutes_billed DESC;
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-20 | FLAME Project | Initial creation |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, Analyst Notes, enriched References |

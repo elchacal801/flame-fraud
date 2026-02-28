@@ -241,3 +241,4 @@ This threat path is the connective tissue of fraud. Mule networks recruited thro
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, Underground Ecosystem Context, IC3 2024 loss figures |

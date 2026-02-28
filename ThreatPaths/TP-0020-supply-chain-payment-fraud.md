@@ -196,10 +196,19 @@ WHERE t.amount > 50000
 
 ---
 
+## Analyst Notes
+
+Supply chain payment fraud extends beyond traditional BEC (TP-0002) by targeting the structural trust relationships between organizations and their vendors. Where BEC typically involves email compromise and impersonation at the point of payment, supply chain payment fraud can involve deeper infiltration — compromising vendor portals, manipulating procurement systems, or inserting fraudulent line items into legitimate invoices. The FBI IC3 2024 report's $2.8B BEC loss figure includes a substantial supply chain component, though it is not broken out separately. The attack surface expands with organizational complexity: enterprises with thousands of vendors, decentralized procurement, and multiple ERP systems face exponentially more opportunities for exploitation. Invoice manipulation (changing amounts or adding fraudulent charges to legitimate invoices) is particularly difficult to detect because the vendor relationship and invoice format are authentic — only the payment details are altered. Procurement fraud analytics should focus on detecting anomalies in banking detail changes, invoice amount deviations from historical patterns, and velocity changes in vendor payment requests.
+
+---
+
 ## References
 
-- FBI IC3 2024 Internet Crime Report (BEC Statistics).
+- FBI IC3: "2024 Internet Crime Report" (April 2025) — BEC and vendor fraud statistics.
 - FLAME Project Internal Knowledge Base.
+- Deloitte: "Supply Chain Fraud: Managing the Risks" — procurement fraud typologies.
+- ACFE: Report to the Nations — vendor billing scheme classification and detection.
+- CISA: "Supply Chain Compromise" advisory series — cybersecurity intersection with payment fraud.
 
 ---
 
@@ -208,3 +217,4 @@ WHERE t.amount > 50000
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-20 | FLAME Project | Initial creation |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, Analyst Notes, enriched References |

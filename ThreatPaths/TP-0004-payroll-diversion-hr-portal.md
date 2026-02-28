@@ -122,6 +122,10 @@ tags:
     - cfpf.phase3.positioning
 ```
 
+## Analyst Notes
+
+Payroll diversion is a high-confidence, low-complexity variant of BEC that exploits HR processes rather than accounts payable. Unlike traditional BEC wire fraud (TP-0002), payroll diversion targets recurring payment streams — once the direct deposit is changed, the attacker receives every subsequent paycheck until discovered, often spanning 1-3 pay cycles. The FBI IC3 has issued multiple public service announcements specifically addressing payroll diversion, noting that it accounts for a material subset of BEC complaints. Detection is complicated by the fact that direct deposit changes are routine business operations; the signal-to-noise ratio is inherently low. Organizations with self-service HR portals face elevated risk because the attacker can bypass the HR department entirely by phishing the employee's portal credentials. MFA on HR portals and out-of-band confirmation of banking changes (e.g., calling the employee at a known number) remain the most effective preventive controls.
+
 ## References
 
 - FBI IC3 PSA I-091819-PSA: "Cybercriminals Use Social Engineering and Technical Attacks to Circumvent Multi-Factor Authentication"
@@ -133,3 +137,4 @@ tags:
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, Analyst Notes |

@@ -185,6 +185,10 @@ Flag sessions where:
   - Multiple accounts accessed from same underlying device within short timeframe
 ```
 
+## Analyst Notes
+
+Credential stuffing remains one of the highest-volume attack patterns in financial services, with Akamai reporting billions of monthly credential stuffing attempts against financial institutions globally. The economics are compelling for attackers: combo lists (email/password pairs from breaches) cost $5-$50 per million credentials on underground markets, and typical hit rates of 0.1-2% yield thousands of compromised accounts per campaign. Loyalty and rewards programs are disproportionately targeted because they are perceived as lower-security than banking applications — many lack MFA, have weaker rate limiting, and victims are slower to notice point depletion. The monetization pathway through gift card conversion provides near-instant, irreversible value extraction. Bot mitigation platforms (e.g., Akamai Bot Manager, F5 Shape) are effective at the perimeter but must be complemented by behavioral analytics to catch low-and-slow attacks that evade rate-based detection. Financial institutions should monitor for credential reuse across their own properties and consider participating in cross-industry credential breach notification services.
+
 ## References
 - Akamai: State of the Internet — Credential Stuffing Reports
 - Shape Security (F5): Credential Spill Report
@@ -196,3 +200,4 @@ Flag sessions where:
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-12 | FLAME Project | Initial submission |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, UCFF Alignment section |

@@ -160,10 +160,20 @@ tags:
 
 ---
 
+## Analyst Notes
+
+The mobile banking trojan ecosystem is dominated by a handful of malware-as-a-service (MaaS) families that are continuously evolving. As of 2025-2026, the most active families include Octo (v2), Vultur, Anatsa (TeaBot), and Hook — each offering builder kits on underground forums for $3,000-$7,000/month. The Automated Transfer System (ATS) capability represents a paradigm shift in mobile fraud: because the fraudulent transaction originates from the victim's own device using their established session, traditional server-side fraud detection (IP reputation, device fingerprinting, geolocation) is entirely bypassed. ThreatFabric's 2024 Mobile Threat Landscape report documented over 100 banking apps targeted by overlay attacks, with European and Latin American banks most heavily targeted. Google's Play Protect and the restricted accessibility service policies introduced in Android 13+ have raised the bar for malware distribution, pushing actors toward sideloading via smishing and third-party app stores. Financial institutions should prioritize Runtime Application Self-Protection (RASP) integration, behavioral biometrics for ATS detection, and migration away from SMS-based MFA to push notification or FIDO2 authentication.
+
+---
+
 ## References
 
 - FLAME Project Internal Knowledge Base.
-- ThreatFabric and Cleafy reports on Android Banking Malware (Anubis, Octo).
+- ThreatFabric: "Mobile Threat Landscape" annual reports — malware family analysis and ATS capability evolution.
+- Cleafy: "Android Banking Trojan Tracker" — overlay attack and ATS detection research.
+- Google: Android Security & Privacy Year in Review — Play Protect statistics and accessibility service policy changes.
+- OWASP Mobile Security: "Mobile Application Security Verification Standard (MASVS)" — RASP and anti-tampering requirements.
+- Europol: Internet Organised Crime Threat Assessment (IOCTA) — mobile malware as a service trends.
 
 ---
 
@@ -172,3 +182,4 @@ tags:
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-20 | FLAME Project | Initial creation |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings, Analyst Notes, enriched References |

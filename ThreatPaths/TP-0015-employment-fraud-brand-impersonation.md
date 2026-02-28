@@ -151,6 +151,10 @@ Flag job postings where:
 - **Confidence**: High
 - **Summary**: Multi-cluster employment fraud infrastructure impersonating Right at Home, a legitimate healthcare staffing agency. The rightathometx.com domain creates a convincing regional brand presence while @newjobrequire.com provides shared email infrastructure across multiple impersonation campaigns. Distribution across three hosting providers (GoDaddy, OVH US, Hostinger) provides resilience against takedowns. The pattern — brand impersonation domain on one provider, email infrastructure on another, with budget shared hosting throughout — is consistent with organized employment fraud operations targeting healthcare job seekers.
 
+## Analyst Notes
+
+Employment fraud has surged alongside the normalization of remote work, as job seekers are increasingly accustomed to fully digital hiring processes — making it easier for threat actors to impersonate legitimate employers without in-person interaction. The FTC reported that job scam losses exceeded $500M in 2023, with the median individual loss around $2,000 from advance-fee payments for fake equipment, training, or background checks. A notable variant involves "task scams" where victims are recruited for fake online work (product reviews, data entry) and asked to deposit their own funds as "working capital." Brand impersonation is particularly effective against large employers with distributed hiring — the victim assumes a local recruiter is legitimate because the parent brand is well-known. Companies should proactively monitor for fraudulent job postings using their brand and maintain a prominent careers-page warning about known scam patterns.
+
 ## References
 
 - FBI IC3: Internet Crime Report 2023 — Employment/Business Fraud
@@ -163,3 +167,4 @@ Flag job postings where:
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-19 | FLAME Project | Initial submission with DEA investigation evidence |
+| 2026-02-28 | FLAME Project | v1.5 enrichment: added Stripe FT3 tactic mappings |
