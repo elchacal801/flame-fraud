@@ -26,6 +26,14 @@ groupib_stages:
   - "Account Access"
   - "Perform Fraud"
   - "Monetization"
+ucff_domains:
+  commit: "Level 3"
+  assess: "Level 3"
+  plan: "Level 3"
+  act: "Level 4"
+  monitor: "Level 3"
+  report: "Level 2"
+  improve: "Level 3"
 tags:
   - credit-building
   - bust-out
@@ -103,6 +111,27 @@ Actors create fictitious identities by combining real SSNs (often belonging to c
 | P3 | Behavioral analytics on credit-building velocity and pattern uniformity | Detective |
 | P4 | Real-time utilization velocity monitoring — flag accounts going from low to max utilization rapidly | Detective |
 | P4 | Cross-lender bust-out detection via consortium data sharing | Detective |
+
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 3 (Established) | Dedicated synthetic identity program with cross-functional ownership spanning fraud, credit risk, and identity operations |
+| ASSESS | Level 3 (Established) | Identity verification risk assessment including thin-file analysis, SSN issuance pattern review, and authorized user abuse exposure |
+| PLAN | Level 3 (Established) | Strategic plan for cross-institution data sharing, consortium participation (e.g., Early Warning, credit bureau collaborative databases) |
+| ACT | Level 4 (Advanced) | Advanced analytics including link analysis, behavioral scoring for credit-building patterns, SSN validation via eCBSV, and graph-based identity clustering |
+| MONITOR | Level 3 (Established) | Credit behavior monitoring for utilization velocity, dormancy pattern detection, thin-file cohort tracking across the portfolio |
+| REPORT | Level 2 (Developing) | SAR filing for bust-out events, consortium reporting to shared databases, credit bureau fraud alert submissions |
+| IMPROVE | Level 3 (Established) | Feedback loop from credit charge-off losses and bust-out forensics back into onboarding models and identity verification thresholds |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ## Detection Approaches
 

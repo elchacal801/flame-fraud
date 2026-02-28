@@ -29,6 +29,14 @@ groupib_stages:
   - "Perform Fraud"
   - "Monetization"
   - "Laundering"
+ucff_domains:
+  commit: "Level 2"
+  assess: "Level 2"
+  plan: "Level 2"
+  act: "Level 3"
+  monitor: "Level 2"
+  report: "Level 2"
+  improve: "Level 2"
 tags:
   - real-estate
   - title-company
@@ -105,6 +113,27 @@ Actors compromise email accounts of real estate agents, title companies, attorne
 | P4 | Title companies: include "we will NEVER change wire instructions via email" disclaimer on all communications | Preventive |
 | P4 | Banks: enhanced scrutiny on large incoming wires to newly opened accounts | Detective |
 | P5 | Immediate wire recall protocol — financial institutions should have <2hr response SLA | Responsive |
+
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 2 (Developing) | Institutional policy on wire transfer verification for real estate closings; commitment to customer friction (mandatory callbacks) to prevent loss |
+| ASSESS | Level 2 (Developing) | Assessment of real estate wire volume exposure, email compromise risk across title company and attorney communication channels |
+| PLAN | Level 2 (Developing) | Wire verification callback procedures for real estate transactions, title company authentication protocols, customer-facing closing wire safety guidance |
+| ACT | Level 3 (Established) | New payee validation controls on incoming wire instructions, email domain verification against known title company domains, beneficiary name matching against closing documents |
+| MONITOR | Level 2 (Developing) | Tracking of wire fraud attempt volume and trends, false positive rates on wire holds, wire recall success rates within recovery windows |
+| REPORT | Level 2 (Developing) | IC3 and FinCEN reporting for real estate BEC, customer notification procedures, coordination with receiving banks on wire recall |
+| IMPROVE | Level 2 (Developing) | Tracking of loss recovery rates by response time, updating callback procedures and customer warnings based on emerging BEC TTPs targeting real estate |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ## Detection Approaches
 

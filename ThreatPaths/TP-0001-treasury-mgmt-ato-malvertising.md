@@ -39,6 +39,14 @@ groupib_stages:               # Group-IB Fraud Matrix (reference)
   - "Perform Fraud"
   - "Monetization"
   - "Laundering"
+ucff_domains:
+  commit: "Level 2"
+  assess: "Level 3"
+  plan: "Level 2"
+  act: "Level 3"
+  monitor: "Level 3"
+  report: "Level 2"
+  improve: "Level 2"
 tags:
   - treasury-management
   - commercial-banking
@@ -181,6 +189,29 @@ Threat actors target commercial banking customers using a multi-phase scheme tha
 ### What Actually Worked
 
 Per the CFPF case study: **mitigating the malvertising at Phase 1** — partnering with search engines to remove poisoned ads — was the single most effective control. The bank went 8 months without a successful treasury management ATO after addressing the upstream entry point. This validates the CFPF's "look left" principle: the highest-leverage intervention was at the earliest phase, not at the point of discovery.
+
+---
+
+## UCFF Alignment
+
+### Required Organizational Maturity for Effective Detection
+
+| UCFF Domain | Minimum Maturity | Key Deliverables for This Threat Path |
+|-------------|-----------------|--------------------------------------|
+| COMMIT | Level 2 (Developing) | Leadership mandate for dual-authorization on commercial wire transfers; executive sponsorship of cross-functional cyber-fraud coordination |
+| ASSESS | Level 3 (Established) | Comprehensive assessment of commercial banking channel attack surface including malvertising exposure, call center social engineering vectors, and treasury platform vulnerabilities |
+| PLAN | Level 2 (Developing) | Documented call-back verification procedures for high-value wires, customer awareness programs for commercial banking clients, search engine partnership for ad takedowns |
+| ACT | Level 3 (Established) | Real-time transaction monitoring for wire transfer anomalies, behavioral analytics for commercial wire patterns, device fingerprinting on treasury platform sessions, credential phishing detection |
+| MONITOR | Level 3 (Established) | Monitoring for unusual wire patterns (new payees, atypical amounts/timing), beneficiary change velocity alerts, session anomaly detection correlated with call center interactions |
+| REPORT | Level 2 (Developing) | Suspicious wire activity reporting, customer notification procedures for detected ATO attempts, SAR filing with mule account identifiers |
+| IMPROVE | Level 2 (Developing) | Post-incident review process linking cyber indicators to fraud outcomes, customer education content updates based on emerging malvertising and vishing TTPs |
+
+### Maturity Levels Reference
+- **Level 1 (Initial):** Ad hoc, reactive fraud management
+- **Level 2 (Developing):** Basic fraud function exists with some defined processes
+- **Level 3 (Established):** Formalized fraud program with proactive capabilities
+- **Level 4 (Advanced):** Data-driven, continuously improving fraud program
+- **Level 5 (Leading):** Industry-leading, predictive fraud management
 
 ---
 
