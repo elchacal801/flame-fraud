@@ -11,13 +11,21 @@
 | File | Description | Count |
 |------|-------------|-------|
 | `FT3_Tactics.json` | FT3 fraud tactic definitions | 12 tactics |
-| `FT3_Techniques.json` | FT3 fraud technique definitions | 137 techniques (58 top-level, 79 sub-techniques) |
+| `FT3_Techniques.json` | FT3 fraud technique definitions | 137 techniques (56 top-level, 79 sub-techniques, 2 unlabeled) |
 
 ## Hierarchy
 
 The FT3 taxonomy organizes fraud attack patterns into 12 tactics, each
 containing one or more techniques. Techniques may have sub-techniques
 for finer-grained classification.
+
+## Notes
+
+- The tactics file uses uppercase `"ID"` while the techniques file uses
+  lowercase `"id"`. Downstream parsers must account for this difference.
+- Two sub-techniques (FT033.003, FT033.004) have an empty `is_sub-technique`
+  field instead of `"TRUE"` — this is an upstream data quality issue.
+- Tactics use `"domain": "fraud-attack"` while techniques use `"domain": "ft3"`.
 
 ## Usage in FLAME
 
