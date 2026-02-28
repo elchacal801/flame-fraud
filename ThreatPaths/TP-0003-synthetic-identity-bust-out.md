@@ -101,6 +101,30 @@ Actors create fictitious identities by combining real SSNs (often belonging to c
 
 **Look Right**: Are the same SSNs being reused in new synthetic identities? Is the same ring applying at other lenders? Are the mailing addresses receiving cards for multiple thin-file identities?
 
+## Underground Ecosystem Context
+
+### Service Supply Chain
+| Role | Service Type | Underground Availability | Typical Cost Range |
+|------|-------------|--------------------------|-------------------|
+| PII Sourcer | SSN fragment sellers, deceased/child SSN brokers, CPN generators | High | $3-$30 per SSN |
+| Fullz Provider | Complete identity packages (SSN, DOB, name, address) | High | $5-$200 per fullz |
+| Document Forger | Fake IDs, utility bills, pay stubs for identity verification | Medium | $50-$500 per document set |
+| Credit Profile Builder | Services that apply for credit builder products to age synthetic identities | Medium | $200-$1,000 per profile |
+| Authorized User Tradeline | Selling AU slots on aged credit accounts to boost synthetic scores | High | $500-$3,000 per tradeline |
+| Bust-Out Coordinator | Orchestrates the final credit line maximization and cash extraction | Low | 20-40% of extracted value |
+
+### Tool Ecosystem
+Automated identity generation tools, CPN (Credit Privacy Number) generators, document template kits, credit monitoring services (used offensively to track synthetic identity score growth), virtual address/mail forwarding services, prepaid phone services for verification callbacks, automated credit application submission tools.
+
+### Underground Marketplace Presence
+Synthetic identity components are available through automated fullz shops (high-volume, low-cost model with web storefronts resembling legitimate e-commerce). SSN fragments and fullz are commoditized with search functionality by state, age range, and credit file status. Authorized user tradeline services operate in a gray market visible on both underground forums and semi-legitimate websites. Credit profile building guides and services are traded on Telegram channels and carding forums. The bust-out coordination layer is more exclusive, requiring trusted relationships within organized crime networks.
+
+### Intelligence Sources
+- Recorded Future "Business of Fraud" (CTA-2021-0225) — fullz shop analysis, automated shop model
+- Federal Reserve "Synthetic Identity Fraud in the U.S. Payment System" white papers
+- FinCEN Advisory FIN-2019-A005 — Synthetic identity fraud
+- McKinsey & Company synthetic identity fraud research
+
 ## Controls & Mitigations
 
 | Phase | Control | Type |
