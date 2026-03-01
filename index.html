@@ -53,6 +53,12 @@
                 </button>
             </div>
             <div class="header-actions">
+                <button class="pulse-toggle-btn" id="pulse-toggle-btn" title="Regulatory Pulse">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                    <span class="pulse-badge" id="pulse-header-badge" style="display:none;">0</span>
+                </button>
                 <button class="about-btn" id="about-btn">About</button>
                 <a href="https://github.com/elchacal801/flame-fraud" class="github-link" target="_blank" rel="noopener">
                     <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
@@ -120,31 +126,6 @@
         <!-- Content Area -->
         <div class="content-area" id="content-area">
 
-            <!-- ================================================================ -->
-            <!-- Regulatory Pulse Panel                                           -->
-            <!-- ================================================================ -->
-            <section id="regulatory-pulse" class="reg-panel" style="display:none;">
-                <div class="reg-panel-header">
-                    <div class="reg-panel-title-row">
-                        <svg class="reg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                        </svg>
-                        <h2 class="reg-panel-heading">Regulatory Pulse</h2>
-                        <span class="reg-badge" id="reg-alert-count">0</span>
-                    </div>
-                    <button class="reg-collapse-btn" id="reg-collapse-btn" title="Toggle panel">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="reg-panel-body" id="regulatory-pulse-body">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
             <!-- Browse View (card grid) -->
             <div class="browse-view" id="browse-view">
                 <div class="results-bar" id="results-bar">Loading...</div>
@@ -183,6 +164,31 @@
         </div>
     </div>
 
+    <!-- ================================================================ -->
+    <!-- Regulatory Pulse Drawer                                          -->
+    <!-- ================================================================ -->
+    <div class="reg-drawer-overlay" id="reg-drawer-overlay" style="display:none;"></div>
+    <aside class="reg-drawer" id="reg-drawer">
+        <div class="reg-drawer-header">
+            <div class="reg-drawer-title-row">
+                <svg class="reg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                <h2 class="reg-drawer-heading">Regulatory Pulse</h2>
+                <span class="reg-drawer-badge" id="reg-drawer-count">0</span>
+            </div>
+            <button class="reg-drawer-close" id="reg-drawer-close" aria-label="Close Pulse">
+                &times;
+            </button>
+        </div>
+        <div class="reg-drawer-body" id="reg-drawer-body">
+            <!-- Populated by JS -->
+            <div style="padding: var(--space-md); text-align: center; color: var(--color-text-muted);">
+                Loading pulse data...
+            </div>
+        </div>
+    </aside>
 
 
     <!-- ================================================================ -->

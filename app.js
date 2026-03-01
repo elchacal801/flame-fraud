@@ -772,32 +772,36 @@
 
     function renderRegulatoryPulse() {
         var alerts = FlameData.getRegulatoryAlerts();
-        var panel = document.getElementById('regulatory-pulse');
-        var body = document.getElementById('regulatory-pulse-body');
-        var badge = document.getElementById('reg-alert-count');
-        var collapseBtn = document.getElementById('reg-collapse-btn');
+        var drawerBtn = document.getElementById('pulse-toggle-btn');
+        var drawer = document.getElementById('reg-drawer');
+        var drawerOverlay = document.getElementById('reg-drawer-overlay');
+        var drawerClose = document.getElementById('reg-drawer-close');
 
-        if (!panel || !body) return;
+        if (!drawer || !drawerBtn) return;
 
         if (!alerts || alerts.length === 0) {
-            panel.style.display = 'none';
+            drawerBtn.style.display = 'none';
             return;
         }
 
-        // Update badge count
-        if (badge) {
-            badge.textContent = alerts.length.toLocaleString();
+        // Toggling Drawer logic
+        function openDrawer() {
+            drawer.classList.add('open');
+            drawerOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden'; // prevent bg scroll
         }
 
-        // Collapse toggle
-        if (collapseBtn) {
-            var header = panel.querySelector('.reg-panel-header');
-            if (header) {
-                header.addEventListener('click', function () {
-                    panel.classList.toggle('collapsed');
-                });
-            }
+        function closeDrawer() {
+            drawer.classList.remove('open');
+            drawerOverlay.classList.remove('show');
+            document.body.style.overflow = '';
         }
+
+        drawerBtn.addEventListener('click', openDrawer);
+        if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+        if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+
 
         // Build summary stats
         var severityCounts = { high: 0, medium: 0, low: 0 };
@@ -816,6 +820,23 @@
             }
         });
         var sourcesActive = Object.keys(sourcesSet).length;
+
+        // Update Header Badge and Drawer Title Badge
+        var alertCountText = alerts.length > 99 ? '99+' : alerts.length;
+        var headerBadge = document.getElementById('pulse-header-badge');
+        var drawerBadge = document.getElementById('reg-drawer-count');
+
+        if (headerBadge) {
+            if (alerts.length > 0) {
+                headerBadge.textContent = alertCountText;
+                headerBadge.style.display = 'inline-flex';
+            } else {
+                headerBadge.style.display = 'none';
+            }
+        }
+        if (drawerBadge) {
+            drawerBadge.textContent = alertCountText;
+        }
 
         // Summary row
         var html = '<div class="reg-summary-row">';
@@ -840,7 +861,7 @@
             html += '<tr>';
             html += '<td style="white-space:nowrap;">' + escapeHtml(a.date || '—') + '</td>';
             html += '<td><span class="reg-source-badge ' + escapeHtml(sourceClass) + '">' + escapeHtml((a.source || '').toUpperCase()) + '</span></td>';
-            var titleText = escapeHtml(truncate(a.title || '', 80));
+            var titleText = escapeHtml(truncate(a.title || '', 60)); // shortened for sidebar
             if (a.url) {
                 html += '<td><a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener">' + titleText + '</a></td>';
             } else {
@@ -856,8 +877,11 @@
             html += '<div style="text-align:center; margin-top: var(--space-md); font-size: 0.78rem; color: var(--color-text-muted);">Showing 20 of ' + alerts.length.toLocaleString() + ' alerts</div>';
         }
 
-        body.innerHTML = html;
-        panel.style.display = 'block';
+        var drawerBody = document.getElementById('reg-drawer-body');
+        if (drawerBody) {
+            drawerBody.innerHTML = html;
+        }
+
     }
 
     // -----------------------------------------------------------------------
