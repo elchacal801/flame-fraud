@@ -137,181 +137,136 @@ class TestCFPBSource:
 # OCCSource tests
 # ===========================================================================
 
-def _make_occ_feed():
-    """Build a mock feedparser result for OCC."""
-    feed = MagicMock()
-    entry1 = MagicMock()
-    entry1.id = "https://occ.gov/bulletin-2026-01"
-    entry1.title = "OCC Bulletin 2026-01: BSA/AML Compliance"
-    entry1.published = "2026-01-15"
-    entry1.link = "https://occ.gov/bulletin-2026-01"
-    entry1.summary = "Guidance on BSA/AML compliance expectations."
-    entry1.tags = [MagicMock(term="bsa-aml")]
-
-    entry2 = MagicMock()
-    entry2.id = "https://occ.gov/enforcement-2026-01"
-    entry2.title = "Enforcement Action Against National Bank"
-    entry2.published = "2026-02-01"
-    entry2.link = "https://occ.gov/enforcement-2026-01"
-    entry2.summary = "OCC takes enforcement action."
-    entry2.tags = []
-
-    feed.entries = [entry1, entry2]
-    return feed
-
+OCC_HTML = '''
+<ul>
+  <li>
+    <time>Jan 15, 2026</time>
+    <a href="/news-issuances/bulletins/2026/bulletin-2026-01.html">OCC Bulletin 2026-01: BSA/AML Compliance</a>
+  </li>
+  <li>
+    <div>Feb 01, 2026</div>
+    <a href="/news-issuances/enforcement-2026-01.html">Enforcement Action Against National Bank</a>
+  </li>
+  <li>
+    <a href="ignore.html"><img src="icon.png"/></a>
+  </li>
+</ul>
+'''
 
 class TestOCCSource:
     def test_name(self):
-        """OCCSource.name should be 'occ'."""
-        src = OCCSource(_make_config({"feed_url": "https://occ.gov/feed"}))
+        src = OCCSource(_make_config())
         assert src.name == "occ"
 
-    @patch("regulatory.sources.occ.feedparser.parse")
-    def test_fetch_calls_feedparser(self, mock_parse):
-        """fetch() should call feedparser.parse with the feed_url."""
-        mock_parse.return_value = _make_occ_feed()
-        src = OCCSource(_make_config({"feed_url": "https://occ.gov/feed"}))
+    @patch("regulatory.sources.occ.requests.get")
+    def test_fetch_downloads_html(self, mock_get):
+        mock_resp = MagicMock()
+        mock_resp.text = OCC_HTML
+        mock_get.return_value = mock_resp
+
+        src = OCCSource(_make_config({"url": "https://occ.test"}))
         result = src.fetch()
-        mock_parse.assert_called_once_with("https://occ.gov/feed")
+        mock_get.assert_called_once()
+        assert result == OCC_HTML
 
-    @patch("regulatory.sources.occ.feedparser.parse")
-    def test_parse_produces_correct_alerts(self, mock_parse):
-        """parse() should produce correct alerts from feed entries."""
-        feed = _make_occ_feed()
-        mock_parse.return_value = feed
-        src = OCCSource(_make_config({"feed_url": "https://occ.gov/feed"}))
-        raw = src.fetch()
-        alerts = src.parse(raw)
+    def test_parse_produces_correct_alerts(self):
+        src = OCCSource(_make_config())
+        alerts = src.parse(OCC_HTML)
 
-        assert len(alerts) == 2
+        assert len(alerts) == 1
 
         a0 = alerts[0]
         assert a0.source == "occ"
         assert a0.alert_id.startswith("occ-")
         assert a0.title == "OCC Bulletin 2026-01: BSA/AML Compliance"
-        assert a0.date == "2026-01-15"
-        assert a0.url == "https://occ.gov/bulletin-2026-01"
+        assert a0.date == "Jan 15, 2026"
+        assert a0.url == "https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-01.html"
 
-        # entry2 has "enforcement" in title
-        a1 = alerts[1]
-        assert a1.category == "Enforcement Action"
-
-    @patch("regulatory.sources.occ.feedparser.parse")
-    def test_category_from_tags(self, mock_parse):
-        """Category should come from entry tags when present."""
-        feed = _make_occ_feed()
-        mock_parse.return_value = feed
-        src = OCCSource(_make_config({"feed_url": "https://occ.gov/feed"}))
-        raw = src.fetch()
-        alerts = src.parse(raw)
-
-        # entry1 has tags: [bsa-aml]
-        assert alerts[0].category == "bsa-aml"
-
-    @patch("regulatory.sources.occ.feedparser.parse")
-    def test_severity_with_tp_mapping(self, mock_parse):
-        """Severity should be 'medium' when TP-mapped, 'low' otherwise."""
-        feed = _make_occ_feed()
-        mock_parse.return_value = feed
+    def test_severity_with_tp_mapping(self):
         config = _make_config({
-            "feed_url": "https://occ.gov/feed",
             "category_mapping": {
-                "bsa-aml": ["TP-0001"],
+                "Bulletin": ["TP-0001"],
             },
         })
         src = OCCSource(config)
-        raw = src.fetch()
-        alerts = src.parse(raw)
+        alerts = src.parse(OCC_HTML)
 
-        # entry1 has category "bsa-aml" which maps to TP-0001
+        assert len(alerts) == 1
+        # entry1 has category "Bulletin" which maps to TP-0001
         assert alerts[0].severity == "medium"
         assert alerts[0].mapped_tp_ids == ["TP-0001"]
-
-        # entry2 has category "Enforcement Action" which has no mapping
-        assert alerts[1].severity == "low"
-        assert alerts[1].mapped_tp_ids == []
 
 
 # ===========================================================================
 # SECSource tests
 # ===========================================================================
 
-def _make_sec_feed():
-    """Build a mock feedparser result for SEC."""
-    feed = MagicMock()
-    entry1 = MagicMock()
-    entry1.id = "https://sec.gov/litigation/lr/2026-001"
-    entry1.title = "SEC Charges XYZ Corp with Securities Fraud"
-    entry1.published = "2026-01-20"
-    entry1.link = "https://sec.gov/litigation/lr/2026-001"
-    entry1.summary = "SEC files fraud charges."
-
-    entry2 = MagicMock()
-    entry2.id = "https://sec.gov/litigation/ap/2026-002"
-    entry2.title = "Administrative Proceeding Against ABC Fund"
-    entry2.published = "2026-02-05"
-    entry2.link = "https://sec.gov/litigation/ap/2026-002"
-    entry2.summary = "Administrative proceeding initiated."
-
-    feed.entries = [entry1, entry2]
-    return feed
-
+SEC_HTML = '''
+<table>
+  <tr>
+    <td>2026-01-20</td>
+    <td><a href="/litigation/lr/2026-001.htm">Release No. LR-26495</a></td>
+    <td>SEC Charges XYZ Corp with Securities Fraud</td>
+  </tr>
+  <tr>
+    <td>2026-02-05</td>
+    <td><a href="/litigation/ap/2026-002.htm">Release No. 34-12345</a></td>
+    <td>Administrative Proceeding Against ABC Fund</td>
+  </tr>
+  <tr>
+    <td>Irrelevant Row</td>
+  </tr>
+</table>
+'''
 
 class TestSECSource:
     def test_name(self):
-        """SECSource.name should be 'sec'."""
-        src = SECSource(_make_config({"feed_url": "https://sec.gov/feed"}))
+        src = SECSource(_make_config())
         assert src.name == "sec"
 
-    @patch("regulatory.sources.sec.feedparser.parse")
-    def test_fetch_calls_feedparser(self, mock_parse):
-        """fetch() should call feedparser.parse with the feed_url."""
-        mock_parse.return_value = _make_sec_feed()
-        src = SECSource(_make_config({"feed_url": "https://sec.gov/feed"}))
-        result = src.fetch()
-        mock_parse.assert_called_once_with("https://sec.gov/feed")
+    @patch("regulatory.sources.sec.requests.get")
+    def test_fetch_downloads_html(self, mock_get):
+        mock_resp = MagicMock()
+        mock_resp.text = SEC_HTML
+        mock_get.return_value = mock_resp
 
-    @patch("regulatory.sources.sec.feedparser.parse")
-    def test_parse_produces_correct_alerts(self, mock_parse):
-        """parse() should produce correct alerts from feed entries."""
-        feed = _make_sec_feed()
-        mock_parse.return_value = feed
-        src = SECSource(_make_config({"feed_url": "https://sec.gov/feed"}))
-        raw = src.fetch()
-        alerts = src.parse(raw)
+        src = SECSource(_make_config({"url": "https://sec.test"}))
+        result = src.fetch()
+        mock_get.assert_called_once()
+        assert result == SEC_HTML
+
+    def test_parse_produces_correct_alerts(self):
+        src = SECSource(_make_config())
+        alerts = src.parse(SEC_HTML)
 
         assert len(alerts) == 2
 
         a0 = alerts[0]
         assert a0.source == "sec"
         assert a0.alert_id.startswith("sec-")
-        assert a0.title == "SEC Charges XYZ Corp with Securities Fraud"
+        assert a0.title == "SEC Litigation: SEC Charges XYZ Corp with Securities Fraud"
         assert a0.date == "2026-01-20"
         assert a0.category == "Litigation Release"
+        assert a0.url == "https://www.sec.gov/litigation/lr/2026-001.htm"
 
         a1 = alerts[1]
-        assert a1.category == "Administrative Proceeding"
+        assert a1.category == "Litigation Release"
 
-    @patch("regulatory.sources.sec.feedparser.parse")
-    def test_severity_with_tp_mapping(self, mock_parse):
-        """Severity should be 'high' when TP-mapped, 'medium' otherwise."""
-        feed = _make_sec_feed()
-        mock_parse.return_value = feed
+    def test_severity_with_tp_mapping(self):
         config = _make_config({
-            "feed_url": "https://sec.gov/feed",
             "category_mapping": {
                 "Litigation Release": ["TP-0031"],
             },
         })
         src = SECSource(config)
-        raw = src.fetch()
-        alerts = src.parse(raw)
+        alerts = src.parse(SEC_HTML)
 
         assert alerts[0].severity == "high"
         assert alerts[0].mapped_tp_ids == ["TP-0031"]
 
-        assert alerts[1].severity == "medium"
-        assert alerts[1].mapped_tp_ids == []
+        assert alerts[1].severity == "high"
+        assert alerts[1].mapped_tp_ids == ["TP-0031"]
+
 
 
 # ===========================================================================

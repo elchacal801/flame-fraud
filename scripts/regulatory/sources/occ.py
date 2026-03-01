@@ -10,6 +10,7 @@ import logging
 from typing import List
 
 import feedparser
+import requests
 
 from regulatory.base import RegulatorySource
 from regulatory.models import RegulatoryAlert
@@ -25,7 +26,6 @@ class OCCSource(RegulatorySource):
     def fetch(self):
         """Fetch the OCC HTML page."""
         url = "https://www.occ.gov/news-issuances/bulletins/index-bulletin-issuances.html"
-        import requests
         headers = {
             "User-Agent": "FlameFraudApp Support@FlameFraud.test"
         }
