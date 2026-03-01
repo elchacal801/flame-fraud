@@ -838,49 +838,129 @@
             drawerBadge.textContent = alertCountText;
         }
 
-        // Summary row
-        var html = '<div class="reg-summary-row">';
-        html += '<div class="reg-stat"><div class="label">Total Alerts</div><div class="value">' + alerts.length.toLocaleString() + '</div></div>';
-        html += '<div class="reg-stat"><div class="label">High Severity</div><div class="value" style="color: #f87171;">' + severityCounts.high.toLocaleString() + '</div></div>';
-        html += '<div class="reg-stat"><div class="label">Sources Active</div><div class="value" style="color: var(--color-accent);">' + sourcesActive + ' / 6</div></div>';
-        html += '<div class="reg-stat"><div class="label">TP-Mapped</div><div class="value" style="color: #4ade80;">' + tpMapped.toLocaleString() + '</div></div>';
-        html += '</div>';
-
-        // Table of 20 most recent alerts (sorted by date descending)
-        var sorted = alerts.slice().sort(function (a, b) {
+        // Sort alerts globally (descending date)
+        var sortedAlerts = alerts.slice().sort(function (a, b) {
             return (b.date || '').localeCompare(a.date || '');
         });
-        var recent = sorted.slice(0, 20);
 
-        html += '<table class="reg-table">';
-        html += '<thead><tr><th>Date</th><th>Source</th><th>Title</th><th>Severity</th><th>TPs</th></tr></thead>';
-        html += '<tbody>';
-        recent.forEach(function (a) {
-            var sourceClass = (a.source || '').toLowerCase().replace(/[^a-z0-9_]/g, '_');
-            var sevClass = (a.severity || '').toLowerCase();
-            html += '<tr>';
-            html += '<td style="white-space:nowrap;">' + escapeHtml(a.date || '—') + '</td>';
-            html += '<td><span class="reg-source-badge ' + escapeHtml(sourceClass) + '">' + escapeHtml((a.source || '').toUpperCase()) + '</span></td>';
-            var titleText = escapeHtml(truncate(a.title || '', 60)); // shortened for sidebar
-            if (a.url) {
-                html += '<td><a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener">' + titleText + '</a></td>';
-            } else {
-                html += '<td>' + titleText + '</td>';
+        // Pagination State
+        var currentPage = 1;
+        var alertsPerPage = 20;
+        var totalPages = Math.ceil(sortedAlerts.length / alertsPerPage);
+
+        function renderRegTable() {
+            var startIndex = (currentPage - 1) * alertsPerPage;
+            var endIndex = Math.min(startIndex + alertsPerPage, sortedAlerts.length);
+            var pageAlerts = sortedAlerts.slice(startIndex, endIndex);
+
+            var html = '';
+
+            // Rebuild summary row on every render (or keep it static above the table)
+            html += '<div class="reg-summary-row">';
+            html += '<div class="reg-stat"><div class="label">Total Alerts</div><div class="value">' + alerts.length.toLocaleString() + '</div></div>';
+            html += '<div class="reg-stat"><div class="label">High Severity</div><div class="value" style="color: #f87171;">' + severityCounts.high.toLocaleString() + '</div></div>';
+            html += '<div class="reg-stat"><div class="label">Sources Active</div><div class="value" style="color: var(--color-accent);">' + sourcesActive + ' / 6</div></div>';
+            html += '<div class="reg-stat"><div class="label">TP-Mapped</div><div class="value" style="color: #4ade80;">' + tpMapped.toLocaleString() + '</div></div>';
+            html += '</div>';
+
+            html += '<div class="reg-drawer-intro">';
+            html += '<p>Recent enforcement actions, advisories, and industry alerts from regulatory bodies (OFAC, FinCEN, SEC, OCC, FBI IC3).</p>';
+            html += '<p>Stay informed about emerging fraud trends and regulatory compliance requirements related to the threat paths in the FLAME dataset.</p>';
+            html += '</div>';
+
+            html += '<table class="reg-table">';
+            html += '<thead><tr><th>Date</th><th>Source</th><th>Title</th><th>Severity</th><th>TPs</th></tr></thead>';
+            html += '<tbody>';
+
+            pageAlerts.forEach(function (a, index) {
+                var sourceClass = (a.source || '').toLowerCase().replace(/[^a-z0-9_]/g, '_');
+                var sevClass = (a.severity || '').toLowerCase();
+                var titleText = escapeHtml(truncate(a.title || '', 60));
+
+                // Using dataset attributes and custom classes for the expand logic
+                html += '<tr class="reg-row-header" data-index="' + index + '">';
+                html += '<td style="white-space:nowrap;">' + escapeHtml(a.date || '—') + '</td>';
+                html += '<td><span class="reg-source-badge ' + escapeHtml(sourceClass) + '">' + escapeHtml((a.source || '').toUpperCase()) + '</span></td>';
+
+                // Keep the link if it exists, but prevent row expand when clicking it
+                if (a.url) {
+                    html += '<td><a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" class="reg-link-prevent">' + titleText + '</a></td>';
+                } else {
+                    html += '<td>' + titleText + '</td>';
+                }
+
+                html += '<td><span class="reg-severity-pill ' + escapeHtml(sevClass) + '">' + escapeHtml(a.severity || '') + '</span></td>';
+                html += '<td style="text-align:center;">' + escapeHtml(String(a.tp_count != null ? a.tp_count : '—')) + '</td>';
+                html += '</tr>';
+
+                // Expanding Context Row
+                html += '<tr class="reg-row-detail" id="reg-detail-' + index + '">';
+                html += '<td colspan="5">';
+                html += '<div class="reg-detail-content">';
+                html += '<div style="margin-bottom: 8px;"><strong>Summary:</strong> ' + escapeHtml(a.summary || 'No summary available.') + '</div>';
+                if (a.mapped_tp_ids && a.mapped_tp_ids.length > 0) {
+                    html += '<div style="margin-top: 4px;"><strong>Relevant TPs:</strong> ' + escapeHtml(a.mapped_tp_ids.join(', ')) + '</div>';
+                }
+                html += '</div>';
+                html += '</td>';
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+
+            // Pagination Controls
+            if (totalPages > 1) {
+                html += '<div class="reg-pagination">';
+                html += '<button class="reg-page-btn" id="reg-prev-btn" ' + (currentPage === 1 ? 'disabled' : '') + '>Previous</button>';
+                html += '<span class="reg-page-info">Page ' + currentPage + ' of ' + totalPages + '</span>';
+                html += '<button class="reg-page-btn" id="reg-next-btn" ' + (currentPage === totalPages ? 'disabled' : '') + '>Next</button>';
+                html += '</div>';
             }
-            html += '<td><span class="reg-severity-pill ' + escapeHtml(sevClass) + '">' + escapeHtml(a.severity || '') + '</span></td>';
-            html += '<td style="text-align:center;">' + escapeHtml(String(a.tp_count != null ? a.tp_count : '—')) + '</td>';
-            html += '</tr>';
-        });
-        html += '</tbody></table>';
 
-        if (alerts.length > 20) {
-            html += '<div style="text-align:center; margin-top: var(--space-md); font-size: 0.78rem; color: var(--color-text-muted);">Showing 20 of ' + alerts.length.toLocaleString() + ' alerts</div>';
+            var drawerBody = document.getElementById('reg-drawer-body');
+            if (drawerBody) {
+                drawerBody.innerHTML = html;
+
+                // Re-bind events for the new DOM elements
+                var prevBtn = document.getElementById('reg-prev-btn');
+                var nextBtn = document.getElementById('reg-next-btn');
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', function () {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            renderRegTable();
+                        }
+                    });
+                }
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', function () {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            renderRegTable();
+                        }
+                    });
+                }
+
+                // Row expand logic
+                var rowHeaders = drawerBody.querySelectorAll('.reg-row-header');
+                rowHeaders.forEach(function (row) {
+                    row.addEventListener('click', function (e) {
+                        // Don't expand if they clicked the outgoing URL link
+                        if (e.target.classList.contains('reg-link-prevent')) {
+                            return;
+                        }
+                        var idx = row.getAttribute('data-index');
+                        var detailRow = document.getElementById('reg-detail-' + idx);
+                        if (detailRow) {
+                            detailRow.classList.toggle('open');
+                        }
+                    });
+                });
+            }
         }
 
-        var drawerBody = document.getElementById('reg-drawer-body');
-        if (drawerBody) {
-            drawerBody.innerHTML = html;
-        }
+        // Initial table render
+        renderRegTable();
 
     }
 

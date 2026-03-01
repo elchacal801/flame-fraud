@@ -44,6 +44,11 @@ class OFACSource(RegulatorySource):
         if root.tag.startswith("{"):
             ns = root.tag.split("}")[0] + "}"
 
+        pub_info = root.find(f"{ns}publshInformation")
+        publish_date = ""
+        if pub_info is not None:
+            publish_date = self._text(pub_info, f"{ns}Publish_Date", "")
+
         for entry in root.findall(f"{ns}sdnEntry"):
             uid = self._text(entry, f"{ns}uid")
             first = self._text(entry, f"{ns}firstName")
@@ -68,7 +73,7 @@ class OFACSource(RegulatorySource):
                     source=self.name,
                     alert_id=f"ofac-{uid}",
                     title=title,
-                    date="",
+                    date=publish_date,
                     category=category,
                     mapped_tp_ids=tp_ids,
                     url="",

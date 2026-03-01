@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:elchacal801.github.io)",
+      "WebSearch"
+    ]
+  }
+}

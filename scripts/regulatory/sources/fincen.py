@@ -26,85 +26,63 @@ class FinCENSource(RegulatorySource):
     name = "fincen"
 
     def fetch(self):
-        """Download PDF and extract tables from all pages.
-
-        Returns
-        -------
-        list[list[list[str]]]
-            List of tables; each table is a list of rows, each row a
-            list of cell strings.
-        """
-        url = self.config["url"]
-        resp = requests.get(url, timeout=60)
+        """Download FinCEN Advisories HTML page and return raw text."""
+        url = self.config.get("url", "https://www.fincen.gov/resources/advisoriesbulletinsfact-sheets/advisories")
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        }
+        resp = requests.get(url, headers=headers, timeout=60)
         resp.raise_for_status()
-
-        content_type = resp.headers.get("Content-Type", "")
-        if "pdf" not in content_type.lower() and not resp.content[:5].startswith(b"%PDF"):
-            logger.warning(
-                "FinCEN URL did not return a PDF (Content-Type: %s). Skipping.",
-                content_type,
-            )
-            return []
-
-        tables = []
-        with pdfplumber.open(io.BytesIO(resp.content)) as pdf:
-            for page in pdf.pages:
-                page_tables = page.extract_tables()
-                if page_tables:
-                    tables.extend(page_tables)
-        return tables
+        return resp.text
 
     def parse(self, raw_data) -> List[RegulatoryAlert]:
-        """Parse extracted table data into RegulatoryAlert objects.
-
-        Parameters
-        ----------
-        raw_data : list[list[list[str]]]
-            List of tables from ``fetch()``.  Each table is a list of
-            rows; each row is a list of cell values.
-
-        Returns
-        -------
-        list[RegulatoryAlert]
-        """
+        """Parse extracted HTML into RegulatoryAlert objects."""
         if not raw_data:
             return []
 
         alerts: List[RegulatoryAlert] = []
-        idx = 0
+        try:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(raw_data, "html.parser")
+            
+            # FinCEN advisories are currently in a table
+            for tr in soup.find_all("tr"):
+                tds = tr.find_all("td")
+                if len(tds) >= 2:
+                    date_td = tds[0]
+                    title_td = tds[1]
+                    
+                    # Extract date
+                    time_el = date_td.find("time")
+                    date = time_el.text.strip() if time_el else date_td.text.strip()
+                    if not date: continue
+                    
+                    # Extract title and link
+                    a = title_td.find("a")
+                    if not a: continue
+                    title = a.text.strip()
+                    link = a["href"]
+                    if link.startswith("/"):
+                        link = "https://www.fincen.gov" + link
 
-        for table in raw_data:
-            # Skip tables with fewer than 2 rows (header + at least one data row)
-            if len(table) < 2:
-                continue
+                    category = "Advisory"
+                    tp_ids = self.map_category_to_tps(category)
+                    severity = "high" if tp_ids else "medium"
 
-            # Skip header row, process data rows
-            for row in table[1:]:
-                idx += 1
-
-                category = str(row[0]) if row[0] is not None else ""
-                raw_count = str(row[1]) if len(row) > 1 and row[1] is not None else ""
-
-                # Strip non-digit characters to get the count
-                count = re.sub(r"\D", "", raw_count)
-
-                tp_ids = self.map_category_to_tps(category)
-                severity = "high" if tp_ids else "medium"
-
-                summary = f"SAR filings: {count}" if count else ""
-
-                alerts.append(
-                    RegulatoryAlert(
-                        source=self.name,
-                        alert_id=f"fincen-sar-{idx:04d}",
-                        title=f"FinCEN SAR: {category}",
-                        date="",
-                        category=category,
-                        mapped_tp_ids=tp_ids,
-                        url=self.config.get("url", ""),
-                        severity=severity,
-                        summary=summary,
+                    alerts.append(
+                        RegulatoryAlert(
+                            source=self.name,
+                            alert_id=f"fincen-{len(alerts):04d}",
+                            title=title,
+                            date=date,
+                            category=category,
+                            mapped_tp_ids=tp_ids,
+                            url=link,
+                            severity=severity,
+                            summary="FinCEN Advisory Notification",
+                        )
                     )
-                )
+        except Exception as e:
+            logger.error(f"Failed to parse FinCEN alerts: {e}")
 
         return alerts

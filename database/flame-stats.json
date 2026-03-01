@@ -625,14 +625,19 @@
     }
   ],
   "regulatoryAlerts": {
-    "total": 18704,
+    "total": 18810,
     "bySeverity": {
-      "high": 18704
+      "high": 18704,
+      "low": 5,
+      "medium": 101
     },
     "bySource": {
-      "ofac": 18704
+      "fbi_ic3": 1,
+      "occ": 5,
+      "ofac": 18704,
+      "sec": 100
     },
     "lastUpdated": "2026-03-01"
   },
-  "generatedAt": "2026-03-01T04:35:04.209018+00:00"
+  "generatedAt": "2026-03-01T18:12:43.045289+00:00"
 }

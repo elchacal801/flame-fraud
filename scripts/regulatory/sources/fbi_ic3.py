@@ -33,68 +33,75 @@ class FBIC3Source(RegulatorySource):
     name = "fbi_ic3"
 
     def fetch(self):
-        """Download PDF and extract text from all pages.
-
-        Returns
-        -------
-        str
-            Concatenated text from every page of the PDF.
-        """
-        url = self.config["url"]
-        resp = requests.get(url, timeout=60)
+        """Download IC3 Alerts HTML page and return raw text."""
+        url = self.config.get("url", "https://www.ic3.gov/Home/IndustryAlerts")
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        }
+        resp = requests.get(url, headers=headers, timeout=60)
         resp.raise_for_status()
-
-        content_type = resp.headers.get("Content-Type", "")
-        if "pdf" not in content_type.lower() and not resp.content[:5].startswith(b"%PDF"):
-            logger.warning(
-                "IC3 URL did not return a PDF (Content-Type: %s). Skipping.",
-                content_type,
-            )
-            return ""
-
-        parts: List[str] = []
-        with pdfplumber.open(io.BytesIO(resp.content)) as pdf:
-            for page in pdf.pages:
-                text = page.extract_text()
-                if text:
-                    parts.append(text)
-        return "\n".join(parts)
+        return resp.text
 
     def parse(self, raw_data) -> List[RegulatoryAlert]:
-        """Parse extracted text into RegulatoryAlert objects.
-
-        Parameters
-        ----------
-        raw_data : str
-            Concatenated page text from ``fetch()``.
-
-        Returns
-        -------
-        list[RegulatoryAlert]
-        """
+        """Parse extracted HTML into RegulatoryAlert objects."""
         if not raw_data:
             return []
 
         alerts: List[RegulatoryAlert] = []
-        matches = _LINE_PATTERN.findall(raw_data)
+        try:
+            from bs4 import BeautifulSoup
+            import re
+            soup = BeautifulSoup(raw_data, "html.parser")
+            
+            # The IC3 lists alerts in blockquotes or standard lists
+            for a in soup.find_all("a", href=True):
+                text = a.text.strip()
+                href = a["href"]
+                
+                # We want /Media/ alerts or things explicitly labeled Alert
+                if "/Media/" in href or "Alert" in text or "PSA" in text:
+                    # Often the date is actually in the parent element text
+                    parent_text = a.parent.text.strip() if a.parent else text
+                    date_match = re.search(r"([A-Z][a-z]+ \d{1,2}, \d{4})", parent_text)
+                    date = date_match.group(1) if date_match else ""
+                    
+                    title = text
+                    # Ignore generic links
+                    if len(title) < 15 or title.lower() in ["read more", "here", "pdf"]:
+                        title = parent_text.replace(date, "").strip() if date else parent_text
 
-        for idx, (category_raw, victims, loss) in enumerate(matches, start=1):
-            category = category_raw.strip()
-            tp_ids = self.map_category_to_tps(category)
-            severity = "high" if tp_ids else "medium"
+                    if len(title) > 100:
+                        title = title[:97] + "..."
+                    
+                    category = "Industry Alert"
+                    tp_ids = self.map_category_to_tps(category)
+                    severity = "high" if tp_ids else "medium"
+                    
+                    if href.startswith("/"):
+                        href = "https://www.ic3.gov" + href
 
-            alerts.append(
-                RegulatoryAlert(
-                    source=self.name,
-                    alert_id=f"ic3-{idx:04d}",
-                    title=f"IC3: {category}",
-                    date="",
-                    category=category,
-                    mapped_tp_ids=tp_ids,
-                    url=self.config.get("url", ""),
-                    severity=severity,
-                    summary=f"Victims: {victims}, Loss: ${loss}",
-                )
-            )
+                    alerts.append(
+                        RegulatoryAlert(
+                            source=self.name,
+                            alert_id=f"ic3-{len(alerts):04d}",
+                            title=title,
+                            date=date,
+                            category=category,
+                            mapped_tp_ids=tp_ids,
+                            url=href,
+                            severity=severity,
+                            summary="FBI IC3 Notification",
+                        )
+                    )
+        except Exception as e:
+            logger.error(f"Failed to parse FBI IC3 alerts: {e}")
 
-        return alerts
+        # Remove duplicates
+        seen = set()
+        unique = []
+        for x in alerts:
+            # dedupe by title, avoiding wipeout of main array
+            if x.title not in seen:
+                seen.add(x.title)
+                unique.append(x)
+        return unique

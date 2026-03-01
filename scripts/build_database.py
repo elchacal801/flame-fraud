@@ -918,7 +918,7 @@ def main():
              total_evidence, len(evidence_map))
 
     # Load regulatory alerts
-    reg_csv = root / "data" / "regulatory_alerts.csv"
+    reg_csv = root / "data" / "regulatory-alerts.csv"
     reg_count = build_regulatory_alerts(conn, reg_csv)
     log.info("Loaded %d regulatory alerts", reg_count)
 

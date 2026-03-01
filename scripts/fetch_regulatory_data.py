@@ -130,8 +130,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--output",
         type=Path,
-        default=_repo_root() / "data" / "regulatory_alerts.csv",
-        help="Output CSV path (default: data/regulatory_alerts.csv relative to repo root).",
+        default=_repo_root() / "data" / "regulatory-alerts.csv",
+        help="Output CSV path (default: data/regulatory-alerts.csv relative to repo root).",
     )
     parser.add_argument(
         "--config",

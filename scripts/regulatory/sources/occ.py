@@ -23,48 +23,83 @@ class OCCSource(RegulatorySource):
     name = "occ"
 
     def fetch(self):
-        """Parse the OCC RSS feed and return the feedparser result."""
-        url = self.config.get("feed_url", self.config.get("url", ""))
-        return feedparser.parse(url)
+        """Fetch the OCC HTML page."""
+        url = "https://www.occ.gov/news-issuances/bulletins/index-bulletin-issuances.html"
+        import requests
+        headers = {
+            "User-Agent": "FlameFraudApp Support@FlameFraud.test"
+        }
+        res = requests.get(url, headers=headers, timeout=60)
+        res.raise_for_status()
+        return res.text
 
-    def parse(self, raw) -> List[RegulatoryAlert]:
-        """Parse feedparser result into a list of RegulatoryAlert objects."""
+    def parse(self, raw_data) -> List[RegulatoryAlert]:
+        """Parse HTML into a list of RegulatoryAlert objects."""
         alerts: List[RegulatoryAlert] = []
+        if not raw_data: return []
+        
+        try:
+            from bs4 import BeautifulSoup
+            import re
+            soup = BeautifulSoup(raw_data, "html.parser")
+            
+            for a in soup.find_all("a", href=True):
+                text = a.text.strip()
+                href = a["href"]
+                
+                # Looking for bulletin links
+                if "bulletin" in href.lower() and len(text) > 10 and "<img" not in str(a):
+                    title = text
+                    if len(title) > 150:
+                        title = title[:147] + "..."
+                        
+                    # Attempt to find date in parent or preceding elements
+                    date = ""
+                    parent = a.find_parent(["li", "div", "tr", "p"])
+                    if parent:
+                        # OCC usually formats as "OCC Bulletin 2024-12" or has dates nearby
+                        time_el = parent.find("time")
+                        if time_el:
+                            date = time_el.text.strip()
+                        else:
+                            date_match = re.search(r"([A-Z][a-z]+ \d{1,2}, \d{4})", parent.text)
+                            date = date_match.group(1) if date_match else ""
 
-        for entry in raw.entries:
-            entry_id = getattr(entry, "id", "")
-            title = getattr(entry, "title", "")
-            published = getattr(entry, "published", "")
-            link = getattr(entry, "link", "")
-            summary = getattr(entry, "summary", "")
+                    category = "Bulletin"
+                    if "enforcement" in title.lower():
+                        category = "Enforcement Action"
 
-            # Determine category from tags or title keywords
-            tags = getattr(entry, "tags", [])
-            if tags:
-                category = tags[0].term
-            elif "enforcement" in title.lower():
-                category = "Enforcement Action"
-            else:
-                category = "Bulletin"
+                    tp_ids = self.map_category_to_tps(category)
+                    severity = "medium" if tp_ids else "low"
+                    
+                    if href.startswith("/"):
+                        href = "https://www.occ.gov" + href
 
-            tp_ids = self.map_category_to_tps(category)
-            severity = "medium" if tp_ids else "low"
+                    alert_id = f"occ-{len(alerts):04d}"
 
-            digest = hashlib.sha256(entry_id.encode()).hexdigest()[:8]
-            alert_id = f"occ-{digest}"
+                    alerts.append(
+                        RegulatoryAlert(
+                            source=self.name,
+                            alert_id=alert_id,
+                            title=title,
+                            date=date,
+                            category=category,
+                            mapped_tp_ids=tp_ids,
+                            url=href,
+                            severity=severity,
+                            summary="OCC Regulatory Bulletin",
+                        )
+                    )
+        except Exception as e:
+            logger.error(f"Failed to parse OCC alerts: {e}")
+            
+        # Dedupe by title
+        seen = set()
+        unique = []
+        for x in alerts:
+            if x.title not in seen:
+                seen.add(x.title)
+                unique.append(x)
 
-            alerts.append(
-                RegulatoryAlert(
-                    source=self.name,
-                    alert_id=alert_id,
-                    title=title,
-                    date=published,
-                    category=category,
-                    mapped_tp_ids=tp_ids,
-                    url=link,
-                    severity=severity,
-                    summary=summary,
-                )
-            )
+        return unique
 
-        return alerts
