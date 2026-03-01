@@ -19789,4 +19789,7 @@ ofac,ofac-57050,OFAC SDN: Mohammad ABEDINI (Individual),02/27/2026,SDN List Addi
 ofac,ofac-57051,OFAC SDN: Mehdi ZAND (Individual),02/27/2026,SDN List Addition,,,high,"SDN entry — type: Individual, programs: IRAN-CON-ARMS-EO"
 ofac,ofac-57052,OFAC SDN: Mehrdad JAFARI (Individual),02/27/2026,SDN List Addition,,,high,"SDN entry — type: Individual, programs: IRAN-CON-ARMS-EO"
 ofac,ofac-57053,OFAC SDN: Ebrahim SHARIATZADEH (Individual),02/27/2026,SDN List Addition,,,high,"SDN entry — type: Individual, programs: IRAN-CON-ARMS-EO"
-fbi_ic3,ic3-0000,Industry Alerts,,Industry Alert,,https://www.ic3.gov/CSA,medium,FBI IC3 Notification
+fbi_ic3,ic3-0000,Increase in Malware Enabled ATM Jackpotting Incidents Across United States,"Thu, 19 Feb 2026",Industry Alert,,https://www.ic3.gov/CSA/2026/260219.pdf,medium,FBI IC3 Notification
+fbi_ic3,ic3-0001,Reducing the Attack Surface for End-of-Support Edge Devices,"Thu, 05 Feb 2026",Industry Alert,,https://www.ic3.gov/CSA/2026/260205.pdf,medium,FBI IC3 Notification
+fbi_ic3,ic3-0002,Secure connectivity principles for Operational Technology (OT),"Wed, 14 Jan 2026",Industry Alert,,https://www.ic3.gov/CSA/2026/260114.pdf,medium,FBI IC3 Notification
+fbi_ic3,ic3-0003,North Korean Kimsuky Actors Leverage Malicious QR Codes in Spearphishing Campaigns Targeting U.S. Entities,"Thu, 08 Jan 2026",Industry Alert,,https://www.ic3.gov/CSA/2026/260108.pdf,medium,FBI IC3 Notification

@@ -49,7 +49,7 @@ sources:
 
   fbi_ic3:
     enabled: true
-    url: "https://www.ic3.gov/Home/IndustryAlerts"
+    url: "https://www.ic3.gov/CSA"
     category_mapping:
       business-email-compromise:
         - TP-0010
