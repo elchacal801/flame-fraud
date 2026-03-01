@@ -1517,6 +1517,68 @@ h4 {
     color: var(--color-accent);
 }
 
+/* Drawer Overlay */
+.reg-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s var(--ease);
+}
+
+.reg-drawer-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Slide-out Drawer */
+.reg-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 800px;
+    background: var(--color-bg);
+    z-index: 999;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.reg-drawer.open {
+    transform: translateX(0);
+}
+
+.reg-drawer-header {
+    padding: var(--space-lg);
+    background: var(--color-surface-1);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.reg-drawer-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.reg-drawer-heading {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
 .reg-drawer-badge {
     display: inline-flex;
     align-items: center;
@@ -1747,94 +1809,100 @@ h4 {
         display: none;
     }
 }
- 
- / *   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-       R e g u l a t o r y   D r a w e r   E n h a n c e m e n t s 
-       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   * / 
- . r e g - d r a w e r - i n t r o   { 
-         p a d d i n g :   v a r ( - - s p a c e - m d ) ; 
-         b a c k g r o u n d :   v a r ( - - c o l o r - s u r f a c e - 2 ) ; 
-         b o r d e r - b o t t o m :   1 p x   s o l i d   v a r ( - - c o l o r - b o r d e r ) ; 
-         f o n t - s i z e :   0 . 8 5 r e m ; 
-         c o l o r :   v a r ( - - c o l o r - t e x t - d i m ) ; 
-         l i n e - h e i g h t :   1 . 5 ; 
- } 
- 
- . r e g - d r a w e r - i n t r o   p   { 
-         m a r g i n - b o t t o m :   v a r ( - - s p a c e - s m ) ; 
- } 
- . r e g - d r a w e r - i n t r o   p : l a s t - c h i l d   { 
-         m a r g i n - b o t t o m :   0 ; 
- } 
- 
- / *   E x p a n d a b l e   R o w s   * / 
- . r e g - t a b l e   t r . r e g - r o w - h e a d e r   { 
-         c u r s o r :   p o i n t e r ; 
-         t r a n s i t i o n :   b a c k g r o u n d   v a r ( - - d u r a t i o n )   v a r ( - - e a s e ) ; 
- } 
- . r e g - t a b l e   t r . r e g - r o w - h e a d e r : h o v e r   { 
-         b a c k g r o u n d :   v a r ( - - c o l o r - s u r f a c e - 2 ) ; 
- } 
- . r e g - t a b l e   t r . r e g - r o w - h e a d e r   t d   { 
-         b o r d e r - b o t t o m :   n o n e ; 
- } 
- . r e g - t a b l e   t r . r e g - r o w - d e t a i l   { 
-         d i s p l a y :   n o n e ; 
-         b a c k g r o u n d :   v a r ( - - c o l o r - s u r f a c e - 1 ) ; 
- } 
- . r e g - t a b l e   t r . r e g - r o w - d e t a i l . o p e n   { 
-         d i s p l a y :   t a b l e - r o w ; 
- } 
- . r e g - t a b l e   t r . r e g - r o w - d e t a i l   t d   { 
-         p a d d i n g :   0   v a r ( - - s p a c e - m d )   v a r ( - - s p a c e - m d )   v a r ( - - s p a c e - m d ) ; 
-         b o r d e r - b o t t o m :   1 p x   s o l i d   v a r ( - - c o l o r - b o r d e r ) ; 
- } 
- . r e g - d e t a i l - c o n t e n t   { 
-         b a c k g r o u n d :   v a r ( - - c o l o r - b g ) ; 
-         b o r d e r :   1 p x   s o l i d   v a r ( - - c o l o r - b o r d e r ) ; 
-         b o r d e r - r a d i u s :   v a r ( - - r a d i u s - s m ) ; 
-         p a d d i n g :   v a r ( - - s p a c e - s m )   v a r ( - - s p a c e - m d ) ; 
-         f o n t - s i z e :   0 . 8 5 r e m ; 
-         c o l o r :   v a r ( - - c o l o r - t e x t - d i m ) ; 
-         b o r d e r - l e f t :   3 p x   s o l i d   v a r ( - - c o l o r - a c c e n t ) ; 
- } 
- 
- / *   P a g i n a t i o n   C o n t r o l s   * / 
- . r e g - p a g i n a t i o n   { 
-         d i s p l a y :   f l e x ; 
-         a l i g n - i t e m s :   c e n t e r ; 
-         j u s t i f y - c o n t e n t :   c e n t e r ; 
-         g a p :   v a r ( - - s p a c e - m d ) ; 
-         p a d d i n g :   v a r ( - - s p a c e - m d ) ; 
-         m a r g i n - t o p :   v a r ( - - s p a c e - m d ) ; 
-         b o r d e r - t o p :   1 p x   s o l i d   v a r ( - - c o l o r - b o r d e r ) ; 
- } 
- 
- . r e g - p a g e - b t n   { 
-         p a d d i n g :   v a r ( - - s p a c e - s m )   v a r ( - - s p a c e - m d ) ; 
-         b a c k g r o u n d :   v a r ( - - c o l o r - s u r f a c e - 2 ) ; 
-         b o r d e r :   1 p x   s o l i d   v a r ( - - c o l o r - b o r d e r ) ; 
-         c o l o r :   v a r ( - - c o l o r - t e x t ) ; 
-         b o r d e r - r a d i u s :   v a r ( - - r a d i u s - s m ) ; 
-         c u r s o r :   p o i n t e r ; 
-         f o n t - s i z e :   0 . 8 5 r e m ; 
-         t r a n s i t i o n :   a l l   v a r ( - - d u r a t i o n )   v a r ( - - e a s e ) ; 
- } 
- 
- . r e g - p a g e - b t n : h o v e r : n o t ( : d i s a b l e d )   { 
-         b a c k g r o u n d :   v a r ( - - c o l o r - s u r f a c e - 3 ) ; 
-         b o r d e r - c o l o r :   v a r ( - - c o l o r - a c c e n t ) ; 
-         c o l o r :   v a r ( - - c o l o r - a c c e n t ) ; 
- } 
- 
- . r e g - p a g e - b t n : d i s a b l e d   { 
-         o p a c i t y :   0 . 5 ; 
-         c u r s o r :   n o t - a l l o w e d ; 
- } 
- 
- . r e g - p a g e - i n f o   { 
-         f o n t - s i z e :   0 . 8 5 r e m ; 
-         c o l o r :   v a r ( - - c o l o r - t e x t - m u t e d ) ; 
- } 
-  
- 
+
+
+/* ----------------------------------------------------------------------- */
+/* Regulatory Drawer Enhancements                                          */
+/* ----------------------------------------------------------------------- */
+.reg-drawer-intro {
+    padding: var(--space-md);
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.85rem;
+    color: var(--color-text-dim);
+    line-height: 1.5;
+}
+
+.reg-drawer-intro p {
+    margin-bottom: var(--space-sm);
+}
+
+.reg-drawer-intro p:last-child {
+    margin-bottom: 0;
+}
+
+/* Expandable Rows */
+.reg-table tr.reg-row-header {
+    cursor: pointer;
+    transition: background var(--duration) var(--ease);
+}
+
+.reg-table tr.reg-row-header:hover {
+    background: var(--color-surface-2);
+}
+
+.reg-table tr.reg-row-header td {
+    border-bottom: none;
+}
+
+.reg-table tr.reg-row-detail {
+    display: none;
+    background: var(--color-surface-1);
+}
+
+.reg-table tr.reg-row-detail.open {
+    display: table-row;
+}
+
+.reg-table tr.reg-row-detail td {
+    padding: 0 var(--space-md) var(--space-md) var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.reg-detail-content {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.85rem;
+    color: var(--color-text-dim);
+    border-left: 3px solid var(--color-accent);
+}
+
+/* Pagination Controls */
+.reg-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    margin-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.reg-page-btn {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all var(--duration) var(--ease);
+}
+
+.reg-page-btn:hover:not(:disabled) {
+    background: var(--color-surface-3);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.reg-page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.reg-page-info {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}

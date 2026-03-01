@@ -843,15 +843,40 @@
             return (b.date || '').localeCompare(a.date || '');
         });
 
+        // Source Filter Element
+        var sourceSelect = document.getElementById('reg-source-select');
+        var currentSourceFilter = 'all';
+
+        if (sourceSelect && sourceSelect.options.length <= 1) {
+            var uniqueSources = Object.keys(sourcesSet).sort();
+            uniqueSources.forEach(function (src) {
+                var opt = document.createElement('option');
+                opt.value = src;
+                opt.textContent = src.toUpperCase();
+                sourceSelect.appendChild(opt);
+            });
+            sourceSelect.addEventListener('change', function (e) {
+                currentSourceFilter = e.target.value;
+                currentPage = 1;
+                renderRegTable();
+            });
+        }
+
         // Pagination State
         var currentPage = 1;
         var alertsPerPage = 20;
-        var totalPages = Math.ceil(sortedAlerts.length / alertsPerPage);
 
         function renderRegTable() {
+            var filteredAlerts = currentSourceFilter === 'all'
+                ? sortedAlerts
+                : sortedAlerts.filter(function (a) { return a.source === currentSourceFilter; });
+
+            var totalPages = Math.ceil(filteredAlerts.length / alertsPerPage);
+            if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+
             var startIndex = (currentPage - 1) * alertsPerPage;
-            var endIndex = Math.min(startIndex + alertsPerPage, sortedAlerts.length);
-            var pageAlerts = sortedAlerts.slice(startIndex, endIndex);
+            var endIndex = Math.min(startIndex + alertsPerPage, filteredAlerts.length);
+            var pageAlerts = filteredAlerts.slice(startIndex, endIndex);
 
             var html = '';
 
@@ -914,6 +939,8 @@
                 html += '<span class="reg-page-info">Page ' + currentPage + ' of ' + totalPages + '</span>';
                 html += '<button class="reg-page-btn" id="reg-next-btn" ' + (currentPage === totalPages ? 'disabled' : '') + '>Next</button>';
                 html += '</div>';
+            } else if (filteredAlerts.length === 0) {
+                html += '<div style="padding: var(--space-lg); text-align: center; color: var(--color-text-dim);">No alerts found for this source.</div>';
             }
 
             var drawerBody = document.getElementById('reg-drawer-body');

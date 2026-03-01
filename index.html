@@ -170,17 +170,28 @@
     <div class="reg-drawer-overlay" id="reg-drawer-overlay" style="display:none;"></div>
     <aside class="reg-drawer" id="reg-drawer">
         <div class="reg-drawer-header">
-            <div class="reg-drawer-title-row">
-                <svg class="reg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-                <h2 class="reg-drawer-heading">Regulatory Pulse</h2>
-                <span class="reg-drawer-badge" id="reg-drawer-count">0</span>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                <div class="reg-drawer-title-row" style="margin-bottom: var(--space-md);">
+                    <svg class="reg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                    <h2 class="reg-drawer-heading">Regulatory Pulse</h2>
+                    <span class="reg-drawer-badge" id="reg-drawer-count">0</span>
+                </div>
+                <button class="reg-drawer-close" id="reg-drawer-close" aria-label="Close Pulse">
+                    &times;
+                </button>
             </div>
-            <button class="reg-drawer-close" id="reg-drawer-close" aria-label="Close Pulse">
-                &times;
-            </button>
+            <div class="reg-source-filter-container">
+                <label for="reg-source-select"
+                    style="font-size: 0.85rem; color: var(--color-text-dim); margin-right: 8px; font-weight: 500;">Filter
+                    by Source:</label>
+                <select id="reg-source-select"
+                    style="padding: 6px 12px; border-radius: 6px; background: var(--color-surface-2); color: var(--color-text); border: 1px solid var(--color-border); font-size: 0.85rem; cursor: pointer;">
+                    <option value="all">All Sources</option>
+                </select>
+            </div>
         </div>
         <div class="reg-drawer-body" id="reg-drawer-body">
             <div class="reg-drawer-intro">
