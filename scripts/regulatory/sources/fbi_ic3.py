@@ -53,25 +53,19 @@ class FBIC3Source(RegulatorySource):
             import re
             soup = BeautifulSoup(raw_data, "html.parser")
             
-            # The IC3 lists alerts in blockquotes or standard lists
+            # The IC3 lists alerts in blockquotes, standard lists, or row divs on the /CSA page
             for a in soup.find_all("a", href=True):
                 text = a.text.strip()
                 href = a["href"]
                 
-                # We want /Media/ alerts or things explicitly labeled Alert
-                if "/Media/" in href or "Alert" in text or "PSA" in text:
-                    # Often the date is actually in the parent element text
+                # We want /CSA/YYYY/XXXX.pdf links
+                if "/CSA/" in href and href.lower().endswith(".pdf"):
                     parent_text = a.parent.text.strip() if a.parent else text
-                    date_match = re.search(r"([A-Z][a-z]+ \d{1,2}, \d{4})", parent_text)
+                    # Look for dates like "Thu, 19 Feb 2026"
+                    date_match = re.search(r"([A-Z][a-z]{2}, \d{1,2} [A-Z][a-z]{2} \d{4})", parent_text)
                     date = date_match.group(1) if date_match else ""
                     
                     title = text
-                    # Ignore generic links
-                    if len(title) < 15 or title.lower() in ["read more", "here", "pdf"]:
-                        title = parent_text.replace(date, "").strip() if date else parent_text
-
-                    if len(title) > 100:
-                        title = title[:97] + "..."
                     
                     category = "Industry Alert"
                     tp_ids = self.map_category_to_tps(category)
