@@ -625,16 +625,14 @@
     }
   ],
   "regulatoryAlerts": {
-    "total": 18804,
+    "total": 18704,
     "bySeverity": {
-      "high": 18704,
-      "medium": 100
+      "high": 18704
     },
     "bySource": {
-      "cfpb": 100,
       "ofac": 18704
     },
-    "lastUpdated": "2026-02-28"
+    "lastUpdated": "2026-03-01"
   },
-  "generatedAt": "2026-02-28T19:26:38.495134+00:00"
+  "generatedAt": "2026-03-01T04:29:55.422453+00:00"
 }

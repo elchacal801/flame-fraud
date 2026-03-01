@@ -840,7 +840,12 @@
             html += '<tr>';
             html += '<td style="white-space:nowrap;">' + escapeHtml(a.date || '—') + '</td>';
             html += '<td><span class="reg-source-badge ' + escapeHtml(sourceClass) + '">' + escapeHtml((a.source || '').toUpperCase()) + '</span></td>';
-            html += '<td>' + escapeHtml(truncate(a.title || '', 80)) + '</td>';
+            var titleText = escapeHtml(truncate(a.title || '', 80));
+            if (a.url) {
+                html += '<td><a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener">' + titleText + '</a></td>';
+            } else {
+                html += '<td>' + titleText + '</td>';
+            }
             html += '<td><span class="reg-severity-pill ' + escapeHtml(sevClass) + '">' + escapeHtml(a.severity || '') + '</span></td>';
             html += '<td style="text-align:center;">' + escapeHtml(String(a.tp_count != null ? a.tp_count : '—')) + '</td>';
             html += '</tr>';

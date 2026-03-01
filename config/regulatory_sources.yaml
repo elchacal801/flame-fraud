@@ -31,7 +31,7 @@ sources:
         - TP-0041
 
   cfpb:
-    enabled: true
+    enabled: false
     api_url: "https://www.consumerfinance.gov/data-research/consumer-complaints/search/api/v1/"
     category_mapping:
       elder-fraud:
