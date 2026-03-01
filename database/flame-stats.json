@@ -639,9 +639,5 @@
     },
     "lastUpdated": "2026-03-01"
   },
-<<<<<<< HEAD
-  "generatedAt": "2026-03-01T18:19:41.653423+00:00"
-=======
   "generatedAt": "2026-03-01T18:42:55.434796+00:00"
->>>>>>> 6dc569d (fix(scraper): Update FBI IC3 scraper URL and HTML parsing to handle the /CSA structure)
 }
