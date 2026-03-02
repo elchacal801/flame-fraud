@@ -4,8 +4,12 @@ on:
 
 jobs:
   generate:
-    # Only run when the intel-submission label is applied
-    if: contains(github.event.issue.labels.*.name, 'intel-submission')
+    # Only run when the intel-submission label is applied AND the author is a trusted collaborator.
+    # The author_association gate prevents untrusted users from triggering workflows that
+    # have access to secrets (ANTHROPIC_API_KEY, OPENAI_API_KEY, GITHUB_TOKEN).
+    if: >
+      contains(github.event.issue.labels.*.name, 'intel-submission') &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -73,18 +77,25 @@ jobs:
             core.setOutput('fraud_types', fraudTypes.join(',') || '');
             core.setOutput('context', additionalContext === '_No response_' ? '' : additionalContext);
 
+      # SECURITY FIX: All step outputs are passed via env: block instead of ${{ }} in run:
+      # to prevent shell injection from user-controlled issue body fields.
       - name: Run AI intake
         id: intake
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          INPUT_SOURCE_URL: ${{ steps.parse.outputs.source_url }}
+          INPUT_AUTHOR: ${{ steps.parse.outputs.author }}
+          INPUT_SECTOR: ${{ steps.parse.outputs.sector }}
+          INPUT_FRAUD_TYPES: ${{ steps.parse.outputs.fraud_types }}
+          INPUT_CONTEXT: ${{ steps.parse.outputs.context }}
         run: |
           OUTPUT=$(python scripts/ai_intake.py \
-            --url "${{ steps.parse.outputs.source_url }}" \
-            --author "${{ steps.parse.outputs.author }}" \
-            --sector "${{ steps.parse.outputs.sector }}" \
-            --fraud-types "${{ steps.parse.outputs.fraud_types }}" \
-            --context "${{ steps.parse.outputs.context }}")
+            --url "$INPUT_SOURCE_URL" \
+            --author "$INPUT_AUTHOR" \
+            --sector "$INPUT_SECTOR" \
+            --fraud-types "$INPUT_FRAUD_TYPES" \
+            --context "$INPUT_CONTEXT")
 
           echo "intake_json=$OUTPUT" >> $GITHUB_OUTPUT
 
@@ -101,8 +112,10 @@ jobs:
 
       - name: Validate generated file
         id: validate
+        env:
+          INTAKE_FILEPATH: ${{ steps.intake.outputs.filepath }}
         run: |
-          python scripts/validate_submission.py "${{ steps.intake.outputs.filepath }}" && echo "valid=true" >> $GITHUB_OUTPUT || echo "valid=false" >> $GITHUB_OUTPUT
+          python scripts/validate_submission.py "$INTAKE_FILEPATH" && echo "valid=true" >> $GITHUB_OUTPUT || echo "valid=false" >> $GITHUB_OUTPUT
 
       - name: Create labels if missing
         env:
@@ -114,15 +127,22 @@ jobs:
       - name: Create branch and PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          INTAKE_TP_ID: ${{ steps.intake.outputs.tp_id }}
+          INTAKE_TITLE: ${{ steps.intake.outputs.title }}
+          INTAKE_MODEL: ${{ steps.intake.outputs.model }}
+          INTAKE_FILEPATH: ${{ steps.intake.outputs.filepath }}
+          PARSE_SOURCE_URL: ${{ steps.parse.outputs.source_url }}
+          VALIDATE_VALID: ${{ steps.validate.outputs.valid }}
         run: |
-          BRANCH="ai-intake/issue-${{ github.event.issue.number }}"
-          TP_ID="${{ steps.intake.outputs.tp_id }}"
-          TITLE="${{ steps.intake.outputs.title }}"
-          MODEL="${{ steps.intake.outputs.model }}"
-          SOURCE_URL="${{ steps.parse.outputs.source_url }}"
-          VALID="${{ steps.validate.outputs.valid }}"
-          ISSUE_NUM="${{ github.event.issue.number }}"
-          FILEPATH="${{ steps.intake.outputs.filepath }}"
+          BRANCH="ai-intake/issue-${ISSUE_NUMBER}"
+          TP_ID="$INTAKE_TP_ID"
+          TITLE="$INTAKE_TITLE"
+          MODEL="$INTAKE_MODEL"
+          SOURCE_URL="$PARSE_SOURCE_URL"
+          VALID="$VALIDATE_VALID"
+          ISSUE_NUM="$ISSUE_NUMBER"
+          FILEPATH="$INTAKE_FILEPATH"
 
           git config user.name "FLAME AI Intake"
           git config user.email "flame-ai@users.noreply.github.com"
@@ -166,14 +186,21 @@ jobs:
             --head "$BRANCH" \
             --label "ai-generated,needs-review"
 
+      # SECURITY FIX: Step outputs accessed via process.env instead of ${{ }} interpolation
+      # in github-script to prevent JavaScript injection from user-controlled values.
       - name: Comment on issue
         uses: actions/github-script@v7
+        env:
+          INTAKE_TP_ID: ${{ steps.intake.outputs.tp_id }}
+          INTAKE_TITLE: ${{ steps.intake.outputs.title }}
+          INTAKE_MODEL: ${{ steps.intake.outputs.model }}
+          VALIDATE_VALID: ${{ steps.validate.outputs.valid }}
         with:
           script: |
-            const tpId = '${{ steps.intake.outputs.tp_id }}';
-            const title = '${{ steps.intake.outputs.title }}';
-            const model = '${{ steps.intake.outputs.model }}';
-            const valid = '${{ steps.validate.outputs.valid }}';
+            const tpId = process.env.INTAKE_TP_ID;
+            const title = process.env.INTAKE_TITLE;
+            const model = process.env.INTAKE_MODEL;
+            const valid = process.env.VALIDATE_VALID;
             const branch = `ai-intake/issue-${context.payload.issue.number}`;
 
             let comment = `### FLAME AI Intake Complete\n\n`;

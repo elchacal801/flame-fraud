@@ -22,12 +22,24 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # SECURITY FIX: Git SHAs moved to env: block to prevent expression injection.
+      # While SHAs are hex-constrained, this follows defense-in-depth best practice.
       - name: Find changed submission files
         id: changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
         run: |
-          FILES=$(git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} ${{ github.sha }} -- 'ThreatPaths/*.md' 'Baselines/*.md' 'DetectionLogic/*.md' | tr '\n' ' ')
+          FILES=$(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" -- 'ThreatPaths/*.md' 'Baselines/*.md' 'DetectionLogic/*.md' | tr '\n' ' ')
           echo "files=$FILES" >> $GITHUB_OUTPUT
 
+      # SECURITY FIX: File list moved to env: block and iterated safely with proper
+      # quoting to prevent filename injection (e.g., filenames containing shell metacharacters).
       - name: Validate submissions
         if: steps.changed.outputs.files != ''
-        run: python scripts/validate_submission.py ${{ steps.changed.outputs.files }}
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          echo "$CHANGED_FILES" | tr ' ' '\n' | while IFS= read -r file; do
+            [ -n "$file" ] && python scripts/validate_submission.py "$file"
+          done
