@@ -756,7 +756,7 @@
                 const count = row.phases[p] || 0;
                 const intensity = maxCount > 0 ? count / maxCount : 0;
                 const alpha = count > 0 ? 0.15 + (intensity * 0.85) : 0;
-                html += '<div class="hm-cell hm-data" style="background: rgba(249, 115, 22, ' + alpha.toFixed(2) + ')" title="' + formatLabel(row.fraud_type) + ' × ' + p + ': ' + count + ' TPs">';
+                html += '<div class="hm-cell hm-data" style="background: rgba(192, 39, 45, ' + alpha.toFixed(2) + ')" title="' + formatLabel(row.fraud_type) + ' × ' + p + ': ' + count + ' TPs">';
                 if (count > 0) html += count;
                 html += '</div>';
             });

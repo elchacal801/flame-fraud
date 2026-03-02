@@ -7,19 +7,19 @@
    Design Tokens
    --------------------------------------------------------------- */
 :root {
-    /* Colors */
-    --color-bg: #0a0e17;
-    --color-surface-1: #111827;
-    --color-surface-2: #1a2332;
-    --color-surface-3: #243044;
-    --color-border: #2a3a50;
-    --color-border-hover: #3d5068;
-    --color-text: #e2e8f0;
-    --color-text-dim: #94a3b8;
-    --color-text-muted: #64748b;
-    --color-accent: #f97316;
-    --color-accent-glow: rgba(249, 115, 22, 0.15);
-    --color-accent-dim: #c2410c;
+    /* Colors — Crimson Vector alignment */
+    --color-bg: #0A0A0C;
+    --color-surface-1: #111114;
+    --color-surface-2: #18181B;
+    --color-surface-3: #222225;
+    --color-border: rgba(255, 255, 255, 0.06);
+    --color-border-hover: rgba(255, 255, 255, 0.10);
+    --color-text: #E4E4E7;
+    --color-text-dim: #A1A1AA;
+    --color-text-muted: #63636B;
+    --color-accent: #C0272D;
+    --color-accent-glow: rgba(192, 39, 45, 0.08);
+    --color-accent-dim: #8B1A1F;
     --color-p1: #f97316;
     --color-p2: #ef4444;
     --color-p3: #a855f7;
@@ -48,7 +48,7 @@
     --radius-lg: 16px;
 
     /* Transitions */
-    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
     --duration: 0.2s;
 
     /* Sizing */
@@ -73,12 +73,39 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--color-bg);
     color: var(--color-text);
-    line-height: 1.6;
+    line-height: 1.75;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+}
+
+::selection {
+    background: var(--color-accent);
+    color: #fff;
+}
+
+::-moz-selection {
+    background: var(--color-accent);
+    color: #fff;
 }
 
 a {
@@ -88,15 +115,17 @@ a {
 }
 
 a:hover {
-    color: #fb923c;
+    color: #E63946;
 }
 
 h1,
 h2,
 h3,
 h4 {
-    line-height: 1.3;
-    font-weight: 600;
+    font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: -0.02em;
 }
 
 /* ---------------------------------------------------------------
@@ -106,8 +135,9 @@ h4 {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(10, 14, 23, 0.85);
-    backdrop-filter: blur(16px);
+    background: rgba(10, 10, 12, 0.92);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    backdrop-filter: blur(24px) saturate(1.2);
     border-bottom: 1px solid var(--color-border);
     height: var(--header-height);
 }
@@ -134,6 +164,7 @@ h4 {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+    font-family: 'Manrope', sans-serif;
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -145,7 +176,7 @@ h4 {
 }
 
 .logo-text {
-    background: linear-gradient(135deg, #f97316, #ef4444);
+    background: linear-gradient(135deg, #C0272D, #E63946);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -184,10 +215,12 @@ h4 {
 }
 
 .stat-label {
+    font-family: 'Manrope', sans-serif;
     font-size: 0.65rem;
     color: var(--color-text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
+    font-weight: 600;
 }
 
 .heat-map-btn {
@@ -333,7 +366,7 @@ h4 {
 }
 
 .clear-filters-btn:hover {
-    background: rgba(249, 115, 22, 0.25);
+    background: rgba(192, 39, 45, 0.15);
 }
 
 .filter-count {
@@ -352,12 +385,15 @@ h4 {
 
 /* Filter groups */
 .filter-group-title {
-    font-size: 0.7rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
     color: var(--color-text-muted);
     margin-bottom: var(--space-sm);
     font-weight: 600;
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .filter-chips {
@@ -423,7 +459,7 @@ h4 {
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
+    box-shadow: 0 4px 20px rgba(192, 39, 45, 0.3);
     transition: transform var(--duration) var(--ease);
 }
 
@@ -512,8 +548,7 @@ h4 {
 
 .tp-card:hover {
     border-color: var(--color-border-hover);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--color-border-hover);
+    background: var(--color-surface-2);
 }
 
 .tp-card:hover::before {
@@ -777,7 +812,6 @@ h4 {
 .tax-btn.active {
     background: var(--color-accent);
     color: #fff;
-    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 
 /* Phase timeline */
@@ -935,12 +969,15 @@ h4 {
 }
 
 .tag-group h4 {
-    font-size: 0.72rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     color: var(--color-text-muted);
     margin-bottom: var(--space-sm);
     font-weight: 600;
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .tag-list {
@@ -1345,7 +1382,6 @@ h4 {
 
     .filter-panel.open {
         transform: translateX(0);
-        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
     }
 
     .filter-toggle {
@@ -1439,12 +1475,11 @@ h4 {
     max-width: 100vw;
     height: 100vh;
     background: var(--color-surface-1);
-    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
     z-index: 1050;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 0.4s var(--ease);
 }
 
 .reg-drawer.open {
@@ -1548,9 +1583,8 @@ h4 {
     max-width: 800px;
     background: var(--color-bg);
     z-index: 999;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
     transform: translateX(100%);
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.4s var(--ease);
     display: flex;
     flex-direction: column;
 }
@@ -1653,8 +1687,7 @@ h4 {
 
 .reg-stat:hover {
     border-color: var(--color-border-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: var(--color-surface-3);
 }
 
 .reg-stat .label {
@@ -1763,7 +1796,7 @@ h4 {
     padding: 10px var(--space-md);
     font-size: 0.82rem;
     color: var(--color-text-dim);
-    border-bottom: 1px solid rgba(42, 58, 80, 0.5);
+    border-bottom: 1px solid var(--color-border);
     vertical-align: middle;
 }
 
